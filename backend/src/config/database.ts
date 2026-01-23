@@ -16,7 +16,9 @@ const connectDB = async (): Promise<void> => {
 
       const conn = await mongoose.connect(mongoURI, options);
 
-      logger.info(`MongoDB Connected: ${conn.connection.host}`);
+      // Get the actual connection host information
+      const host = conn.connections[0]?.host || 'unknown';
+      logger.info(`MongoDB Connected: ${host}`);
 
       // Handle connection events
       mongoose.connection.on('error', (err) => {
