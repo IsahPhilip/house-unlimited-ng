@@ -1,10 +1,10 @@
 import multer from 'multer';
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import cloudinaryStorage from 'multer-storage-cloudinary';
 import cloudinary from '../config/cloudinary'; // Import the configured cloudinary instance
 import { Request } from 'express';
 
 // Configure multer storage for Cloudinary
-const storage = new CloudinaryStorage({
+const storage = cloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req: Request, file: Express.Multer.File) => {
     return {
@@ -20,7 +20,7 @@ const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilt
   if (file.mimetype.startsWith('image/')) {
     cb(null, true);
   } else {
-    cb(new Error('Only image files are allowed!'), false);
+    cb(null, false);
   }
 };
 

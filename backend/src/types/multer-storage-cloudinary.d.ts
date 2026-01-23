@@ -3,32 +3,37 @@ declare module 'multer-storage-cloudinary' {
 
   interface CloudinaryStorageOptions {
     cloudinary: any;
-    params: {
-      folder: string;
+    params?: {
+      folder?: string;
       allowed_formats?: string[];
       public_id?: (req: any, file: Express.Multer.File) => string;
       transformation?: any;
       format?: string;
       resource_type?: string;
     } | ((req: any, file: Express.Multer.File) => {
-      folder: string;
+      folder?: string;
       allowed_formats?: string[];
       public_id?: string;
       transformation?: any;
       format?: string;
       resource_type?: string;
     }) | ((req: any, file: Express.Multer.File) => Promise<{
-      folder: string;
+      folder?: string;
       allowed_formats?: string[];
       public_id?: string;
       transformation?: any;
       format?: string;
       resource_type?: string;
     }>);
+    filename?: (req: any, file: Express.Multer.File) => string;
+    folder?: string;
+    transformation?: any;
+    type?: string;
+    format?: string;
+    allowedFormats?: string[];
   }
 
-  class CloudinaryStorage implements StorageEngine {
-    constructor(options: CloudinaryStorageOptions);
+  interface CloudinaryStorage extends StorageEngine {
     _handleFile(
       req: any,
       file: Express.Multer.File,
@@ -41,5 +46,8 @@ declare module 'multer-storage-cloudinary' {
     ): void;
   }
 
-  export { CloudinaryStorage };
+  // The package exports a factory function, not the class directly
+  function cloudinaryStorage(options: CloudinaryStorageOptions): CloudinaryStorage;
+
+  export = cloudinaryStorage;
 }
