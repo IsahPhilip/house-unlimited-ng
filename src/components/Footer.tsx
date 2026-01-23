@@ -1,0 +1,59 @@
+import React from 'react';
+import { Page } from '../types';
+
+interface FooterProps {
+  onNavigate: (p: Page) => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onNavigate }) => (
+  <footer className="bg-slate-900 text-white pt-16 pb-8">
+    <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12">
+      <div className="space-y-4">
+        <div className="flex items-center cursor-pointer" onClick={() => onNavigate('home')}>
+          <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center mr-2">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+          </div>
+          <span className="text-xl font-bold">Real Estate.</span>
+        </div>
+        <p className="text-gray-400 text-sm">Empowering home seekers with AI-driven visualizers and expert human guidance since 1995.</p>
+        <div className="flex space-x-4">
+          <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-blue-600 transition-colors"><i className="fab fa-facebook-f text-xs"></i></div>
+          <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-blue-600 transition-colors"><i className="fab fa-twitter text-xs"></i></div>
+          <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-blue-600 transition-colors"><i className="fab fa-linkedin-in text-xs"></i></div>
+        </div>
+      </div>
+      <div>
+        <h4 className="font-bold mb-6">Company</h4>
+        <ul className="space-y-3 text-gray-400 text-sm">
+          <li className="hover:text-blue-400 cursor-pointer" onClick={() => onNavigate('agents')}>Our Agents</li>
+          <li className="hover:text-blue-400 cursor-pointer" onClick={() => onNavigate('faq')}>FAQs</li>
+          <li className="hover:text-blue-400 cursor-pointer" onClick={() => onNavigate('home')}>Testimonial</li>
+          <li className="hover:text-blue-400 cursor-pointer" onClick={() => onNavigate('about')}>About Us</li>
+          <li className="hover:text-blue-400 cursor-pointer" onClick={() => onNavigate('contact')}>Contact Us</li>
+        </ul>
+      </div>
+      <div>
+        <h4 className="font-bold mb-6">Contact</h4>
+        <ul className="space-y-3 text-gray-400 text-sm">
+          <li className="flex items-center"><span className="mr-2 text-blue-500">📞</span> +1 (408) 555-0120</li>
+          <li className="flex items-center"><span className="mr-2 text-blue-500">✉️</span> example@gmail.com</li>
+          <li className="flex items-center"><span className="mr-2 text-blue-500">📍</span> 2464 Royal Ln. Mesa, New Jersey 45463</li>
+        </ul>
+      </div>
+      <div>
+        <h4 className="font-bold mb-6">Get the latest information</h4>
+        <div className="relative">
+          <input type="email" placeholder="Email address" className="w-full bg-slate-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-600" />
+          <button className="absolute right-1 top-1 bottom-1 bg-blue-600 px-3 rounded-md hover:bg-blue-700 transition-colors">➤</button>
+        </div>
+      </div>
+    </div>
+    <div className="max-w-7xl mx-auto px-4 mt-16 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between text-gray-500 text-xs text-center md:text-left">
+      <p>© 2024 Real Estate. All Rights Reserved.</p>
+      <div className="space-x-6 mt-4 md:mt-0">
+        <span className="hover:text-white cursor-pointer" onClick={() => onNavigate('terms')}>User Terms & Conditions</span>
+        <span className="hover:text-white cursor-pointer" onClick={() => onNavigate('privacy')}>Privacy Policy</span>
+      </div>
+    </div>
+  </footer>
+);

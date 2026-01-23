@@ -1,0 +1,7 @@
+{
+  "name": "Real Estate Platform",
+  "description": "A high-end real estate platform with Gemini-powered dream home visualization and property assistance.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
