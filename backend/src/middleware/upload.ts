@@ -1,14 +1,7 @@
 import multer from 'multer';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import { v2 as cloudinary } from 'cloudinary';
+import cloudinary from '../config/cloudinary'; // Import the configured cloudinary instance
 import { Request } from 'express';
-
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 // Configure multer storage for Cloudinary
 const storage = new CloudinaryStorage({
@@ -27,7 +20,6 @@ const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilt
   if (file.mimetype.startsWith('image/')) {
     cb(null, true);
   } else {
-    // @ts-ignore
     cb(new Error('Only image files are allowed!'), false);
   }
 };
