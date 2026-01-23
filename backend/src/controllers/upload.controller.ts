@@ -16,12 +16,12 @@ export const uploadFile = async (req: AuthRequest, res: Response, next: NextFunc
 
     // File information
     const fileInfo = {
-      filename: req.file.filename,
+      filename: req.file.originalname, // Use original name for consistency or adjust based on Cloudinary response
       originalName: req.file.originalname,
       mimetype: req.file.mimetype,
       size: req.file.size,
-      path: req.file.path,
-      url: `${process.env.FRONTEND_URL}/uploads/${req.file.filename}`,
+      path: req.file.path, // Cloudinary URL
+      url: req.file.path, // Cloudinary URL
     };
 
     res.status(200).json({
@@ -40,6 +40,7 @@ export const deleteFile = async (req: AuthRequest, res: Response, next: NextFunc
   try {
     const { publicId } = req.params;
 
+    // TODO: Implement Cloudinary API call to delete file using publicId
     // For now, just return success
     // In a real implementation, you'd delete from cloud storage
 
@@ -57,6 +58,7 @@ export const deleteFile = async (req: AuthRequest, res: Response, next: NextFunc
 // @access  Private
 export const getFiles = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
+    // TODO: Implement Cloudinary API call to fetch user's uploaded files
     // For now, return empty array
     // In a real implementation, you'd fetch user's uploaded files
 
