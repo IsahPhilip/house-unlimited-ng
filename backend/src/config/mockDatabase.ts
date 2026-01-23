@@ -100,8 +100,8 @@ class MockDatabase {
       ...this.collections[collectionName][index],
       ...update
     };
-
-    return this.collections[collectionName][index] as T;
+    const updatedDoc = this.collections[collectionName][index];
+    return updatedDoc ? updatedDoc as T : null;
   }
 
   async deleteOne<T>(collectionName: string, query: Record<string, any>): Promise<boolean> {

@@ -136,7 +136,7 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
     }
 
     try {
-      const decoded = require('jsonwebtoken').verify(token, process.env.JWT_REFRESH_SECRET!);
+      const decoded = require('jsonwebtoken').verify(token, process.env.JWT_REFRESH_SECRET as string);
       const user = await User.findById(decoded.id);
 
       if (!user) {

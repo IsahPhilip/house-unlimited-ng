@@ -6,7 +6,7 @@ import { Request } from 'express';
 // Configure multer storage for Cloudinary
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: async (req, file) => {
+  params: async (req: Request, file: Express.Multer.File) => {
     return {
       folder: 'house-unlimited-ng',
       allowed_formats: ['jpg', 'jpeg', 'png', 'heic'],

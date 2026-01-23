@@ -1,24 +1,20 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import User from '../models/User.js';
+import User, { IUser } from '../models/User.js'; // Import IUser interface
 
 // Extend Express Request interface to include user
 declare global {
   namespace Express {
     interface Request {
-      user?: any;
+      user?: IUser; // Use IUser for the user property
     }
   }
 }
 
 export interface AuthRequest extends Request {
-  user: {
-    _id: string;
-    name: string;
-    email: string;
-    role: string;
-  };
+  user: IUser; // Use IUser for the user property
 }
+
 
 // Protect routes - require authentication
 export const protect = async (
