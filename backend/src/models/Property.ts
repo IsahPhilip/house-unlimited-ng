@@ -265,7 +265,7 @@ PropertySchema.virtual('reviewCount').get(function() {
 });
 
 // Cascade delete reviews when a property is deleted
-PropertySchema.pre('remove', async function (next) {
+PropertySchema.pre('deleteOne', { document: true, query: false }, async function (next) {
   console.log(`Reviews being removed from property ${this._id}`);
   await this.model('Review').deleteMany({ property: this._id });
   next();

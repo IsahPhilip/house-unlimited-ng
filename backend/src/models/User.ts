@@ -160,9 +160,27 @@ UserSchema.pre('save', async function (next) {
 
 // Sign JWT and return
 UserSchema.methods.getSignedJwtToken = function (): string {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET!, {
-    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
-  });
+  const secret = process.env.JWT_SECRET || 'default-secret';
+  const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
+
+  // Convert expiresIn to number of seconds for JWT
+  const expiresInSeconds = typeof expiresIn === 'string' && expiresIn.match(/^\d+d$/)
+    ? parseInt(expiresIn) * 24 * 60 * 60
+    : typeof expiresIn === 'string' && expiresIn.match(/^\d+h$/)
+    ? parseInt(expiresIn) * 60 * 60
+    : typeof expiresIn === 'string' && expiresIn.match(/^\d+m$/)
+    ? parseInt(expiresIn) * 60
+    : typeof expiresIn === 'string' && expiresIn.match(/^\d+s$/)
+    ? parseInt(expiresIn)
+    : 7 * 24 * 60 * 60; // Default to 7 days in seconds
+
+  return jwt.sign(
+    { id: this._id },
+    secret,
+    {
+      expiresIn: expiresInSeconds,
+    }
+  );
 };
 
 // Match user entered password to hashed password in database
@@ -205,9 +223,10 @@ UserSchema.methods.getEmailVerificationToken = function (): string {
 };
 
 // Cascade delete reviews when a user is deleted
-UserSchema.pre('remove', async function (next) {
+UserSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
   console.log(`Reviews being removed from user ${this._id}`);
-  await this.model('Review').deleteMany({ user: this._id });
+  const ReviewModel = mongoose.model('Review');
+  await ReviewModel.deleteMany({ user: this._id });
   next();
 });
 

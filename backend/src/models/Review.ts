@@ -111,7 +111,8 @@ ReviewSchema.statics.getAverageRating = async function (propertyId: string) {
   ]);
 
   try {
-    await this.model('Property').findByIdAndUpdate(propertyId, {
+    const PropertyModel = mongoose.model('Property');
+    await PropertyModel.findByIdAndUpdate(propertyId, {
       averageRating: obj[0]?.averageRating || 0,
       reviewCount: obj[0]?.reviewCount || 0,
     });
@@ -122,12 +123,12 @@ ReviewSchema.statics.getAverageRating = async function (propertyId: string) {
 
 // Call getAverageRating after save
 ReviewSchema.post('save', function () {
-  this.constructor.getAverageRating(this.property);
+  (this.constructor as any).getAverageRating(this.property);
 });
 
 // Call getAverageRating after remove
-ReviewSchema.post('remove', function () {
-  this.constructor.getAverageRating(this.property);
+ReviewSchema.post('deleteOne', { document: true, query: false }, function () {
+  (this.constructor as any).getAverageRating(this.property);
 });
 
 // Reverse populate with virtuals
