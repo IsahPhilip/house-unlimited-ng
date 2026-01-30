@@ -68,6 +68,11 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('combined'));
 }
 
+// Root route - redirect to API welcome page
+app.get('/', (req, res) => {
+  res.redirect('/api');
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).json({

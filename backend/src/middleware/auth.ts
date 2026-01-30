@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import User, { IUser } from '../models/User.js'; // Import IUser interface
+import User from '../models/mongodb/User.mongoose.js'; // Import MongoDB User model
+import { IUser } from '../models/mongodb/User.mongoose.js'; // Import IUser interface from MongoDB model
 
 // Extend Express Request interface to include user
 declare global {

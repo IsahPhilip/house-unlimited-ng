@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
-import User from '../models/User.js';
+import User from '../models/mongodb/User.mongoose.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { sendEmail } from '../services/emailService.js';
 
@@ -31,7 +31,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
 
     // Generate email verification token
     const verificationToken = user.getEmailVerificationToken();
-    await user.save({ validateBeforeSave: false });
+    await user.save();
 
     // Send verification email
     const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
@@ -98,7 +98,7 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
 
     // Update last login
     user.lastLogin = new Date();
-    await user.save({ validateBeforeSave: false });
+    await user.save();
 
     sendTokenResponse(user, 200, res);
   } catch (error) {
@@ -179,7 +179,7 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
     // Get reset token
     const resetToken = user.getResetPasswordToken();
 
-    await user.save({ validateBeforeSave: false });
+    await user.save();
 
     // Create reset url
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
@@ -208,7 +208,7 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
       user.passwordResetToken = undefined;
       user.passwordResetExpires = undefined;
 
-      await user.save({ validateBeforeSave: false });
+      await user.save();
 
       res.status(500).json({
         success: false,

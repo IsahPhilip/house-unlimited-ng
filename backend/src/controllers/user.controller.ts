@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import User from '../models/User.js';
+import User from '../models/mongodb/User.mongoose.js';
 import { AuthRequest } from '../middleware/auth.js';
 
 // @desc    Get all users
@@ -9,13 +9,12 @@ export const getUsers = async (req: AuthRequest, res: Response, next: NextFuncti
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
-    const startIndex = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-    const users = await User.find()
-      .select('-password')
+    const users = await User.find({}, { password: 0 })
       .sort({ createdAt: -1 })
       .limit(limit)
-      .skip(startIndex);
+      .skip(offset);
 
     const total = await User.countDocuments();
 
@@ -43,7 +42,7 @@ export const getUsers = async (req: AuthRequest, res: Response, next: NextFuncti
 // @access  Private (Admin or own profile)
 export const getUser = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const user = await User.findById(req.params.id).select('-password');
+    const user = await User.findById(req.params.id);
 
     if (!user) {
       res.status(404).json({
@@ -62,9 +61,13 @@ export const getUser = async (req: AuthRequest, res: Response, next: NextFunctio
       return;
     }
 
+    // Remove password from response
+    const userWithoutPassword = user.toObject();
+    delete userWithoutPassword.password;
+
     res.status(200).json({
       success: true,
-      data: user,
+      data: userWithoutPassword,
     });
   } catch (error) {
     next(error);
@@ -93,7 +96,7 @@ export const updateUser = async (req: AuthRequest, res: Response, next: NextFunc
     const user = await User.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
-    }).select('-password');
+    });
 
     if (!user) {
       res.status(404).json({
@@ -103,9 +106,13 @@ export const updateUser = async (req: AuthRequest, res: Response, next: NextFunc
       return;
     }
 
+    // Remove password from response
+    const userWithoutPassword = user.toObject();
+    delete userWithoutPassword.password;
+
     res.status(200).json({
       success: true,
-      data: user,
+      data: userWithoutPassword,
     });
   } catch (error) {
     next(error);
@@ -126,7 +133,7 @@ export const deleteUser = async (req: AuthRequest, res: Response, next: NextFunc
       return;
     }
 
-    const user = await User.findById(req.params.id);
+    const user = await User.findByIdAndDelete(req.params.id);
 
     if (!user) {
       res.status(404).json({
@@ -135,8 +142,6 @@ export const deleteUser = async (req: AuthRequest, res: Response, next: NextFunc
       });
       return;
     }
-
-    await User.findByIdAndDelete(req.params.id);
 
     res.status(200).json({
       success: true,
@@ -152,7 +157,7 @@ export const deleteUser = async (req: AuthRequest, res: Response, next: NextFunc
 // @access  Private
 export const getProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const user = await User.findById(req.user._id).select('-password');
+    const user = await User.findById(req.user._id, { password: 0 });
 
     res.status(200).json({
       success: true,
@@ -181,7 +186,7 @@ export const updateProfile = async (req: AuthRequest, res: Response, next: NextF
     const user = await User.findByIdAndUpdate(req.user._id, req.body, {
       new: true,
       runValidators: true,
-    }).select('-password');
+    });
 
     res.status(200).json({
       success: true,
@@ -258,11 +263,7 @@ export const uploadAvatar = async (req: AuthRequest, res: Response, next: NextFu
       return;
     }
 
-    const user = await User.findByIdAndUpdate(
-      req.user._id,
-      { avatar: avatarUrl },
-      { new: true }
-    ).select('-password');
+    const user = await User.findByIdAndUpdate(req.user._id, { avatar: avatarUrl }, { new: true });
 
     res.status(200).json({
       success: true,

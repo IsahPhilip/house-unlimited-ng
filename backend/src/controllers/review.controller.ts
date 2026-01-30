@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import Review from '../models/Review.js';
-import Property from '../models/Property.js';
+import Review from '../models/mongodb/Review.mongoose.js';
+import Property from '../models/mongodb/Property.mongoose.js';
 import { AuthRequest } from '../middleware/auth.js';
 
 // @desc    Get all reviews
@@ -15,8 +15,7 @@ export const getReviews = async (req: Request, res: Response, next: NextFunction
     const reviews = await Review.find()
       .populate('user', 'name avatar')
       .populate('property', 'title address featuredImage')
-      .populate('agent', 'name avatar role')
-      .sort({ createdAt: -1 })
+      .sort([['createdAt', -1]])
       .limit(limit)
       .skip(startIndex);
 
@@ -48,8 +47,7 @@ export const getReview = async (req: Request, res: Response, next: NextFunction)
   try {
     const review = await Review.findById(req.params.id)
       .populate('user', 'name avatar')
-      .populate('property', 'title address featuredImage')
-      .populate('agent', 'name avatar role');
+      .populate('property', 'title address featuredImage');
 
     if (!review) {
       res.status(404).json({
@@ -111,8 +109,7 @@ export const createReview = async (req: AuthRequest, res: Response, next: NextFu
 
     const populatedReview = await Review.findById(review._id)
       .populate('user', 'name avatar')
-      .populate('property', 'title address featuredImage')
-      .populate('agent', 'name avatar role');
+      .populate('property', 'title address featuredImage');
 
     res.status(201).json({
       success: true,
@@ -150,10 +147,8 @@ export const updateReview = async (req: AuthRequest, res: Response, next: NextFu
     review = await Review.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
-    })
-      .populate('user', 'name avatar')
-      .populate('property', 'title address featuredImage')
-      .populate('agent', 'name avatar role');
+    }).populate('user', 'name avatar')
+      .populate('property', 'title address featuredImage');
 
     res.status(200).json({
       success: true,
@@ -212,23 +207,17 @@ export const getPropertyReviews = async (req: Request, res: Response, next: Next
     const reviews = await Review.find({ property: propertyId })
       .populate('user', 'name avatar')
       .populate('agent', 'name avatar role')
-      .sort({ createdAt: -1 })
+      .sort([['createdAt', -1]])
       .limit(limit)
       .skip(startIndex);
 
     const total = await Review.countDocuments({ property: propertyId });
 
     // Calculate average rating
-    const ratingStats = await Review.aggregate([
-      { $match: { property: require('mongoose').Types.ObjectId(propertyId) } },
-      {
-        $group: {
-          _id: '$property',
-          averageRating: { $avg: '$rating' },
-          totalReviews: { $sum: 1 },
-        },
-      },
-    ]);
+    const allReviews = await Review.find({ property: propertyId });
+    const averageRating = allReviews.length > 0
+      ? allReviews.reduce((sum, review) => sum + review.rating, 0) / allReviews.length
+      : 0;
 
     const pagination = {
       currentPage: page,
@@ -242,8 +231,8 @@ export const getPropertyReviews = async (req: Request, res: Response, next: Next
       success: true,
       count: reviews.length,
       pagination,
-      averageRating: ratingStats[0]?.averageRating || 0,
-      totalReviews: ratingStats[0]?.totalReviews || 0,
+      averageRating: averageRating,
+      totalReviews: total,
       data: reviews,
     });
   } catch (error) {
@@ -259,7 +248,7 @@ export const getUserReviews = async (req: AuthRequest, res: Response, next: Next
     const reviews = await Review.find({ user: req.user._id })
       .populate('property', 'title address featuredImage')
       .populate('agent', 'name avatar role')
-      .sort({ createdAt: -1 });
+      .sort([['createdAt', -1]]);
 
     res.status(200).json({
       success: true,

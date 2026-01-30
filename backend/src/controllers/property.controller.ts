@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import Property from '../models/Property.js';
+import Property from '../models/mongodb/Property.mongoose.js';
 import { AuthRequest } from '../middleware/auth.js';
-import { mockDB } from '../config/mockDatabase.js';
 
 // @desc    Get all properties
 // @route   GET /api/properties
@@ -61,57 +60,34 @@ export const getProperties = async (req: Request, res: Response, next: NextFunct
       query.featured = true;
     }
 
-    // Try to use MongoDB first, fall back to mock database
-    try {
-      // Execute query
-      const properties = await Property.find(query)
-        .populate('agent', 'name email phone avatar')
-        .sort({ featured: -1, createdAt: -1 })
-        .limit(limit)
-        .skip(startIndex);
+    // Execute query
+    const properties = await Property.find(query)
+      .populate('agent', 'name email phone avatar')
+      .sort([
+        ['featured', -1],
+        ['createdAt', -1]
+      ])
+      .limit(limit)
+      .skip(startIndex);
 
-      // Get total count for pagination
-      const total = await Property.countDocuments(query);
+    // Get total count for pagination
+    const total = await Property.countDocuments(query);
 
-      // Pagination info
-      const pagination = {
-        currentPage: page,
-        totalPages: Math.ceil(total / limit),
-        totalProperties: total,
-        hasNext: page * limit < total,
-        hasPrev: page > 1,
-      };
+    // Pagination info
+    const pagination = {
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      totalProperties: total,
+      hasNext: page * limit < total,
+      hasPrev: page > 1,
+    };
 
-      res.status(200).json({
-        success: true,
-        count: properties.length,
-        pagination,
-        data: properties,
-      });
-    } catch (mongoError) {
-      // Fall back to mock database
-      console.log('Using mock database for properties');
-      const mockProperties = await mockDB.find('properties', query);
-
-      // Apply pagination manually
-      const paginatedProperties = mockProperties.slice(startIndex, startIndex + limit);
-
-      // Pagination info
-      const pagination = {
-        currentPage: page,
-        totalPages: Math.ceil(mockProperties.length / limit),
-        totalProperties: mockProperties.length,
-        hasNext: page * limit < mockProperties.length,
-        hasPrev: page > 1,
-      };
-
-      res.status(200).json({
-        success: true,
-        count: paginatedProperties.length,
-        pagination,
-        data: paginatedProperties,
-      });
-    }
+    res.status(200).json({
+      success: true,
+      count: properties.length,
+      pagination,
+      data: properties,
+    });
   } catch (error) {
     next(error);
   }
@@ -240,29 +216,16 @@ export const deleteProperty = async (req: AuthRequest, res: Response, next: Next
 // @access  Public
 export const getFeaturedProperties = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    // Try to use MongoDB first, fall back to mock database
-    try {
-      const properties = await Property.find({ featured: true, status: 'available' })
-        .populate('agent', 'name email avatar')
-        .sort({ createdAt: -1 })
-        .limit(6);
+    const properties = await Property.find({ featured: true, status: 'available' })
+      .populate('agent', 'name email avatar')
+      .sort([['createdAt', -1]])
+      .limit(6);
 
-      res.status(200).json({
-        success: true,
-        count: properties.length,
-        data: properties,
-      });
-    } catch (mongoError) {
-      // Fall back to mock database
-      console.log('Using mock database for featured properties');
-      const mockProperties = await mockDB.find('properties', { featured: true });
-
-      res.status(200).json({
-        success: true,
-        count: mockProperties.length,
-        data: mockProperties,
-      });
-    }
+    res.status(200).json({
+      success: true,
+      count: properties.length,
+      data: properties,
+    });
   } catch (error) {
     next(error);
   }
@@ -310,7 +273,10 @@ export const searchProperties = async (req: Request, res: Response, next: NextFu
 
     const properties = await Property.find(query)
       .populate('agent', 'name email avatar')
-      .sort({ featured: -1, createdAt: -1 })
+      .sort([
+        ['featured', -1],
+        ['createdAt', -1]
+      ])
       .limit(50);
 
     res.status(200).json({
@@ -333,12 +299,15 @@ export const getPropertiesByLocation = async (req: Request, res: Response, next:
     const properties = await Property.find({
       status: 'available',
       $or: [
-        { city: new RegExp(location || '', 'i') },
-        { state: new RegExp(location || '', 'i') },
+        { city: { $regex: location || '', $options: 'i' } },
+        { state: { $regex: location || '', $options: 'i' } },
       ],
     })
       .populate('agent', 'name email avatar')
-      .sort({ featured: -1, createdAt: -1 })
+      .sort([
+        ['featured', -1],
+        ['createdAt', -1]
+      ])
       .limit(20);
 
     res.status(200).json({
