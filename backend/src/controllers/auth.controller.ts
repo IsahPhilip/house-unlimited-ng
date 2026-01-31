@@ -138,10 +138,10 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
     }
 
     try {
-      const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET as string);
+      const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET as string) as { id: string };
       
-      // Type guard to ensure decoded is JwtPayload with id property
-      if (typeof decoded === 'string' || !decoded || !('id' in decoded)) {
+      // Type guard to ensure decoded has id property
+      if (!decoded || !decoded.id) {
         res.status(401).json({
           success: false,
           error: 'Invalid token format',
