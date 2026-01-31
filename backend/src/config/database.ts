@@ -3,9 +3,8 @@ import { logger } from '../utils/logger.js';
 
 const connectDB = async (): Promise<void> => {
   try {
-    // Use local MongoDB for testing (comment out if using Atlas)
-    const mongoURI = 'mongodb://localhost:27017/real-estate-platform';
-    // const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/real-estate-platform';
+    // Use Atlas MongoDB (comment out if using local)
+    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/real-estate-platform';
     
     await mongoose.connect(mongoURI);
     

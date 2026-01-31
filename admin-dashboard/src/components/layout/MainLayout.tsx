@@ -7,7 +7,6 @@ import {
   Home,
   Building2,
   Users,
-  Handshake,
   MessageSquare,
   BarChart2,
   Settings,
@@ -17,10 +16,12 @@ import {
   Search,
   Bell,
   User,
-  ChevronDown
+  ChevronDown,
+  Calendar
 } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
-// Mock data for sidebar navigation
+// Sidebar navigation items
 const sidebarItems = [
   {
     name: 'Dashboard',
@@ -40,7 +41,7 @@ const sidebarItems = [
   {
     name: 'Deals Pipeline',
     path: '/deals',
-    icon: <Handshake className="h-5 w-5" />
+    icon: <Users className="h-5 w-5" />
   },
   {
     name: 'Agents/Team',
@@ -84,14 +85,6 @@ const mockNotifications = [
   }
 ];
 
-// Mock user
-const mockUser = {
-  name: 'Admin User',
-  email: 'admin@example.com',
-  avatar: 'https://i.pravatar.cc/150?u=admin',
-  role: 'admin' as const
-};
-
 export default function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -99,6 +92,7 @@ export default function MainLayout() {
   const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   // Close sidebar on route change (for mobile)
   useEffect(() => {
@@ -277,7 +271,7 @@ export default function MainLayout() {
                                   <Users className="h-5 w-5 text-blue-500" />
                                 )}
                                 {notification.type === 'deal_update' && (
-                                  <Handshake className="h-5 w-5 text-green-500" />
+                                  <Users className="h-5 w-5 text-green-500" />
                                 )}
                                 {notification.type === 'appointment' && (
                                   <Calendar className="h-5 w-5 text-purple-500" />
@@ -319,11 +313,11 @@ export default function MainLayout() {
             {/* User Menu */}
             <div className="flex items-center space-x-2">
               <div className="flex flex-col items-end">
-                <span className="text-sm font-medium text-gray-900">{mockUser.name}</span>
-                <span className="text-xs text-gray-500 capitalize">{mockUser.role}</span>
+                <span className="text-sm font-medium text-gray-900">{user?.name || 'User'}</span>
+                <span className="text-xs text-gray-500 capitalize">{user?.role || 'user'}</span>
               </div>
               <img
-                src={mockUser.avatar}
+                src={user?.avatar || 'https://i.pravatar.cc/150?u=default'}
                 alt="User avatar"
                 className="h-8 w-8 rounded-full"
               />

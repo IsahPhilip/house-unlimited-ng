@@ -265,10 +265,12 @@ PropertySchema.virtual('reviewCount').get(function() {
 });
 
 // Cascade delete reviews when a property is deleted
-PropertySchema.pre('deleteOne', { document: true, query: false }, async function (next) {
-  console.log(`Reviews being removed from property ${this._id}`);
-  await this.model('Review').deleteMany({ property: this._id });
-  next();
+PropertySchema.pre('findOneAndDelete', { document: false, query: true }, async function() {
+  const doc = await this.model.findOne(this.getFilter());
+  if (doc) {
+    console.log(`Reviews being removed from property ${doc._id}`);
+    await mongoose.model('Review').deleteMany({ property: doc._id });
+  }
 });
 
 // Reverse populate with virtuals

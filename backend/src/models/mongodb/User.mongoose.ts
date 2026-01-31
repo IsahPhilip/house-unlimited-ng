@@ -146,7 +146,7 @@ const UserSchema: Schema<IUser> = new Schema(
 );
 
 // Encrypt password using bcrypt
-UserSchema.pre('save', async function (next) {
+UserSchema.pre('save', async function (next: (err?: Error) => void) {
   // Only run this function if password was actually modified
   if (!this.isModified('password')) {
     next();
@@ -223,7 +223,7 @@ UserSchema.methods.getEmailVerificationToken = function (): string {
 };
 
 // Cascade delete reviews when a user is deleted
-UserSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
+UserSchema.pre('deleteOne', { document: true, query: false }, async function (this: IUser, next: (err?: Error) => void) {
   console.log(`Reviews being removed from user ${this._id}`);
   const ReviewModel = mongoose.model('Review');
   await ReviewModel.deleteMany({ user: this._id });
