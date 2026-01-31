@@ -27,6 +27,12 @@ export interface User {
   };
 }
 
+export interface AuthResponse {
+  success: boolean;
+  data: User & { token: string };
+  message?: string;
+}
+
 export interface SearchCriteria {
   location: string;
   type: string;

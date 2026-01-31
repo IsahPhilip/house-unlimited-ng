@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 import User from '../models/mongodb/User.mongoose.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { sendEmail } from '../services/emailService.js';
@@ -137,7 +138,17 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
     }
 
     try {
-      const decoded = require('jsonwebtoken').verify(token, process.env.JWT_REFRESH_SECRET as string);
+      const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET as string);
+      
+      // Type guard to ensure decoded is JwtPayload with id property
+      if (typeof decoded === 'string' || !decoded || !('id' in decoded)) {
+        res.status(401).json({
+          success: false,
+          error: 'Invalid token format',
+        });
+        return;
+      }
+
       const user = await User.findById(decoded.id);
 
       if (!user) {
@@ -321,10 +332,10 @@ export const getCurrentUser = async (req: AuthRequest, res: Response, next: Next
 const sendTokenResponse = (user: any, statusCode: number, res: Response): void => {
   // Create token
   const token = user.getSignedJwtToken();
-  const refreshToken = require('jsonwebtoken').sign(
+  const refreshToken = jwt.sign(
     { id: user._id },
     process.env.JWT_REFRESH_SECRET!,
-    { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d' }
+    { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d' } as jwt.SignOptions
   );
 
   const options = {

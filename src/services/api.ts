@@ -1,4 +1,4 @@
-import { Property, Review, User } from '../types';
+import { Property, Review, User, AuthResponse } from '../types';
 
 const API_BASE_URL = 'http://localhost:5000/api';
 
@@ -76,7 +76,7 @@ export const addReview = async (reviewData: Omit<Review, 'id' | 'date'>): Promis
 };
 
 // Auth API
-export const login = async (email: string, password: string): Promise<User> => {
+export const login = async (email: string, password: string): Promise<User & { token: string }> => {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
@@ -88,14 +88,15 @@ export const login = async (email: string, password: string): Promise<User> => {
     if (!response.ok) {
       throw new Error('Login failed');
     }
-    return await response.json();
+    const result = await response.json();
+    return result.data;
   } catch (error) {
     console.error('Login error:', error);
     throw error;
   }
 };
 
-export const register = async (userData: Omit<User, 'id'> & { password: string }): Promise<User> => {
+export const register = async (userData: Omit<User, 'id'> & { password: string }): Promise<User & { token: string }> => {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
@@ -107,7 +108,8 @@ export const register = async (userData: Omit<User, 'id'> & { password: string }
     if (!response.ok) {
       throw new Error('Registration failed');
     }
-    return await response.json();
+    const result = await response.json();
+    return result.data;
   } catch (error) {
     console.error('Registration error:', error);
     throw error;

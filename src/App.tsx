@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Page, User, Review, Property, BlogArticle } from './types';
 import { PROPERTIES, INITIAL_REVIEWS, BLOGS } from './utils/mockData';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -26,9 +27,9 @@ import Banner from './components/Banner'; // Import the Banner component
 type AuthMode = 'signin' | 'signup';
 
 // --- App Container ---
-const App = () => {
+const AppContent = () => {
+  const { user, login, register, logout, isLoading } = useAuth();
   const [currentPage, setCurrentPage] = useState<Page>('home');
-  const [user, setUser] = useState<User | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<AuthMode>('signin');
   const [searchCriteria, setSearchCriteria] = useState<any | null>(null);
@@ -81,8 +82,8 @@ const App = () => {
     setIsForgotPasswordFlowActive(false); // Ensure forgot password flow is inactive when opening auth modal
   };
 
-  const logout = () => {
-    setUser(null);
+  const handleLogout = () => {
+    logout();
     setWishlistIds([]);
   };
 
@@ -194,9 +195,9 @@ const App = () => {
             reviews={reviews}
             onNavigate={setCurrentPage}
             onUpdateProfile={(updates) => {
-              if (user) {
-                setUser({ ...user, ...updates });
-              }
+              // Profile updates would be handled via API call
+              // For now, we'll just log the update
+              console.log('Profile update:', updates);
             }}
             onWishlistToggle={handleWishlistToggle}
           />
@@ -236,7 +237,7 @@ const App = () => {
         }} 
         user={user}
         openAuthModal={openAuthModal}
-        logout={logout}
+        logout={handleLogout}
         wishlistCount={wishlistIds.length}
       />
       
@@ -249,11 +250,23 @@ const App = () => {
         onClose={() => setIsAuthModalOpen(false)}
         mode={authMode}
         setMode={setAuthMode}
-        onSuccess={setUser}
+        onSuccess={(userData) => {
+          // This will be handled by the AuthContext
+          setIsAuthModalOpen(false);
+        }}
         onForgotPasswordClick={handleForgotPasswordRequest}
       />
       <Banner />
     </div>
+  );
+};
+
+// --- App Wrapper ---
+const App = () => {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 };
 

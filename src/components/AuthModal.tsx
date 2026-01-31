@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal } from './Modal';
 import { User } from '../types';
+import { useAuth } from '../contexts/AuthContext';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -19,26 +20,35 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onSuccess,
   onForgotPasswordClick
 }) => {
+  const { login, register } = useAuth();
   const [currentAuthFlow, setCurrentAuthFlow] = useState<'signin' | 'signup' | 'forgot-password'>(mode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   // Update currentAuthFlow when mode prop changes
   React.useEffect(() => {
     setCurrentAuthFlow(mode);
   }, [mode]);
 
-
-
-  const handleModalSubmit = (e: React.FormEvent) => {
+  const handleModalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (currentAuthFlow === 'signin') {
-      onSuccess({ name: name || 'Demo User', email });
-      onClose();
-    } else if (currentAuthFlow === 'signup') {
-      onSuccess({ name: name || 'Demo User', email });
-      onClose();
+    setIsLoading(true);
+    
+    try {
+      if (currentAuthFlow === 'signin') {
+        await login(email, password);
+        onClose();
+      } else if (currentAuthFlow === 'signup') {
+        await register({ name, email, password });
+        onClose();
+      }
+    } catch (error) {
+      console.error('Authentication error:', error);
+      // You could show an error message to the user here
+    } finally {
+      setIsLoading(false);
     }
   };
 
