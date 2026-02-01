@@ -2,8 +2,8 @@
   "version": 2,
   "framework": "vite",
   "installCommand": "npm install --prefix=./backend && npm install",
-  "buildCommand": "npm run build && npm run build --prefix=./backend",
-  "outputDirectory": "dist",
+  "buildCommand": "npm run build --prefix=./frontend && npm run build --prefix=./backend",
+  "outputDirectory": "frontend/dist",
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -11,7 +11,7 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/frontend/index.html"
     }
   ],
   "env": {

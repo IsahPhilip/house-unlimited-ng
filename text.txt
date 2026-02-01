@@ -1,3 +1,0 @@
-Integrate a virtual tour feature for properties. Allow users to explore properties in 3D or via a video walkthrough on the PropertyDetailsPage.
-
-Implement a feature that allows logged-in users to save their frequently used search filters and criteria, enabling them to quickly re-run searches or receive notifications for new listings matching their saved preferences.
