@@ -366,8 +366,8 @@ const MapView = ({ properties, onNavigate }: { properties: Property[], onNavigat
           <img src="${prop.image}" class="w-full h-24 object-cover">
           <div class="p-3">
             <h4 class="font-bold text-gray-900 text-sm mb-1">${prop.title}</h4>
-            <p class="text-blue-600 font-bold text-xs mb-2">${prop.price}</p>
-            <button class="view-details-btn bg-blue-600 text-white w-full py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider hover:bg-blue-700 transition-colors">
+            <p class="text-teal-600 font-bold text-xs mb-2">${prop.price}</p>
+            <button class="view-details-btn bg-teal-600 text-white w-full py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider hover:bg-teal-700 transition-colors">
               View Details
             </button>
           </div>
@@ -454,7 +454,7 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }: {
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="John Doe" 
-              className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none" 
+              className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none" 
             />
           </div>
         )}
@@ -466,7 +466,7 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }: {
             value={email}
             onChange={e => setEmail(e.target.value)}
             placeholder="example@email.com" 
-            className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none" 
+            className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none" 
           />
         </div>
         <div className="space-y-2">
@@ -477,12 +477,12 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }: {
             value={password}
             onChange={e => setPassword(e.target.value)}
             placeholder="••••••••" 
-            className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none" 
+            className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none" 
           />
         </div>
         <button 
           type="submit" 
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-blue-200 mt-4"
+          className="w-full bg-teal-600 hover:bg-teal-700 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-teal-200 mt-4"
         >
           {mode === 'signin' ? 'Sign In' : 'Create Account'}
         </button>
@@ -491,7 +491,7 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }: {
           <button 
             type="button"
             onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
-            className="text-blue-600 font-bold hover:underline"
+            className="text-teal-600 font-bold hover:underline"
           >
             {mode === 'signin' ? 'Sign Up' : 'Sign In'}
           </button>
@@ -558,10 +558,10 @@ const Navbar = ({
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex items-center cursor-pointer" onClick={() => handleNavigate('home')}>
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-2">
+            <div className="w-10 h-10 bg-[#005555] rounded-lg flex items-center justify-center mr-2">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
             </div>
-            <span className="text-xl font-bold text-gray-900">Real Estate.</span>
+            <span className="text-xl font-bold text-gray-900">House Unlimited Nigeria</span>
           </div>
 
           {/* Desktop Nav Items */}
@@ -570,7 +570,7 @@ const Navbar = ({
               <button
                 key={item.page}
                 onClick={() => handleNavigate(item.page)}
-                className={`capitalize font-medium transition-colors ${currentPage === item.page ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+                className={`capitalize font-medium transition-colors ${currentPage === item.page ? 'text-teal-600' : 'text-gray-600 hover:text-teal-600'}`}
               >
                 {item.label}
               </button>
@@ -578,11 +578,11 @@ const Navbar = ({
             {user && (
               <button
                 onClick={() => handleNavigate('wishlist')}
-                className={`capitalize font-medium transition-colors flex items-center ${currentPage === 'wishlist' ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+                className={`capitalize font-medium transition-colors flex items-center ${currentPage === 'wishlist' ? 'text-teal-600' : 'text-gray-600 hover:text-teal-600'}`}
               >
                 Wishlist
                 {wishlistCount > 0 && (
-                  <span className="ml-2 bg-blue-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                  <span className="ml-2 bg-teal-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                     {wishlistCount}
                   </span>
                 )}
@@ -598,14 +598,14 @@ const Navbar = ({
                   <p className="text-sm font-bold text-gray-900">{user.name}</p>
                   <button onClick={logout} className="text-xs text-red-500 hover:underline">Sign Out</button>
                 </div>
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center border border-blue-200 shadow-sm">
-                  <span className="text-blue-600 font-bold uppercase">{user.name.charAt(0)}</span>
+                <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center border border-teal-200 shadow-sm">
+                  <span className="text-teal-600 font-bold uppercase">{user.name.charAt(0)}</span>
                 </div>
               </div>
             ) : (
               <>
-                <button onClick={() => openAuthModal('signin')} className="text-gray-600 font-bold hover:text-blue-600 transition-colors text-sm px-4">Sign In</button>
-                <button onClick={() => openAuthModal('signup')} className="bg-blue-600 text-white px-6 py-2.5 rounded-full font-semibold hover:bg-blue-700 transition-all text-sm shadow-lg shadow-blue-100">Sign Up</button>
+                <button onClick={() => openAuthModal('signin')} className="text-gray-600 font-bold hover:text-teal-600 transition-colors text-sm px-4">Sign In</button>
+                <button onClick={() => openAuthModal('signup')} className="bg-teal-600 text-white px-6 py-2.5 rounded-full font-semibold hover:bg-teal-700 transition-all text-sm shadow-lg shadow-teal-100">Sign Up</button>
               </>
             )}
           </div>
@@ -635,7 +635,7 @@ const Navbar = ({
                 <button
                   key={item.page}
                   onClick={() => handleNavigate(item.page)}
-                  className={`text-left text-lg font-semibold py-2 px-4 rounded-xl transition-colors ${currentPage === item.page ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'}`}
+                  className={`text-left text-lg font-semibold py-2 px-4 rounded-xl transition-colors ${currentPage === item.page ? 'bg-teal-50 text-teal-600' : 'text-gray-600 hover:bg-gray-50'}`}
                 >
                   {item.label.charAt(0).toUpperCase() + item.label.slice(1)}
                 </button>
@@ -643,11 +643,11 @@ const Navbar = ({
               {user && (
                 <button
                   onClick={() => handleNavigate('wishlist')}
-                  className={`text-left text-lg font-semibold py-2 px-4 rounded-xl flex items-center justify-between transition-colors ${currentPage === 'wishlist' ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'}`}
+                  className={`text-left text-lg font-semibold py-2 px-4 rounded-xl flex items-center justify-between transition-colors ${currentPage === 'wishlist' ? 'bg-teal-50 text-teal-600' : 'text-gray-600 hover:bg-gray-50'}`}
                 >
                   Wishlist
                   {wishlistCount > 0 && (
-                    <span className="bg-blue-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                    <span className="bg-teal-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
                       {wishlistCount}
                     </span>
                   )}
@@ -659,7 +659,7 @@ const Navbar = ({
               {user ? (
                 <div className="flex items-center justify-between bg-gray-50 p-4 rounded-2xl">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">
+                    <div className="w-10 h-10 bg-teal-600 text-white rounded-full flex items-center justify-center font-bold">
                       {user.name.charAt(0).toUpperCase()}
                     </div>
                     <div>
@@ -684,7 +684,7 @@ const Navbar = ({
                   </button>
                   <button 
                     onClick={() => { openAuthModal('signup'); setIsMenuOpen(false); }} 
-                    className="w-full py-3 px-4 text-center font-bold text-white bg-blue-600 rounded-xl shadow-lg shadow-blue-200"
+                    className="w-full py-3 px-4 text-center font-bold text-white bg-teal-600 rounded-xl shadow-lg shadow-teal-200"
                   >
                     Sign Up
                   </button>
@@ -703,41 +703,41 @@ const Footer = ({ onNavigate }: { onNavigate: (p: Page) => void }) => (
     <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12">
       <div className="space-y-4">
         <div className="flex items-center cursor-pointer" onClick={() => onNavigate('home')}>
-          <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center mr-2">
+          <div className="w-8 h-8 bg-teal-600 rounded flex items-center justify-center mr-2">
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
           </div>
-          <span className="text-xl font-bold">Real Estate.</span>
+            <span className="text-xl font-bold">House Unlimited Nigeria</span>
         </div>
         <p className="text-gray-400 text-sm">Empowering home seekers with expert human guidance since 1995.</p>
         <div className="flex space-x-4">
-          <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-blue-600 transition-colors"><i className="fab fa-facebook-f text-xs"></i></div>
-          <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-blue-600 transition-colors"><i className="fab fa-twitter text-xs"></i></div>
-          <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-blue-600 transition-colors"><i className="fab fa-linkedin-in text-xs"></i></div>
+          <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-teal-600 transition-colors"><i className="fab fa-facebook-f text-xs"></i></div>
+          <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-teal-600 transition-colors"><i className="fab fa-twitter text-xs"></i></div>
+          <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-teal-600 transition-colors"><i className="fab fa-linkedin-in text-xs"></i></div>
         </div>
       </div>
       <div>
         <h4 className="font-bold mb-6">Company</h4>
         <ul className="space-y-3 text-gray-400 text-sm">
-          <li className="hover:text-blue-400 cursor-pointer" onClick={() => onNavigate('agents')}>Our Agents</li>
-          <li className="hover:text-blue-400 cursor-pointer" onClick={() => onNavigate('faq')}>FAQs</li>
-          <li className="hover:text-blue-400 cursor-pointer" onClick={() => onNavigate('home')}>Testimonial</li>
-          <li className="hover:text-blue-400 cursor-pointer" onClick={() => onNavigate('about')}>About Us</li>
-          <li className="hover:text-blue-400 cursor-pointer" onClick={() => onNavigate('contact')}>Contact Us</li>
+          <li className="hover:text-teal-400 cursor-pointer" onClick={() => onNavigate('agents')}>Our Agents</li>
+          <li className="hover:text-teal-400 cursor-pointer" onClick={() => onNavigate('faq')}>FAQs</li>
+          <li className="hover:text-teal-400 cursor-pointer" onClick={() => onNavigate('home')}>Testimonial</li>
+          <li className="hover:text-teal-400 cursor-pointer" onClick={() => onNavigate('about')}>About Us</li>
+          <li className="hover:text-teal-400 cursor-pointer" onClick={() => onNavigate('contact')}>Contact Us</li>
         </ul>
       </div>
       <div>
         <h4 className="font-bold mb-6">Contact</h4>
         <ul className="space-y-3 text-gray-400 text-sm">
-          <li className="flex items-center"><span className="mr-2 text-blue-500">📞</span> +1 (408) 555-0120</li>
-          <li className="flex items-center"><span className="mr-2 text-blue-500">✉️</span> example@gmail.com</li>
-          <li className="flex items-center"><span className="mr-2 text-blue-500">📍</span> 2464 Royal Ln. Mesa, New Jersey 45463</li>
+          <li className="flex items-center"><span className="mr-2 text-teal-500">📞</span> +2349043752708</li>
+          <li className="flex items-center"><span className="mr-2 text-teal-500">✉️</span> official@houseunlimitednigeria.com</li>
+          <li className="flex items-center"><span className="mr-2 text-teal-500">📍</span> Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory</li>
         </ul>
       </div>
       <div>
         <h4 className="font-bold mb-6">Get the latest information</h4>
         <div className="relative">
-          <input type="email" placeholder="Email address" className="w-full bg-slate-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-600" />
-          <button className="absolute right-1 top-1 bottom-1 bg-blue-600 px-3 rounded-md hover:bg-blue-700 transition-colors">➤</button>
+          <input type="email" placeholder="Email address" className="w-full bg-slate-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-teal-600" />
+          <button className="absolute right-1 top-1 bottom-1 bg-teal-600 px-3 rounded-md hover:bg-teal-700 transition-colors">➤</button>
         </div>
       </div>
     </div>
@@ -755,7 +755,7 @@ const FAQPage = () => (
   <div className="py-24 bg-gray-50 min-h-screen animate-in fade-in duration-500">
     <div className="max-w-3xl mx-auto px-4">
       <div className="text-center mb-16">
-        <p className="text-blue-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Answers to your questions</p>
+        <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Answers to your questions</p>
         <h1 className="text-4xl font-bold text-gray-900">Frequently Asked <span className="text-gray-400 font-light italic">Questions</span></h1>
       </div>
       <div className="space-y-6">
@@ -787,19 +787,19 @@ const AgentsPage = () => (
   <div className="py-24 bg-gray-50 min-h-screen animate-in fade-in duration-500">
     <div className="max-w-7xl mx-auto px-4">
       <div className="text-center mb-16">
-        <p className="text-blue-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Meet our experts</p>
+        <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Meet our experts</p>
         <h1 className="text-4xl font-bold text-gray-900">Our Professional <span className="text-gray-400 font-light italic">Agents</span></h1>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {TEAM.map((member, idx) => (
           <div key={idx} className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 text-center hover:shadow-xl transition-all group">
-            <img src={member.image} alt={member.name} className="w-32 h-32 rounded-full mx-auto mb-6 object-cover border-4 border-blue-50" />
+            <img src={member.image} alt={member.name} className="w-32 h-32 rounded-full mx-auto mb-6 object-cover border-4 border-teal-50" />
             <h4 className="text-xl font-bold text-gray-900">{member.name}</h4>
-            <p className="text-blue-600 text-xs font-bold uppercase tracking-widest mt-1 mb-6">{member.role}</p>
+            <p className="text-teal-600 text-xs font-bold uppercase tracking-widest mt-1 mb-6">{member.role}</p>
             <div className="flex justify-center space-x-3">
-              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer"><i className="fab fa-facebook-f text-xs"></i></div>
-              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer"><i className="fab fa-twitter text-xs"></i></div>
-              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer"><i className="fab fa-linkedin-in text-xs"></i></div>
+              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-teal-600 hover:text-white transition-colors cursor-pointer"><i className="fab fa-facebook-f text-xs"></i></div>
+              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-teal-600 hover:text-white transition-colors cursor-pointer"><i className="fab fa-twitter text-xs"></i></div>
+              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-teal-600 hover:text-white transition-colors cursor-pointer"><i className="fab fa-linkedin-in text-xs"></i></div>
             </div>
           </div>
         ))}
@@ -822,7 +822,7 @@ const BlogDetailsPage = ({ blogId, onNavigate }: { blogId: number, onNavigate: (
         <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"></div>
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="max-w-4xl px-4 text-center">
-            <span className="bg-blue-600 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6 inline-block shadow-lg">
+            <span className="bg-teal-600 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6 inline-block shadow-lg">
               {blog.category}
             </span>
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight drop-shadow-lg">
@@ -849,13 +849,13 @@ const BlogDetailsPage = ({ blogId, onNavigate }: { blogId: number, onNavigate: (
             <div>
               <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-6">Share Article</h4>
               <div className="flex flex-col space-y-4">
-                <button onClick={() => handleShare(blog)} className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-blue-600 hover:text-white transition-all shadow-sm">
+                <button onClick={() => handleShare(blog)} className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-teal-600 hover:text-white transition-all shadow-sm">
                   <i className="fab fa-facebook-f"></i>
                 </button>
-                <button onClick={() => handleShare(blog)} className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-blue-400 hover:text-white transition-all shadow-sm">
+                <button onClick={() => handleShare(blog)} className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-teal-400 hover:text-white transition-all shadow-sm">
                   <i className="fab fa-twitter"></i>
                 </button>
-                <button onClick={() => handleShare(blog)} className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-blue-700 hover:text-white transition-all shadow-sm">
+                <button onClick={() => handleShare(blog)} className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-teal-700 hover:text-white transition-all shadow-sm">
                   <i className="fab fa-linkedin-in"></i>
                 </button>
                 <button onClick={() => handleShare(blog)} className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-slate-900 hover:text-white transition-all shadow-sm">
@@ -882,7 +882,7 @@ const BlogDetailsPage = ({ blogId, onNavigate }: { blogId: number, onNavigate: (
               <img src={blog.author.image} className="w-24 h-24 rounded-3xl object-cover shadow-xl" />
               <div>
                 <h4 className="text-xl font-bold text-gray-900 mb-1">{blog.author.name}</h4>
-                <p className="text-blue-600 text-xs font-bold uppercase tracking-widest mb-3">{blog.author.role}</p>
+                <p className="text-teal-600 text-xs font-bold uppercase tracking-widest mb-3">{blog.author.role}</p>
                 <p className="text-gray-500 text-sm leading-relaxed italic">
                   Passionate about connecting people with their ideal living spaces. Sarah has over 15 years of experience in the luxury real estate sector.
                 </p>
@@ -901,7 +901,7 @@ const BlogDetailsPage = ({ blogId, onNavigate }: { blogId: number, onNavigate: (
                   <div className="aspect-video rounded-2xl overflow-hidden mb-4 shadow-sm">
                     <img src={rb.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                   </div>
-                  <h5 className="font-bold text-gray-900 text-sm leading-snug group-hover:text-blue-600 transition-colors">
+                  <h5 className="font-bold text-gray-900 text-sm leading-snug group-hover:text-teal-600 transition-colors">
                     {rb.title}
                   </h5>
                   <p className="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-wider">{rb.date}</p>
@@ -909,11 +909,11 @@ const BlogDetailsPage = ({ blogId, onNavigate }: { blogId: number, onNavigate: (
               ))}
             </div>
 
-            <div className="mt-12 bg-blue-600 rounded-3xl p-8 text-white">
+            <div className="mt-12 bg-teal-600 rounded-3xl p-8 text-white">
               <h4 className="text-lg font-bold mb-4">Want more insights?</h4>
-              <p className="text-blue-100 text-xs leading-relaxed mb-6">Join 50,000+ home buyers receiving our weekly market reports and design tips.</p>
-              <input placeholder="Email address" className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-xs text-white placeholder:text-blue-200 focus:ring-2 focus:ring-white outline-none mb-3" />
-              <button className="w-full bg-white text-blue-600 py-3 rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg">Subscribe</button>
+              <p className="text-teal-100 text-xs leading-relaxed mb-6">Join 50,000+ home buyers receiving our weekly market reports and design tips.</p>
+              <input placeholder="Email address" className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-xs text-white placeholder:text-teal-200 focus:ring-2 focus:ring-white outline-none mb-3" />
+              <button className="w-full bg-white text-teal-600 py-3 rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg">Subscribe</button>
             </div>
           </div>
         </div>
@@ -935,10 +935,10 @@ const PropertyCard: React.FC<{
     <div className="relative aspect-[4/3] overflow-hidden">
       <img src={property.image} alt={property.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
       <div className="absolute top-4 left-4 flex space-x-2">
-        <span className={`px-3 py-1 rounded-full text-xs font-bold ${property.category === 'rent' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'}`}>
+        <span className={`px-3 py-1 rounded-full text-xs font-bold ${property.category === 'rent' ? 'bg-teal-600 text-white' : 'bg-teal-100 text-teal-800'}`}>
           For {property.category === 'rent' ? 'Rent' : 'Sale'}
         </span>
-        <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-bold">{property.type}</span>
+        <span className="px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-xs font-bold">{property.type}</span>
       </div>
       <div className="absolute top-4 right-4 flex flex-col space-y-2">
         <button 
@@ -958,7 +958,7 @@ const PropertyCard: React.FC<{
             e.stopPropagation();
             handleShare(property);
           }}
-          className="bg-white/80 backdrop-blur p-2 rounded-full transition-all shadow-lg text-gray-600 hover:bg-blue-600 hover:text-white"
+          className="bg-white/80 backdrop-blur p-2 rounded-full transition-all shadow-lg text-gray-600 hover:bg-teal-600 hover:text-white"
           title="Share property"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -968,16 +968,16 @@ const PropertyCard: React.FC<{
       </div>
     </div>
     <div className="p-5">
-      <p className="text-blue-600 font-bold text-lg mb-1">{property.price}</p>
-      <h3 className="font-bold text-gray-900 mb-2 truncate group-hover:text-blue-600 transition-colors">{property.title}</h3>
+      <p className="text-teal-600 font-bold text-lg mb-1">{property.price}</p>
+      <h3 className="font-bold text-gray-900 mb-2 truncate group-hover:text-teal-600 transition-colors">{property.title}</h3>
       <p className="text-gray-500 text-sm mb-4 flex items-center">
         <svg className="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         {property.address}
       </p>
       <div className="flex justify-between items-center text-gray-600 text-xs font-medium border-t pt-4">
-        <span className="flex items-center"><span className="mr-1 text-blue-500">🛏️</span> {property.beds} Beds</span>
-        <span className="flex items-center"><span className="mr-1 text-blue-500">🚿</span> {property.baths} Bath</span>
-        <span className="flex items-center"><span className="mr-1 text-blue-500">📐</span> {property.sqft} sqft</span>
+        <span className="flex items-center"><span className="mr-1 text-teal-500">🛏️</span> {property.beds} Beds</span>
+        <span className="flex items-center"><span className="mr-1 text-teal-500">🚿</span> {property.baths} Bath</span>
+        <span className="flex items-center"><span className="mr-1 text-teal-500">📐</span> {property.sqft} sqft</span>
       </div>
     </div>
   </div>
@@ -1021,10 +1021,10 @@ const Home = ({
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 w-full">
           <div className="max-w-2xl">
-            <p className="text-blue-600 font-semibold mb-4 tracking-wide uppercase tracking-[0.2em] text-xs font-bold">Find Your Dream Property Easily</p>
+            <p className="text-teal-600 font-semibold mb-4 tracking-wide uppercase tracking-[0.2em] text-xs font-bold">Find Your Dream Property Easily</p>
             <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
               Instant Property Deals:<br />
-              <span className="text-blue-600">Buy, Sell, and Rent</span>
+              <span className="text-teal-600">Buy, Sell, and Rent</span>
             </h1>
             <p className="text-gray-600 text-lg mb-10 max-w-lg">Experience the next generation of real estate discovery. We use cutting-edge AI to match you with your perfect home.</p>
             
@@ -1032,13 +1032,13 @@ const Home = ({
               <div className="flex p-1">
                 <button 
                   onClick={() => setCriteria({...criteria, category: 'buy'})}
-                  className={`px-8 py-2.5 rounded-xl font-bold transition-all ${criteria.category === 'buy' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-blue-600'}`}
+                  className={`px-8 py-2.5 rounded-xl font-bold transition-all ${criteria.category === 'buy' ? 'bg-teal-600 text-white' : 'text-gray-500 hover:text-teal-600'}`}
                 >
                   Buy
                 </button>
                 <button 
                   onClick={() => setCriteria({...criteria, category: 'rent'})}
-                  className={`px-8 py-2.5 rounded-xl font-bold transition-all ${criteria.category === 'rent' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-blue-600'}`}
+                  className={`px-8 py-2.5 rounded-xl font-bold transition-all ${criteria.category === 'rent' ? 'bg-teal-600 text-white' : 'text-gray-500 hover:text-teal-600'}`}
                 >
                   Rent
                 </button>
@@ -1074,14 +1074,14 @@ const Home = ({
                     onChange={(e) => setCriteria({...criteria, priceRange: e.target.value})}
                     className="text-gray-900 font-bold text-sm bg-transparent border-none p-0 focus:ring-0 outline-none w-full cursor-pointer"
                   >
-                    <option>$30,000 - $80,000</option>
-                    <option>$80,000 - $200,000</option>
-                    <option>$200,000+</option>
+                    <option>N50,000,000 - N100,000,000</option>
+                    <option>N100,000,000 - N250,000,000</option>
+                    <option>N250,000,000+</option>
                   </select>
                 </div>
                 <button 
                   onClick={() => onSearch(criteria)}
-                  className="bg-blue-600 text-white h-14 w-14 md:w-full rounded-xl flex items-center justify-center font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
+                  className="bg-teal-600 text-white h-14 w-14 md:w-full rounded-xl flex items-center justify-center font-bold hover:bg-teal-700 transition-all shadow-lg shadow-teal-200"
                 >
                   <span className="md:hidden">🔍</span>
                   <span className="hidden md:block">Search</span>
@@ -1095,7 +1095,7 @@ const Home = ({
       {/* Property Types */}
       <section className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 text-center mb-16">
-          <p className="text-blue-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Property Types</p>
+          <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Property Types</p>
           <h2 className="text-4xl font-bold text-gray-900">Explore Property <span className="text-gray-400 italic font-light">Types</span></h2>
         </div>
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-5 gap-6">
@@ -1103,10 +1103,10 @@ const Home = ({
             <div 
               key={idx} 
               onClick={() => onSearch({ location: '', type: type.label, priceRange: 'all', category: 'all' })}
-              className={`p-8 rounded-3xl transition-all cursor-pointer group bg-white border border-gray-100 hover:border-blue-500 hover:shadow-xl hover:-translate-y-1`}
+              className={`p-8 rounded-3xl transition-all cursor-pointer group bg-white border border-gray-100 hover:border-teal-500 hover:shadow-xl hover:-translate-y-1`}
             >
               <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">{type.icon}</div>
-              <h4 className="font-bold mb-1 text-gray-900 group-hover:text-blue-600 transition-colors">{type.label}</h4>
+              <h4 className="font-bold mb-1 text-gray-900 group-hover:text-teal-600 transition-colors">{type.label}</h4>
               <p className={`text-[10px] font-bold uppercase tracking-wider text-gray-400`}>{type.count}</p>
             </div>
           ))}
@@ -1117,10 +1117,10 @@ const Home = ({
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-end mb-12">
           <div>
-            <p className="text-blue-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Popular Properties</p>
+            <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Popular Properties</p>
             <h2 className="text-4xl font-bold text-gray-900">Discover <span className="text-gray-400 italic font-light">Popular Properties</span></h2>
           </div>
-          <button onClick={() => onSearch({ location: '', type: 'all', priceRange: 'all', category: 'all' })} className="bg-blue-600 text-white px-8 py-3 rounded-full flex items-center group font-bold text-sm shadow-lg shadow-blue-100">
+          <button onClick={() => onSearch({ location: '', type: 'all', priceRange: 'all', category: 'all' })} className="bg-teal-600 text-white px-8 py-3 rounded-full flex items-center group font-bold text-sm shadow-lg shadow-teal-100">
             Visit All Properties <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
           </button>
         </div>
@@ -1140,7 +1140,7 @@ const Home = ({
       {/* Testimonials */}
       <section className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 text-center mb-16">
-          <p className="text-blue-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Our Testimonials</p>
+          <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Our Testimonials</p>
           <h2 className="text-4xl font-bold text-gray-900">What Our <span className="text-gray-400 italic font-light font-normal">Client Say About Us</span></h2>
         </div>
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -1149,14 +1149,14 @@ const Home = ({
             { name: 'Esther Howard', img: 'https://i.pravatar.cc/150?u=esther', text: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa.' }
           ].map((t, i) => (
             <div key={i} className="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 flex items-start space-x-6">
-              <img src={t.img} alt={t.name} className="w-20 h-20 rounded-full border-4 border-blue-50 object-cover" />
+              <img src={t.img} alt={t.name} className="w-20 h-20 rounded-full border-4 border-teal-50 object-cover" />
               <div className="flex-1">
                 <div className="flex justify-between items-center mb-4">
                   <div>
                     <h4 className="font-bold text-gray-900">{t.name}</h4>
                     <p className="text-gray-400 text-sm">Customer</p>
                   </div>
-                  <div className="text-blue-200 text-6xl font-serif h-10 overflow-hidden leading-[1]">“</div>
+                  <div className="text-teal-200 text-6xl font-serif h-10 overflow-hidden leading-[1]">“</div>
                 </div>
                 <p className="text-gray-600 leading-relaxed italic text-sm">"{t.text}"</p>
                 <div className="mt-4 flex text-yellow-400 space-x-1">
@@ -1270,13 +1270,13 @@ const PropertyPage = ({
           <div className="flex items-center bg-white p-1 rounded-2xl shadow-sm border border-gray-100">
              <button 
               onClick={() => setViewMode('grid')}
-              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center ${viewMode === 'grid' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-500 hover:text-blue-600'}`}
+              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center ${viewMode === 'grid' ? 'bg-teal-600 text-white shadow-md' : 'text-gray-500 hover:text-teal-600'}`}
              >
                <span className="mr-2 text-base">⊞</span> Grid
              </button>
              <button 
               onClick={() => setViewMode('map')}
-              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center ${viewMode === 'map' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-500 hover:text-blue-600'}`}
+              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center ${viewMode === 'map' ? 'bg-teal-600 text-white shadow-md' : 'text-gray-500 hover:text-teal-600'}`}
              >
                <span className="mr-2 text-base">🗺</span> Map
              </button>
@@ -1290,7 +1290,7 @@ const PropertyPage = ({
               <button 
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-8 py-2.5 rounded-lg capitalize font-bold transition-all ${filter === f ? 'bg-blue-600 text-white shadow-md' : 'text-gray-500 hover:text-blue-600'}`}
+                className={`px-8 py-2.5 rounded-lg capitalize font-bold transition-all ${filter === f ? 'bg-teal-600 text-white shadow-md' : 'text-gray-500 hover:text-teal-600'}`}
               >
                 {f}
               </button>
@@ -1301,7 +1301,7 @@ const PropertyPage = ({
             <select 
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
-              className="bg-white border border-gray-100 rounded-xl px-4 py-2 font-medium text-gray-600 outline-none focus:ring-2 focus:ring-blue-600 shadow-sm"
+              className="bg-white border border-gray-100 rounded-xl px-4 py-2 font-medium text-gray-600 outline-none focus:ring-2 focus:ring-teal-600 shadow-sm"
             >
               <option value="asc">Price: Low to High</option>
               <option value="desc">Price: High to Low</option>
@@ -1333,7 +1333,7 @@ const PropertyPage = ({
             <div className="text-6xl mb-6">🏜️</div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">No matching properties found</h3>
             <p className="text-gray-500 mb-8">Try adjusting your filters or search location to find what you're looking for.</p>
-            <button onClick={() => { setFilter('all'); window.location.reload(); }} className="text-blue-600 font-bold hover:underline">Reset all filters</button>
+            <button onClick={() => { setFilter('all'); window.location.reload(); }} className="text-teal-600 font-bold hover:underline">Reset all filters</button>
           </div>
         )}
 
@@ -1347,18 +1347,18 @@ const PropertyPage = ({
                 value={dreamHousePrompt}
                 onChange={e => setDreamHousePrompt(e.target.value)}
                 placeholder="e.g. A minimalist glass villa on a cliff in Norway..." 
-                className="flex-1 bg-slate-800 border border-white/10 rounded-xl px-6 py-4 text-white focus:ring-2 focus:ring-blue-600 outline-none placeholder:text-gray-600 transition-all"
+                className="flex-1 bg-slate-800 border border-white/10 rounded-xl px-6 py-4 text-white focus:ring-2 focus:ring-teal-600 outline-none placeholder:text-gray-600 transition-all"
               />
               <button 
                 onClick={handleGenerate}
                 disabled={loading}
-                className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl font-bold transition-all disabled:opacity-50 flex items-center justify-center min-w-[150px] shadow-lg shadow-blue-600/20"
+                className="bg-teal-600 hover:bg-teal-700 px-8 py-4 rounded-xl font-bold transition-all disabled:opacity-50 flex items-center justify-center min-w-[150px] shadow-lg shadow-teal-600/20"
               >
                 {loading ? <span className="flex items-center"><svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Generating...</span> : 'Visualize'}
               </button>
             </div>
           </div>
-          <div className="absolute top-0 right-0 w-1/3 h-full opacity-10 pointer-events-none bg-gradient-to-l from-blue-600 to-transparent"></div>
+          <div className="absolute top-0 right-0 w-1/3 h-full opacity-10 pointer-events-none bg-gradient-to-l from-teal-600 to-transparent"></div>
           {generatedHouse && (
             <div className="mt-8 animate-in zoom-in duration-500 relative z-10">
               <img src={generatedHouse} alt="AI Generated House" className="w-full rounded-2xl shadow-2xl border-4 border-slate-800" />
@@ -1387,7 +1387,7 @@ const WishlistPage = ({
     <div className="py-24 bg-gray-50 min-h-screen animate-in fade-in duration-500">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-12">
-          <p className="text-blue-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Your Saved Items</p>
+          <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Your Saved Items</p>
           <h1 className="text-4xl font-bold text-gray-900">My <span className="text-gray-400 italic font-light">Wishlist</span></h1>
         </div>
 
@@ -1405,12 +1405,12 @@ const WishlistPage = ({
           </div>
         ) : (
           <div className="bg-white rounded-3xl p-20 text-center border border-gray-100 shadow-sm">
-            <div className="w-24 h-24 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">❤️</div>
+            <div className="w-24 h-24 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">❤️</div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Your wishlist is empty</h3>
             <p className="text-gray-500 mb-8 max-w-md mx-auto">Start saving your favorite properties to keep track of them and get updates on price changes.</p>
             <button 
               onClick={() => setCurrentPage('property')}
-              className="bg-blue-600 text-white px-10 py-4 rounded-xl font-bold shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all uppercase tracking-widest text-xs"
+              className="bg-teal-600 text-white px-10 py-4 rounded-xl font-bold shadow-lg shadow-teal-200 hover:shadow-teal-300 transition-all uppercase tracking-widest text-xs"
             >
               Explore Properties
             </button>
@@ -1425,7 +1425,7 @@ const BlogPage = ({ onNavigate }: { onNavigate: (p: Page, id?: number) => void }
   <div className="py-24 bg-gray-50 min-h-screen animate-in fade-in duration-500">
     <div className="max-w-7xl mx-auto px-4">
       <div className="text-center mb-16">
-        <p className="text-blue-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Latest Updates</p>
+        <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Latest Updates</p>
         <h1 className="text-4xl font-bold text-gray-900">Industry Insights & <span className="text-gray-400 font-light italic">News</span></h1>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -1433,16 +1433,16 @@ const BlogPage = ({ onNavigate }: { onNavigate: (p: Page, id?: number) => void }
           <div key={idx} className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 group hover:shadow-xl transition-all cursor-pointer" onClick={() => onNavigate('blog-details', blog.id)}>
             <div className="relative aspect-video overflow-hidden">
               <img src={blog.image} alt={blog.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-              <div className="absolute top-4 left-4 bg-blue-600 text-white px-4 py-1.5 rounded-full text-[10px] font-bold shadow-md">{blog.date}</div>
+              <div className="absolute top-4 left-4 bg-teal-600 text-white px-4 py-1.5 rounded-full text-[10px] font-bold shadow-md">{blog.date}</div>
             </div>
             <div className="p-8">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-blue-600 font-bold text-xs uppercase tracking-wider">{blog.category}</span>
+                <span className="text-teal-600 font-bold text-xs uppercase tracking-wider">{blog.category}</span>
                 <span className="text-gray-400 text-[10px] font-medium uppercase">{blog.readTime}</span>
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">{blog.title}</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4 group-hover:text-teal-600 transition-colors line-clamp-2 leading-snug">{blog.title}</h3>
               <p className="text-gray-500 text-xs mb-6 line-clamp-3 leading-relaxed">{blog.desc}</p>
-              <button className="text-gray-900 font-bold text-sm flex items-center group-hover:translate-x-1 transition-transform">Read More <span className="ml-2 text-blue-600">→</span></button>
+              <button className="text-gray-900 font-bold text-sm flex items-center group-hover:translate-x-1 transition-transform">Read More <span className="ml-2 text-teal-600">→</span></button>
             </div>
           </div>
         ))}
@@ -1457,31 +1457,31 @@ const AboutPage = () => (
     <section className="py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         <div>
-           <p className="text-blue-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Our Story</p>
-           <h1 className="text-5xl font-bold text-gray-900 mb-8 leading-tight">We help you find your <span className="text-blue-600">Perfect Home</span> since 1995.</h1>
+           <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Our Story</p>
+           <h1 className="text-5xl font-bold text-gray-900 mb-8 leading-tight">We help you find your <span className="text-teal-600">Perfect Home</span> since 1995.</h1>
            <p className="text-gray-600 mb-8 leading-relaxed text-sm">Founded in Los Angeles, Real Estate. has grown from a small family firm into a global leader in property management and brokerage. We believe everyone deserves a place they can truly call home, and we leverage the latest technology—including Gemini AI—to make that process as smooth as possible.</p>
            <div className="grid grid-cols-3 gap-8 mb-10">
               <div className="text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-                <p className="text-3xl font-bold text-blue-600 mb-1">25+</p>
+                <p className="text-3xl font-bold text-teal-600 mb-1">25+</p>
                 <p className="text-gray-500 text-[10px] font-bold uppercase tracking-wider">Years Exp</p>
               </div>
               <div className="text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-                <p className="text-3xl font-bold text-blue-600 mb-1">10k+</p>
+                <p className="text-3xl font-bold text-teal-600 mb-1">10k+</p>
                 <p className="text-gray-500 text-[10px] font-bold uppercase tracking-wider">Sales</p>
               </div>
               <div className="text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-                <p className="text-3xl font-bold text-blue-600 mb-1">500+</p>
+                <p className="text-3xl font-bold text-teal-600 mb-1">500+</p>
                 <p className="text-gray-500 text-[10px] font-bold uppercase tracking-wider">Agents</p>
               </div>
            </div>
-           <button className="bg-blue-600 text-white px-10 py-4 rounded-full font-bold shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all text-sm uppercase tracking-widest">Download Brochure</button>
+           <button className="bg-teal-600 text-white px-10 py-4 rounded-full font-bold shadow-lg shadow-teal-200 hover:shadow-teal-300 transition-all text-sm uppercase tracking-widest">Download Brochure</button>
         </div>
         <div className="relative">
           <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800" className="rounded-3xl shadow-2xl relative z-10 w-full object-cover h-[500px]" alt="Modern Office" />
-          <div className="absolute -top-10 -right-10 w-48 h-48 bg-blue-100 rounded-full -z-0"></div>
-          <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-blue-600/10 rounded-3xl -z-0"></div>
+          <div className="absolute -top-10 -right-10 w-48 h-48 bg-teal-100 rounded-full -z-0"></div>
+          <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-teal-600/10 rounded-3xl -z-0"></div>
           <div className="absolute bottom-10 right-10 bg-white p-6 rounded-2xl shadow-xl z-20">
-             <p className="text-blue-600 font-bold text-2xl">99%</p>
+             <p className="text-teal-600 font-bold text-2xl">99%</p>
              <p className="text-gray-400 text-[10px] font-bold uppercase">Customer Satisfaction</p>
           </div>
         </div>
@@ -1492,13 +1492,13 @@ const AboutPage = () => (
     <section className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
-          <p className="text-blue-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Our Philosophy</p>
+          <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Our Philosophy</p>
           <h2 className="text-4xl font-bold text-gray-900">Purpose & <span className="text-gray-400 font-light italic">Principles</span></h2>
           <p className="text-gray-500 mt-4 max-w-2xl mx-auto">We are guided by a simple mission: to simplify the complex world of real estate through technology and human-centric design.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {PRINCIPLES.map((p, idx) => (
-            <div key={idx} className="p-10 rounded-3xl bg-gray-50 border border-transparent hover:border-blue-100 hover:bg-white hover:shadow-xl transition-all duration-300 group">
+            <div key={idx} className="p-10 rounded-3xl bg-gray-50 border border-transparent hover:border-teal-100 hover:bg-white hover:shadow-xl transition-all duration-300 group">
               <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-sm group-hover:scale-110 transition-transform">{p.icon}</div>
               <h4 className="text-xl font-bold text-gray-900 mb-4">{p.title}</h4>
               <p className="text-gray-500 text-sm leading-relaxed">{p.desc}</p>
@@ -1513,10 +1513,10 @@ const AboutPage = () => (
       <div className="max-w-7xl mx-auto px-4 relative z-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div className="max-w-xl">
-            <p className="text-blue-400 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">The Brains Behind the Brand</p>
-            <h2 className="text-4xl font-bold">Meet our <span className="text-blue-400 italic">Visionary</span> Team</h2>
+            <p className="text-teal-400 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">The Brains Behind the Brand</p>
+            <h2 className="text-4xl font-bold">Meet our <span className="text-teal-400 italic">Visionary</span> Team</h2>
           </div>
-          <button className="text-blue-400 font-bold hover:underline flex items-center">Join our growing team <span className="ml-2">→</span></button>
+          <button className="text-teal-400 font-bold hover:underline flex items-center">Join our growing team <span className="ml-2">→</span></button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {TEAM.map((member, idx) => (
@@ -1525,17 +1525,17 @@ const AboutPage = () => (
                 <img src={member.image} alt={member.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="absolute bottom-6 left-6 right-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-500 opacity-0 group-hover:opacity-100 flex space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-xs"><i className="fab fa-linkedin-in"></i></div>
+                  <div className="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-xs"><i className="fab fa-linkedin-in"></i></div>
                   <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-xs"><i className="fab fa-twitter"></i></div>
                 </div>
               </div>
-              <h4 className="text-xl font-bold group-hover:text-blue-400 transition-colors">{member.name}</h4>
+              <h4 className="text-xl font-bold group-hover:text-teal-400 transition-colors">{member.name}</h4>
               <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">{member.role}</p>
             </div>
           ))}
         </div>
       </div>
-      <div className="absolute top-0 right-0 w-1/3 h-full bg-blue-600/5 -skew-x-12 translate-x-1/2"></div>
+      <div className="absolute top-0 right-0 w-1/3 h-full bg-teal-600/5 -skew-x-12 translate-x-1/2"></div>
     </section>
   </div>
 );
@@ -1544,7 +1544,7 @@ const ContactPage = () => (
   <div className="py-24 bg-gray-50 min-h-screen animate-in fade-in duration-500">
     <div className="max-w-7xl mx-auto px-4">
       <div className="text-center mb-16">
-        <p className="text-blue-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Get In Touch</p>
+        <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Get In Touch</p>
         <h1 className="text-4xl font-bold text-gray-900">Contact <span className="text-gray-400 font-light italic">Us</span></h1>
         <p className="text-gray-500 mt-4 max-w-2xl mx-auto">Have questions about a property or want to list your own? Our team is here to help you every step of the way.</p>
       </div>
@@ -1553,21 +1553,21 @@ const ContactPage = () => (
         <div className="lg:col-span-1 space-y-8">
           <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
             <div className="flex items-center space-x-4 mb-6">
-              <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl">📞</div>
+              <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-xl">📞</div>
               <div>
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Phone Number</p>
                 <p className="font-bold text-gray-900">+1 (408) 555-0120</p>
               </div>
             </div>
             <div className="flex items-center space-x-4 mb-6">
-              <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl">✉️</div>
+              <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-xl">✉️</div>
               <div>
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Email Address</p>
                 <p className="font-bold text-gray-900">example@gmail.com</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl">📍</div>
+              <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-xl">📍</div>
               <div>
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Office Location</p>
                 <p className="font-bold text-gray-900 text-sm">2464 Royal Ln. Mesa, New Jersey 45463</p>
@@ -1588,7 +1588,7 @@ const ContactPage = () => (
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Sunday</span>
-                <span className="font-bold text-blue-400">Closed</span>
+                <span className="font-bold text-teal-400">Closed</span>
               </div>
             </div>
           </div>
@@ -1600,22 +1600,22 @@ const ContactPage = () => (
             <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={(e) => e.preventDefault()}>
               <div className="space-y-2">
                 <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Full Name</label>
-                <input type="text" placeholder="Your name" className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none" />
+                <input type="text" placeholder="Your name" className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none" />
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Email Address</label>
-                <input type="email" placeholder="example@email.com" className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none" />
+                <input type="email" placeholder="example@email.com" className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none" />
               </div>
               <div className="md:col-span-2 space-y-2">
                 <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Subject</label>
-                <input type="text" placeholder="How can we help?" className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none" />
+                <input type="text" placeholder="How can we help?" className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none" />
               </div>
               <div className="md:col-span-2 space-y-2">
                 <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Message</label>
-                <textarea rows={6} placeholder="Write your message here..." className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none resize-none"></textarea>
+                <textarea rows={6} placeholder="Write your message here..." className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none resize-none"></textarea>
               </div>
               <div className="md:col-span-2">
-                <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-xl font-bold transition-all shadow-lg shadow-blue-200 uppercase tracking-widest text-xs">
+                <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white px-10 py-4 rounded-xl font-bold transition-all shadow-lg shadow-teal-200 uppercase tracking-widest text-xs">
                   Send Message
                 </button>
               </div>
@@ -1756,14 +1756,14 @@ const App = () => {
       <div className="bg-slate-900 text-white py-2 text-[10px] uppercase tracking-widest font-bold">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
           <div className="flex space-x-6">
-            <span className="flex items-center"><i className="fas fa-phone mr-2 text-blue-500"></i> (408) 555-0120</span>
-            <span className="flex items-center"><i className="fas fa-envelope mr-2 text-blue-500"></i> example@gmail.com</span>
+            <span className="flex items-center"><i className="fas fa-phone mr-2 text-teal-500"></i> (408) 555-0120</span>
+            <span className="flex items-center"><i className="fas fa-envelope mr-2 text-teal-500"></i> example@gmail.com</span>
           </div>
           <div className="flex space-x-4">
-            <i className="fab fa-facebook-f hover:text-blue-500 cursor-pointer transition-colors"></i>
-            <i className="fab fa-twitter hover:text-blue-500 cursor-pointer transition-colors"></i>
-            <i className="fab fa-instagram hover:text-blue-500 cursor-pointer transition-colors"></i>
-            <i className="fab fa-linkedin hover:text-blue-500 cursor-pointer transition-colors"></i>
+            <i className="fab fa-facebook-f hover:text-teal-500 cursor-pointer transition-colors"></i>
+            <i className="fab fa-twitter hover:text-teal-500 cursor-pointer transition-colors"></i>
+            <i className="fab fa-instagram hover:text-teal-500 cursor-pointer transition-colors"></i>
+            <i className="fab fa-linkedin hover:text-teal-500 cursor-pointer transition-colors"></i>
           </div>
         </div>
       </div>

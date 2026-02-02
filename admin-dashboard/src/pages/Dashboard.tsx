@@ -1,176 +1,202 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { getDashboardStats } from '../services/api';
+import React, { useEffect, useState } from 'react';
 import { 
-  Building2, 
   Users, 
+  Home, 
   DollarSign, 
   TrendingUp, 
+  Activity,
   Calendar,
-  Loader2 
+  ArrowUpRight,
+  ArrowDownRight,
+  Loader2
 } from 'lucide-react';
-import type { DashboardStats } from '../types/admin';
 
-export default function Dashboard() {
-  const { user } = useAuth();
-  const [stats, setStats] = useState<DashboardStats | null>(null);
+const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [data, setData] = useState<any>(null);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchDashboardData = async () => {
       try {
-        setIsLoading(true);
-        const data = await getDashboardStats();
-        setStats(data);
-      } catch (err) {
-        console.error('Error fetching dashboard stats:', err);
-        setError('Failed to load dashboard data');
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/admin/dashboard`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          setData(result);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchStats();
+    fetchDashboardData();
   }, []);
-
-  const statsCards = [
-    {
-      title: 'Total Properties',
-      value: stats?.totalProperties || 0,
-      icon: Building2,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
-    },
-    {
-      title: 'Total Leads',
-      value: stats?.totalLeads || 0,
-      icon: Users,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50'
-    },
-    {
-      title: 'Total Deals',
-      value: stats?.totalDeals || 0,
-      icon: Users,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50'
-    },
-    {
-      title: 'Total Revenue',
-      value: `$${(stats?.totalRevenue || 0).toLocaleString()}`,
-      icon: DollarSign,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50'
-    }
-  ];
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <Loader2 className="animate-spin h-8 w-8 text-primary-600 mx-auto" />
-          <p className="mt-2 text-gray-600">Loading dashboard...</p>
-        </div>
+      <div className="flex items-center justify-center h-[60vh]">
+        <Loader2 className="w-10 h-10 text-teal-600 animate-spin" />
       </div>
     );
   }
 
-  if (error) {
-    return (
-      <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
-        {error}
-      </div>
-    );
-  }
+  const stats = [
+    { 
+      label: 'Total Properties', 
+      value: data?.totalProperties?.toString() || '0', 
+      change: data?.propertiesChange || '0%', 
+      trend: (data?.propertiesChange?.startsWith('-') ? 'down' : 'up') as 'up' | 'down',
+      icon: Home,
+      color: 'bg-blue-500',
+      textColor: 'text-blue-500'
+    },
+    { 
+      label: 'Total Leads', 
+      value: data?.totalLeads?.toString() || '0', 
+      change: data?.leadsChange || '0%', 
+      trend: (data?.leadsChange?.startsWith('-') ? 'down' : 'up') as 'up' | 'down',
+      icon: Users,
+      color: 'bg-green-500',
+      textColor: 'text-green-500'
+    },
+    { 
+      label: 'Total Revenue', 
+      value: data?.totalRevenue ? `$${data.totalRevenue.toLocaleString()}` : '$0', 
+      change: data?.revenueChange || '0%', 
+      trend: (data?.revenueChange?.startsWith('-') ? 'down' : 'up') as 'up' | 'down',
+      icon: DollarSign,
+      color: 'bg-purple-500',
+      textColor: 'text-purple-500'
+    },
+    { 
+      label: 'Active Deals', 
+      value: data?.activeDeals?.toString() || '0', 
+      change: data?.dealsChange || '0%', 
+      trend: (data?.dealsChange?.startsWith('-') ? 'down' : 'up') as 'up' | 'down',
+      icon: TrendingUp,
+      color: 'bg-orange-500',
+      textColor: 'text-orange-500'
+    }
+  ];
+
+  const recentActivities = data?.recentActivities || [];
+  const recentProperties = data?.recentProperties || [];
 
   return (
-    <div className="space-y-6">
-      {/* Welcome Section */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Welcome back, {user?.name}!</h1>
-            <p className="text-gray-600 mt-1">Here's what's happening with your real estate business today.</p>
-          </div>
-          <div className="hidden md:flex items-center space-x-4">
-            <div className="flex items-center space-x-2 text-sm text-gray-500">
-              <Calendar className="h-4 w-4" />
-              <span>{new Date().toLocaleDateString()}</span>
-            </div>
-            <div className="px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm font-medium">
-              Admin
-            </div>
-          </div>
+    <div className="space-y-6 animate-in fade-in duration-500">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-500 text-sm mt-1">Welcome back, here's what's happening today.</p>
+        </div>
+        <div className="flex space-x-3">
+          <button className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors shadow-sm">
+            Download Report
+          </button>
+          <button className="px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors shadow-sm shadow-teal-200">
+            Add Property
+          </button>
         </div>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statsCards.map((stat, index) => (
-          <div key={index} className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
+        {stats.map((stat, index) => (
+          <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                <p className="text-sm font-medium text-gray-500">{stat.label}</p>
+                <h3 className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</h3>
               </div>
-              <div className={`p-3 rounded-full ${stat.bgColor} ${stat.color}`}>
-                <stat.icon className="h-6 w-6" />
+              <div className={`p-3 rounded-xl ${stat.color} bg-opacity-10`}>
+                <stat.icon className={`w-6 h-6 ${stat.textColor}`} />
               </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm">
+              <span className={`font-medium flex items-center ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                {stat.trend === 'up' ? <ArrowUpRight className="w-4 h-4 mr-1" /> : <ArrowDownRight className="w-4 h-4 mr-1" />}
+                {stat.change}
+              </span>
+              <span className="text-gray-400 ml-2">vs last month</span>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Quick Actions */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-            <Building2 className="h-6 w-6 text-blue-600" />
-            <span className="font-medium text-gray-900">Add Property</span>
-          </button>
-          <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-            <Users className="h-6 w-6 text-green-600" />
-            <span className="font-medium text-gray-900">Manage Leads</span>
-          </button>
-          <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-            <Users className="h-6 w-6 text-purple-600" />
-            <span className="font-medium text-gray-900">View Deals</span>
-          </button>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent Properties Table */}
+        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+            <h3 className="text-lg font-bold text-gray-900">Recent Properties</h3>
+            <button className="text-sm text-teal-600 font-medium hover:text-teal-700">View All</button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="text-xs text-gray-500 uppercase bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3">Property</th>
+                  <th className="px-6 py-3">Price</th>
+                  <th className="px-6 py-3">Status</th>
+                  <th className="px-6 py-3">Date Added</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentProperties.map((property) => (
+                  <tr key={property.id} className="border-b border-gray-50 hover:bg-gray-50/50">
+                    <td className="px-6 py-4 font-medium text-gray-900">{property.title}</td>
+                    <td className="px-6 py-4 text-gray-600">{property.price}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        property.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {property.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-gray-500">{property.date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
 
-      {/* Recent Activity */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
-        <div className="space-y-4">
-          <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <div>
-              <p className="font-medium text-gray-900">New property listed</p>
-              <p className="text-sm text-gray-600">3 bedroom apartment in downtown</p>
-            </div>
-            <div className="ml-auto text-sm text-gray-500">2 hours ago</div>
-          </div>
-          <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-            <div>
-              <p className="font-medium text-gray-900">Lead converted to deal</p>
-              <p className="text-sm text-gray-600">John Smith - 3 bedroom house</p>
-            </div>
-            <div className="ml-auto text-sm text-gray-500">4 hours ago</div>
-          </div>
-          <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-            <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-            <div>
-              <p className="font-medium text-gray-900">New inquiry received</p>
-              <p className="text-sm text-gray-600">Question about pricing</p>
-            </div>
-            <div className="ml-auto text-sm text-gray-500">1 day ago</div>
+        {/* Recent Activity Feed */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <h3 className="text-lg font-bold text-gray-900 mb-6">Recent Activity</h3>
+          <div className="space-y-8">
+            {recentActivities.map((activity, index) => (
+              <div key={index} className="relative flex items-start space-x-4">
+                {index !== recentActivities.length - 1 && (
+                  <div className="absolute left-4 top-8 bottom-[-32px] w-0.5 bg-gray-100"></div>
+                )}
+                <div className="w-8 h-8 rounded-full bg-teal-50 border border-teal-100 flex items-center justify-center flex-shrink-0 z-10">
+                  <Activity className="w-4 h-4 text-teal-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900">
+                    {activity.user} <span className="font-normal text-gray-500">{activity.action}</span>
+                  </p>
+                  <p className="text-sm text-gray-600 truncate">{activity.target}</p>
+                  <p className="text-xs text-gray-400 mt-1 flex items-center">
+                    <Calendar className="w-3 h-3 mr-1" />
+                    {activity.time}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default Dashboard;

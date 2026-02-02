@@ -39,10 +39,10 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex items-center cursor-pointer" onClick={() => handleNavigate('home')}>
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-2">
+            <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center mr-2">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
             </div>
-            <span className="text-xl font-bold text-gray-900">Real Estate.</span>
+            <span className="text-xl font-bold text-teal-600">House Unlimited Nigeria.</span>
           </div>
 
           {/* Desktop Nav Items */}
@@ -51,7 +51,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 key={item.page}
                 onClick={() => handleNavigate(item.page)}
-                className={`capitalize font-medium transition-colors ${currentPage === item.page ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+                className={`capitalize font-medium transition-colors ${currentPage === item.page ? 'text-teal-600' : 'text-gray-600 hover:text-teal-600'}`}
               >
                 {item.label}
               </button>
@@ -59,11 +59,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             {user && (
               <button
                 onClick={() => handleNavigate('wishlist')}
-                className={`capitalize font-medium transition-colors flex items-center ${currentPage === 'wishlist' ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+                className={`capitalize font-medium transition-colors flex items-center ${currentPage === 'wishlist' ? 'text-teal-600' : 'text-gray-600 hover:text-teal-600'}`}
               >
                 Wishlist
                 {wishlistCount > 0 && (
-                  <span className="ml-2 bg-blue-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                  <span className="ml-2 bg-teal-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                     {wishlistCount}
                   </span>
                 )}
@@ -77,7 +77,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className="flex items-center space-x-4">
                 <button
                   onClick={() => handleNavigate('profile')}
-                  className={`text-sm font-medium transition-colors ${currentPage === 'profile' ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+                className={`text-sm font-medium transition-colors ${currentPage === 'profile' ? 'text-teal-600' : 'text-gray-600 hover:text-teal-600'}`}
                 >
                   Profile
                 </button>
@@ -85,14 +85,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <p className="text-sm font-bold text-gray-900">{user.name}</p>
                   <button onClick={logout} className="text-xs text-red-500 hover:underline">Sign Out</button>
                 </div>
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center border border-blue-200 shadow-sm">
-                  <span className="text-blue-600 font-bold uppercase">{user.name.charAt(0)}</span>
+                <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center border border-teal-200 shadow-sm">
+                  <span className="text-teal-600 font-bold uppercase">{user.name.charAt(0)}</span>
                 </div>
               </div>
             ) : (
               <>
-                <button onClick={() => openAuthModal('signin')} className="text-gray-600 font-bold hover:text-blue-600 transition-colors text-sm px-4">Sign In</button>
-                <button onClick={() => openAuthModal('signup')} className="bg-blue-600 text-white px-6 py-2.5 rounded-full font-semibold hover:bg-blue-700 transition-all text-sm shadow-lg shadow-blue-100">Sign Up</button>
+                <button onClick={() => openAuthModal('signin')} className="text-gray-600 font-bold hover:text-teal-600 transition-colors text-sm px-4">Sign In</button>
+                <button onClick={() => openAuthModal('signup')} className="bg-teal-600 text-white px-6 py-2.5 rounded-full font-semibold hover:bg-teal-700 transition-all text-sm shadow-lg shadow-teal-100">Sign Up</button>
               </>
             )}
           </div>
@@ -122,7 +122,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   key={item.page}
                   onClick={() => handleNavigate(item.page)}
-                  className={`text-left text-lg font-semibold py-2 px-4 rounded-xl transition-colors ${currentPage === item.page ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'}`}
+                  className={`text-left text-lg font-semibold py-2 px-4 rounded-xl transition-colors ${currentPage === item.page ? 'bg-teal-50 text-teal-600' : 'text-gray-600 hover:bg-gray-50'}`}
                 >
                   {item.label.charAt(0).toUpperCase() + item.label.slice(1)}
                 </button>
@@ -131,17 +131,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <>
                   <button
                     onClick={() => handleNavigate('profile')}
-                    className={`text-left text-lg font-semibold py-2 px-4 rounded-xl transition-colors ${currentPage === 'profile' ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'}`}
+                    className={`text-left text-lg font-semibold py-2 px-4 rounded-xl transition-colors ${currentPage === 'profile' ? 'bg-teal-50 text-teal-600' : 'text-gray-600 hover:bg-gray-50'}`}
                   >
                     My Profile
                   </button>
                   <button
                     onClick={() => handleNavigate('wishlist')}
-                    className={`text-left text-lg font-semibold py-2 px-4 rounded-xl flex items-center justify-between transition-colors ${currentPage === 'wishlist' ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'}`}
+                    className={`text-left text-lg font-semibold py-2 px-4 rounded-xl flex items-center justify-between transition-colors ${currentPage === 'wishlist' ? 'bg-teal-50 text-teal-600' : 'text-gray-600 hover:bg-gray-50'}`}
                   >
                     Wishlist
                     {wishlistCount > 0 && (
-                      <span className="bg-blue-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                      <span className="bg-teal-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
                         {wishlistCount}
                       </span>
                     )}
@@ -154,7 +154,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               {user ? (
                 <div className="flex items-center justify-between bg-gray-50 p-4 rounded-2xl">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">
+                    <div className="w-10 h-10 bg-teal-600 text-white rounded-full flex items-center justify-center font-bold">
                       {user.name.charAt(0).toUpperCase()}
                     </div>
                     <div>
@@ -179,7 +179,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </button>
                   <button 
                     onClick={() => { openAuthModal('signup'); setIsMenuOpen(false); }} 
-                    className="w-full py-3 px-4 text-center font-bold text-white bg-blue-600 rounded-xl shadow-lg shadow-blue-200"
+                    className="w-full py-3 px-4 text-center font-bold text-white bg-teal-600 rounded-xl shadow-lg shadow-teal-200"
                   >
                     Sign Up
                   </button>

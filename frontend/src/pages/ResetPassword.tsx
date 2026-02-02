@@ -61,7 +61,7 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ email, token, onS
           </p>
           <button
             onClick={() => onNavigate('home')}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-blue-200"
+            className="w-full bg-teal-600 hover:bg-teal-700 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-teal-200"
           >
             Back to Home
           </button>
@@ -74,7 +74,7 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ email, token, onS
     <div className="flex items-center justify-center min-h-[calc(100vh-200px)] bg-gray-50 p-4">
       <div className="bg-white rounded-3xl shadow-xl p-8 w-full max-w-md text-center">
         <div className="mb-6">
-          <i className="fas fa-lock text-6xl text-blue-500 mb-4"></i>
+          <i className="fas fa-lock text-6xl text-teal-500 mb-4"></i>
         </div>
         <h2 className="text-3xl font-extrabold text-gray-900 mb-6">Reset Your Password</h2>
         {email && (
@@ -92,7 +92,7 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ email, token, onS
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="New Password"
-              className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none"
+              className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none"
               disabled={isLoading}
             />
           </div>
@@ -105,7 +105,7 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ email, token, onS
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm New Password"
-              className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none"
+              className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none"
               disabled={isLoading}
             />
           </div>
@@ -117,7 +117,7 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ email, token, onS
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-blue-200"
+            className="w-full bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-teal-200"
           >
             {isLoading ? 'Resetting...' : 'Reset Password'}
           </button>

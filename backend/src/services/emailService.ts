@@ -84,7 +84,7 @@ export const sendWelcomeEmail = async (email: string, name: string): Promise<voi
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .header { background: linear-gradient(135deg, #005555 0%, #008080 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
         .content { background: white; padding: 30px; border: 1px solid #ddd; border-top: none; border-radius: 0 0 10px 10px; }
         .button { display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
         .footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }
@@ -93,7 +93,7 @@ export const sendWelcomeEmail = async (email: string, name: string): Promise<voi
     <body>
       <div class="container">
         <div class="header">
-          <h1>Welcome to Real Estate Platform! 🎉</h1>
+          <h1>Welcome to House Unlimited Nigeria! 🎉</h1>
         </div>
         <div class="content">
           <h2>Hello ${name}!</h2>
@@ -126,7 +126,7 @@ export const sendWelcomeEmail = async (email: string, name: string): Promise<voi
 
   await sendEmail({
     email,
-    subject: 'Welcome to Real Estate Platform!',
+    subject: 'Welcome to House Unlimited Nigeria!',
     message,
   });
 };
@@ -265,7 +265,7 @@ export const sendNewsletterWelcomeEmail = async (email: string, subscriberId: st
     <body>
       <div class="container">
         <div class="header">
-          <h1>🎉 Welcome to Our Newsletter!</h1>
+          <h1>🎉 Welcome to House Unlimited Nigeria Newsletter!</h1>
         </div>
         <div class="content">
           <h2>Thank you for subscribing!</h2>
@@ -308,7 +308,7 @@ export const sendNewsletterWelcomeEmail = async (email: string, subscriberId: st
 
   await sendEmail({
     email,
-    subject: 'Welcome to Our Newsletter - Real Estate Platform',
+    subject: 'Welcome to House Unlimited Nigeria Newsletter!',
     message,
   });
 };

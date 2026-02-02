@@ -3,12 +3,13 @@ import { AuthProvider } from './contexts/AuthContext';
 import MainLayout from './components/layout/MainLayout';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
+import Properties from './pages/Properties';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <Routes>
           {/* Public routes */}
           <Route path="/login" element={<Login />} />
@@ -19,9 +20,9 @@ function App() {
               <MainLayout />
             </ProtectedRoute>
           }>
-            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route index element={<Dashboard />} />
             <Route path="dashboard" element={<Dashboard />} />
-            <Route path="properties" element={<div>Properties Page</div>} />
+            <Route path="properties" element={<Properties />} />
             <Route path="leads" element={<div>Leads Page</div>} />
             <Route path="deals" element={<div>Deals Page</div>} />
             <Route path="agents" element={<div>Agents Page</div>} />
@@ -33,8 +34,8 @@ function App() {
           {/* Catch all route */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

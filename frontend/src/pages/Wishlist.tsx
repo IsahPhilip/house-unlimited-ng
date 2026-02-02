@@ -20,7 +20,7 @@ const WishlistPage = ({
     <div className="py-24 bg-gray-50 min-h-screen animate-in fade-in duration-500">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-12">
-          <p className="text-blue-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Your Saved Items</p>
+          <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Your Saved Items</p>
           <h1 className="text-4xl font-bold text-gray-900">My <span className="text-gray-400 italic font-light">Wishlist</span></h1>
         </div>
 
@@ -38,12 +38,12 @@ const WishlistPage = ({
           </div>
         ) : (
           <div className="bg-white rounded-3xl p-20 text-center border border-gray-100 shadow-sm">
-            <div className="w-24 h-24 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">❤️</div>
+            <div className="w-24 h-24 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">❤️</div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Your wishlist is empty</h3>
             <p className="text-gray-500 mb-8 max-w-md mx-auto">Start saving your favorite properties to keep track of them and get updates on price changes.</p>
             <button 
               onClick={() => setCurrentPage('property')}
-              className="bg-blue-600 text-white px-10 py-4 rounded-xl font-bold shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all uppercase tracking-widest text-xs"
+              className="bg-teal-600 text-white px-10 py-4 rounded-xl font-bold shadow-lg shadow-teal-200 hover:shadow-teal-300 transition-all uppercase tracking-widest text-xs"
             >
               Explore Properties
             </button>

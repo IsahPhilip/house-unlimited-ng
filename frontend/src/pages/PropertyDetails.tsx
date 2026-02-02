@@ -297,7 +297,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
           <div className="flex items-center space-x-2">
             <button 
               onClick={onBack}
-              className="hover:text-blue-600 transition-colors font-medium"
+              className="hover:text-teal-600 transition-colors font-medium"
             >
               ← Back to Properties
             </button>
@@ -330,7 +330,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                       onClick={() => setActiveImage(img)}
                       className={`flex-shrink-0 w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden border-2 transition-all ${
                         activeImage === img 
-                          ? 'border-blue-600 shadow-md' 
+                          ? 'border-teal-600 shadow-md' 
                           : 'border-transparent hover:border-gray-300'
                       }`}
                     >
@@ -348,7 +348,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   <div className="flex flex-wrap gap-3 mb-3">
                     <span className={`inline-block px-4 py-1.5 rounded-full text-sm font-semibold ${
                       property.category === 'rent' 
-                        ? 'bg-blue-600 text-white' 
+                        ? 'bg-teal-600 text-white' 
                         : 'bg-emerald-600 text-white'
                     }`}>
                       For {property.category === 'rent' ? 'Rent' : 'Sale'}
@@ -384,7 +384,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   )}
                 </div>
                 <div className="text-right">
-                  <p className="text-4xl md:text-5xl font-bold text-blue-600 mb-1">
+                  <p className="text-4xl md:text-5xl font-bold text-teal-600 mb-1">
                     {property.price}
                   </p>
                   <div className="flex items-center gap-2 justify-end">
@@ -439,7 +439,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                     key={i} 
                     className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl"
                   >
-                    <div className="text-blue-600 text-xl">✓</div>
+                    <div className="text-teal-600 text-xl">✓</div>
                     <span className="font-medium">{amenity}</span>
                   </div>
                 ))}
@@ -503,7 +503,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                         <span className="text-sm">Crime Rate: {property.neighborhood.crimeRate}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-blue-600">•</span>
+                        <span className="text-teal-600">•</span>
                         <span className="text-sm">Average Price: {property.neighborhood.averagePrice}</span>
                       </div>
                     </div>
@@ -513,7 +513,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                     <ul className="space-y-2">
                       {property.neighborhood.schools?.map((school, i) => (
                         <li key={i} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
-                          <span className="text-blue-600">🏫</span>
+                          <span className="text-teal-600">🏫</span>
                           <span>{school}</span>
                         </li>
                       ))}
@@ -540,7 +540,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                     <div key={review.id} className="border-b pb-8 last:border-0 last:pb-0">
                       <div className="flex justify-between items-start mb-4">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xl">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xl">
                             {review.userName[0]}
                           </div>
                           <div>
@@ -565,11 +565,11 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                 <h3 className="text-xl font-bold mb-6">Write a Review</h3>
                 
                 {!user ? (
-                  <div className="bg-blue-50 p-8 rounded-2xl text-center">
+                  <div className="bg-teal-50 p-8 rounded-2xl text-center">
                     <p className="text-lg mb-4">Please sign in to write a review</p>
                     <button
                       onClick={() => openAuthModal?.('signin')}
-                      className="bg-blue-600 text-white px-8 py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors"
+                      className="bg-teal-600 text-white px-8 py-3 rounded-xl font-medium hover:bg-teal-700 transition-colors"
                     >
                       Sign In
                     </button>
@@ -592,7 +592,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                         value={newComment}
                         onChange={e => setNewComment(e.target.value)}
                         rows={4}
-                        className="w-full px-5 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
+                        className="w-full px-5 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none resize-none"
                         placeholder="Share your experience..."
                         required
                       />
@@ -600,7 +600,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
 
                     <button
                       type="submit"
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-xl font-medium transition-colors"
+                      className="bg-teal-600 hover:bg-teal-700 text-white px-10 py-4 rounded-xl font-medium transition-colors"
                     >
                       Submit Review
                     </button>
@@ -625,7 +625,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                         <div className="absolute top-3 left-3">
                           <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
                             similarProp.category === 'rent' 
-                              ? 'bg-blue-600 text-white' 
+                              ? 'bg-teal-600 text-white' 
                               : 'bg-emerald-600 text-white'
                           }`}>
                             For {similarProp.category === 'rent' ? 'Rent' : 'Sale'}
@@ -649,7 +649,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                         <h3 className="font-bold text-lg mb-2">{similarProp.title}</h3>
                         <p className="text-gray-600 text-sm mb-3">{similarProp.address}</p>
                         <div className="flex justify-between items-center">
-                          <div className="text-blue-600 font-bold text-lg">{similarProp.price}</div>
+                          <div className="text-teal-600 font-bold text-lg">{similarProp.price}</div>
                           <div className="flex gap-2">
                             <span className="text-sm text-gray-500">{similarProp.beds} bd</span>
                             <span className="text-sm text-gray-500">{similarProp.baths} ba</span>
@@ -667,7 +667,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
             <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm">
               <h2 className="text-2xl font-bold mb-6">Share This Property</h2>
               <div className="flex flex-wrap gap-4">
-                <button onClick={handleShare} className="flex items-center gap-3 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <button onClick={handleShare} className="flex items-center gap-3 px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors">
                   <span className="text-lg">📱</span>
                   <span>Share</span>
                 </button>
@@ -679,7 +679,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   <span className="text-lg">💬</span>
                   <span>WhatsApp</span>
                 </button>
-                <button onClick={handleEmail} className="flex items-center gap-3 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                <button onClick={handleEmail} className="flex items-center gap-3 px-6 py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors">
                   <span className="text-lg">📧</span>
                   <span>Email</span>
                 </button>
@@ -711,7 +711,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                       {property.virtualTourUrl && (
                         <button
                           onClick={() => setIsVirtualTourModalOpen(true)}
-                          className="p-3 rounded-full bg-gray-100 text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                          className="p-3 rounded-full bg-gray-100 text-gray-500 hover:text-teal-600 hover:bg-teal-50 transition-colors"
                           title="View Virtual Tour"
                         >
                           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
@@ -725,29 +725,29 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                       <input
                         name="name"
                         placeholder="Full Name"
-                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
                         required
                       />
                       <input
                         name="email"
                         type="email"
                         placeholder="Email Address"
-                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
                         required
                       />
                       <textarea
                         name="message"
                         rows={4}
                         placeholder="I'm interested in this property..."
-                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
+                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none resize-none"
                       />
                       <button
                         type="submit"
                         disabled={loading}
                         className={`w-full py-4 px-6 rounded-xl font-medium text-white transition-all ${
                           loading 
-                            ? 'bg-blue-400 cursor-wait' 
-                            : 'bg-blue-600 hover:bg-blue-700'
+                            ? 'bg-teal-400 cursor-wait' 
+                            : 'bg-teal-600 hover:bg-teal-700'
                         }`}
                       >
                         {loading ? 'Sending...' : 'Send Inquiry'}
@@ -765,7 +765,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                       </p>
                       <button
                         onClick={() => setInquirySent(false)}
-                        className="mt-6 text-blue-600 hover:underline font-medium"
+                        className="mt-6 text-teal-600 hover:underline font-medium"
                       >
                         Send another message
                       </button>
@@ -775,7 +775,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               </div>
 
               {/* Simple Agent Info */}
-              <div className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl p-8 shadow-xl">
+              <div className="bg-gradient-to-br from-teal-600 to-indigo-700 text-white rounded-2xl p-8 shadow-xl">
                 <h4 className="text-lg font-semibold mb-5 opacity-90">Listed by</h4>
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-2xl font-bold">
@@ -783,7 +783,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   </div>
                   <div>
                     <p className="font-bold text-lg">Leslie Alexander</p>
-                    <p className="text-blue-100 text-sm">Senior Property Consultant</p>
+                    <p className="text-teal-100 text-sm">Senior Property Consultant</p>
                   </div>
                 </div>
                 <div className="space-y-3 text-sm">

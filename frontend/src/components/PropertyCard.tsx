@@ -21,10 +21,10 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
     <div className="relative aspect-[4/3] overflow-hidden">
       <img src={property.image} alt={property.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
       <div className="absolute top-4 left-4 flex space-x-2">
-        <span className={`px-3 py-1 rounded-full text-xs font-bold ${property.category === 'rent' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'}`}>
+        <span className={`px-3 py-1 rounded-full text-xs font-bold ${property.category === 'rent' ? 'bg-teal-600 text-white' : 'bg-teal-100 text-teal-800'}`}>
           For {property.category === 'rent' ? 'Rent' : 'Sale'}
         </span>
-        <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-bold">{property.type}</span>
+        <span className="px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-xs font-bold">{property.type}</span>
       </div>
       <div className="absolute top-4 right-4 flex flex-col space-y-2">
         <button 
@@ -45,7 +45,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
             // Import handleShare from helpers
             import('../utils/helpers').then(({ handleShare }) => handleShare(property));
           }}
-          className="bg-white/80 backdrop-blur p-2 rounded-full transition-all shadow-lg text-gray-600 hover:bg-blue-600 hover:text-white"
+          className="bg-white/80 backdrop-blur p-2 rounded-full transition-all shadow-lg text-gray-600 hover:bg-teal-600 hover:text-white"
           title="Share property"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -55,16 +55,16 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
       </div>
     </div>
     <div className="p-5">
-      <p className="text-blue-600 font-bold text-lg mb-1">{property.price}</p>
-      <h3 className="font-bold text-gray-900 mb-2 truncate group-hover:text-blue-600 transition-colors">{property.title}</h3>
+      <p className="text-teal-600 font-bold text-lg mb-1">{property.price}</p>
+      <h3 className="font-bold text-gray-900 mb-2 truncate group-hover:text-teal-600 transition-colors">{property.title}</h3>
       <p className="text-gray-500 text-sm mb-4 flex items-center">
         <svg className="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         {property.address}
       </p>
       <div className="flex justify-between items-center text-gray-600 text-xs font-medium border-t pt-4">
-        <span className="flex items-center"><span className="mr-1 text-blue-500">🛏️</span> {property.beds} Beds</span>
-        <span className="flex items-center"><span className="mr-1 text-blue-500">🚿</span> {property.baths} Bath</span>
-        <span className="flex items-center"><span className="mr-1 text-blue-500">📐</span> {property.sqft} sqft</span>
+        <span className="flex items-center"><span className="mr-1 text-teal-500">🛏️</span> {property.beds} Beds</span>
+        <span className="flex items-center"><span className="mr-1 text-teal-500">🚿</span> {property.baths} Bath</span>
+        <span className="flex items-center"><span className="mr-1 text-teal-500">📐</span> {property.sqft} sqft</span>
       </div>
     </div>
   </div>

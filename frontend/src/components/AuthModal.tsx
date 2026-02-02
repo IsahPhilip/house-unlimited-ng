@@ -81,7 +81,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 value={name}
                 onChange={e => setName(e.target.value)}
                 placeholder="John Doe" 
-                className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none" 
+                className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none" 
               />
             </div>
           )}
@@ -93,7 +93,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="example@email.com" 
-              className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none" 
+              className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none" 
             />
           </div>
           <div className="space-y-2">
@@ -104,14 +104,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="••••••••" 
-              className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none" 
+              className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none" 
             />
             {currentAuthFlow === 'signin' && (
               <div className="text-right text-sm">
                 <button 
                   type="button" 
                   onClick={() => setCurrentAuthFlow('forgot-password')} 
-                  className="text-blue-600 font-bold hover:underline"
+                  className="text-teal-600 font-bold hover:underline"
                 >
                   Forgot Password?
                 </button>
@@ -120,7 +120,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </div>
           <button 
             type="submit" 
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-blue-200 mt-4"
+            className="w-full bg-teal-600 hover:bg-teal-700 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-teal-200 mt-4"
           >
             {currentAuthFlow === 'signin' ? 'Sign In' : 'Create Account'}
           </button>
@@ -131,7 +131,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               onClick={() => {
                 setMode(currentAuthFlow === 'signin' ? 'signup' : 'signin');
               }}
-              className="text-blue-600 font-bold hover:underline"
+              className="text-teal-600 font-bold hover:underline"
             >
               {currentAuthFlow === 'signin' ? 'Sign Up' : 'Sign In'}
             </button>
@@ -148,12 +148,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="example@email.com" 
-              className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none" 
+              className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none" 
             />
           </div>
           <button 
             type="submit" 
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-blue-200 mt-4"
+            className="w-full bg-teal-600 hover:bg-teal-700 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-teal-200 mt-4"
           >
             Send Reset Link
           </button>
@@ -161,7 +161,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <button 
               type="button"
               onClick={() => setCurrentAuthFlow('signin')}
-              className="text-blue-600 font-bold hover:underline"
+              className="text-teal-600 font-bold hover:underline"
             >
               Back to Sign In
             </button>

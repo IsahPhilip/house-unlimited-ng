@@ -72,7 +72,7 @@ const ContactPage = () => {
     <div className="py-24 bg-gray-50 min-h-screen animate-in fade-in duration-500">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
-          <p className="text-blue-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Get In Touch</p>
+          <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Get In Touch</p>
           <h1 className="text-4xl font-bold text-gray-900">Contact <span className="text-gray-400 font-light italic">Us</span></h1>
           <p className="text-gray-500 mt-4 max-w-2xl mx-auto">Have questions about a property or want to list your own? Our team is here to help you every step of the way.</p>
         </div>
@@ -81,21 +81,21 @@ const ContactPage = () => {
           <div className="lg:col-span-1 space-y-8">
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
               <div className="flex items-center space-x-4 mb-6">
-                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl">📞</div>
+                <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-xl">📞</div>
                 <div>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Phone Number</p>
                   <p className="font-bold text-gray-900">+1 (408) 555-0120</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4 mb-6">
-                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl">✉️</div>
+                <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-xl">✉️</div>
                 <div>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Email Address</p>
                   <p className="font-bold text-gray-900">example@gmail.com</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl">📍</div>
+                <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-xl">📍</div>
                 <div>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Office Location</p>
                   <p className="font-bold text-gray-900 text-sm">2464 Royal Ln. Mesa, New Jersey 45463</p>
@@ -116,7 +116,7 @@ const ContactPage = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Sunday</span>
-                  <span className="font-bold text-blue-400">Closed</span>
+                  <span className="font-bold text-teal-400">Closed</span>
                 </div>
               </div>
             </div>
@@ -161,7 +161,7 @@ const ContactPage = () => {
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="Your full name"
-                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none"
+                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none"
                         disabled={isSubmitting}
                       />
                     </div>
@@ -173,7 +173,7 @@ const ContactPage = () => {
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="your.email@example.com"
-                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none"
+                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none"
                         disabled={isSubmitting}
                       />
                     </div>
@@ -185,7 +185,7 @@ const ContactPage = () => {
                         value={formData.subject}
                         onChange={handleChange}
                         placeholder="What can we help you with?"
-                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none"
+                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none"
                         disabled={isSubmitting}
                       />
                     </div>
@@ -197,7 +197,7 @@ const ContactPage = () => {
                         onChange={handleChange}
                         rows={6} 
                         placeholder="Please provide details about your inquiry..."
-                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none resize-none"
+                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none resize-none"
                         disabled={isSubmitting}
                       ></textarea>
                     </div>
@@ -209,7 +209,7 @@ const ContactPage = () => {
                         value={formData.phone}
                         onChange={handleChange}
                         placeholder="+1 (555) 123-4567"
-                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none"
+                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none"
                         disabled={isSubmitting}
                       />
                     </div>
@@ -219,7 +219,7 @@ const ContactPage = () => {
                         name="type"
                         value={formData.type}
                         onChange={handleChange}
-                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none"
+                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none"
                         disabled={isSubmitting}
                       >
                         <option value="general">General Inquiry</option>
@@ -233,8 +233,8 @@ const ContactPage = () => {
                       <button 
                         type="submit" 
                         disabled={isSubmitting}
-                        className={`w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-xl font-bold transition-all shadow-lg shadow-blue-200 uppercase tracking-widest text-xs ${
-                          isSubmitting ? 'opacity-50 cursor-wait' : 'hover:shadow-blue-300'
+                        className={`w-full md:w-auto bg-teal-600 hover:bg-teal-700 text-white px-10 py-4 rounded-xl font-bold transition-all shadow-lg shadow-teal-200 uppercase tracking-widest text-xs ${
+                          isSubmitting ? 'opacity-50 cursor-wait' : 'hover:shadow-teal-300'
                         }`}
                       >
                         {isSubmitting ? 'Sending...' : 'Send Message'}

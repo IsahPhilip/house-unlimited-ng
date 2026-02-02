@@ -35,7 +35,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
           <h2 className="text-2xl font-bold mb-4">Please sign in to view your profile</h2>
           <button
             onClick={() => onNavigate('home')}
-            className="bg-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-700"
+            className="bg-teal-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-teal-700"
           >
             Go to Home
           </button>
@@ -57,10 +57,10 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
       <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
         {/* Avatar */}
         <div className="relative">
-          <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-4xl font-bold shadow-lg">
+          <div className="w-32 h-32 bg-gradient-to-br from-teal-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-4xl font-bold shadow-lg">
             {user.name.charAt(0).toUpperCase()}
           </div>
-          <button className="absolute bottom-0 right-0 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700">
+          <button className="absolute bottom-0 right-0 bg-teal-600 text-white p-3 rounded-full shadow-lg hover:bg-teal-700">
             📷
           </button>
         </div>
@@ -72,7 +72,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{wishlistIds.length}</div>
+              <div className="text-2xl font-bold text-teal-600">{wishlistIds.length}</div>
               <div className="text-sm text-gray-600">Saved Properties</div>
             </div>
             <div className="text-center">
@@ -102,7 +102,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
           >
             {isEditing ? 'Cancel' : 'Edit Profile'}
           </button>
-          <button className="bg-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-700">
+          <button className="bg-teal-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-teal-700">
             Share Profile
           </button>
         </div>
@@ -124,7 +124,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
             onClick={() => setActiveTab(tab.id as any)}
             className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition-all ${
               activeTab === tab.id
-                ? 'bg-blue-600 text-white shadow-lg'
+                ? 'bg-teal-600 text-white shadow-lg'
                 : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
@@ -143,7 +143,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
         <h2 className="text-2xl font-bold mb-6">Recent Activity</h2>
         <div className="space-y-4">
           <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-            <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">❤️</div>
+            <div className="w-10 h-10 bg-teal-100 text-teal-600 rounded-lg flex items-center justify-center">❤️</div>
             <div className="flex-1">
               <p className="font-medium">Saved "Riverview Retreat" to wishlist</p>
               <p className="text-sm text-gray-600">2 hours ago</p>
@@ -170,7 +170,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-2xl p-6 shadow-sm text-center">
           <div className="text-3xl mb-2">🏠</div>
-          <div className="text-2xl font-bold text-blue-600 mb-1">24</div>
+          <div className="text-2xl font-bold text-teal-600 mb-1">24</div>
           <div className="text-sm text-gray-600">Properties Viewed</div>
         </div>
         <div className="bg-white rounded-2xl p-6 shadow-sm text-center">
@@ -193,7 +193,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
         <h2 className="text-2xl font-bold">Saved Properties ({wishlistProperties.length})</h2>
         <button
           onClick={() => onNavigate('wishlist')}
-          className="text-blue-600 hover:underline font-medium"
+          className="text-teal-600 hover:underline font-medium"
         >
           View All
         </button>
@@ -206,7 +206,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
               <img src={property.image} alt={property.title} className="w-full h-48 object-cover" />
               <div className="p-6">
                 <h3 className="font-bold text-lg mb-2">{property.title}</h3>
-                <p className="text-blue-600 font-bold mb-2">{property.price}</p>
+                <p className="text-teal-600 font-bold mb-2">{property.price}</p>
                 <p className="text-gray-600 text-sm mb-4">{property.address}</p>
                 <div className="flex justify-between items-center">
                   <div className="text-sm text-gray-500">
@@ -214,7 +214,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
                   </div>
                   <button
                     onClick={() => onNavigate('property-details')}
-                    className="text-blue-600 hover:underline text-sm font-medium"
+                    className="text-teal-600 hover:underline text-sm font-medium"
                   >
                     View Details
                   </button>
@@ -230,7 +230,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
           <p className="text-gray-600 mb-6">Start exploring properties and save your favorites!</p>
           <button
             onClick={() => onNavigate('property')}
-            className="bg-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-700"
+            className="bg-teal-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-teal-700"
           >
             Browse Properties
           </button>
@@ -274,7 +274,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
           <p className="text-gray-600 mb-6">Share your experience by reviewing properties you've viewed!</p>
           <button
             onClick={() => onNavigate('property')}
-            className="bg-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-700"
+            className="bg-teal-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-teal-700"
           >
             Explore Properties
           </button>
@@ -298,7 +298,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
                   type="text"
                   value={editForm.name}
                   onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
               <div>
@@ -307,7 +307,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
                   type="tel"
                   value={editForm.phone}
                   onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -319,7 +319,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
                 value={editForm.location}
                 onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
                 placeholder="City, State"
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               />
             </div>
 
@@ -330,14 +330,14 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
                 onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
                 rows={4}
                 placeholder="Tell us about yourself..."
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none"
               />
             </div>
 
             <div className="flex gap-4">
               <button
                 onClick={handleSaveProfile}
-                className="bg-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-700"
+                className="bg-teal-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-teal-700"
               >
                 Save Changes
               </button>
@@ -398,7 +398,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" className="sr-only peer" defaultChecked />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
             </label>
           </div>
 
@@ -409,7 +409,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" className="sr-only peer" />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
             </label>
           </div>
 
@@ -431,7 +431,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
           <div className="flex items-center space-x-2">
             <button
               onClick={() => onNavigate('home')}
-              className="hover:text-blue-600 transition-colors font-medium"
+              className="hover:text-teal-600 transition-colors font-medium"
             >
               ← Back to Home
             </button>

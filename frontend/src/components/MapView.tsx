@@ -62,8 +62,8 @@ export const MapView: React.FC<MapViewProps> = ({ properties, onNavigate }) => {
           <img src="${prop.image}" class="w-full h-24 object-cover">
           <div class="p-3">
             <h4 class="font-bold text-gray-900 text-sm mb-1">${prop.title}</h4>
-            <p class="text-blue-600 font-bold text-xs mb-2">${prop.price}</p>
-            <button class="view-details-btn bg-blue-600 text-white w-full py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider hover:bg-blue-700 transition-colors">
+            <p class="text-teal-600 font-bold text-xs mb-2">${prop.price}</p>
+            <button class="view-details-btn bg-teal-600 text-white w-full py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider hover:bg-teal-700 transition-colors">
               View Details
             </button>
           </div>

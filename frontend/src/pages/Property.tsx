@@ -74,13 +74,13 @@ export const PropertyPage: React.FC<PropertyPageProps> = ({
           <div className="flex items-center bg-white p-1 rounded-2xl shadow-sm border border-gray-100">
              <button 
               onClick={() => setViewMode('grid')}
-              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center ${viewMode === 'grid' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-500 hover:text-blue-600'}`}
+              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center ${viewMode === 'grid' ? 'bg-teal-600 text-white shadow-md' : 'text-gray-500 hover:text-teal-600'}`}
              >
                <span className="mr-2 text-base">⊞</span> Grid
              </button>
              <button 
               onClick={() => setViewMode('map')}
-              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center ${viewMode === 'map' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-500 hover:text-blue-600'}`}
+              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center ${viewMode === 'map' ? 'bg-teal-600 text-white shadow-md' : 'text-gray-500 hover:text-teal-600'}`}
              >
                <span className="mr-2 text-base">🗺</span> Map
              </button>
@@ -94,7 +94,7 @@ export const PropertyPage: React.FC<PropertyPageProps> = ({
               <button 
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-8 py-2.5 rounded-lg capitalize font-bold transition-all ${filter === f ? 'bg-blue-600 text-white shadow-md' : 'text-gray-500 hover:text-blue-600'}`}
+                className={`px-8 py-2.5 rounded-lg capitalize font-bold transition-all ${filter === f ? 'bg-teal-600 text-white shadow-md' : 'text-gray-500 hover:text-teal-600'}`}
               >
                 {f}
               </button>
@@ -105,7 +105,7 @@ export const PropertyPage: React.FC<PropertyPageProps> = ({
             <select 
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
-              className="bg-white border border-gray-100 rounded-xl px-4 py-2 font-medium text-gray-600 outline-none focus:ring-2 focus:ring-blue-600 shadow-sm"
+              className="bg-white border border-gray-100 rounded-xl px-4 py-2 font-medium text-gray-600 outline-none focus:ring-2 focus:ring-teal-600 shadow-sm"
             >
               <option value="asc">Price: Low to High</option>
               <option value="desc">Price: High to Low</option>
@@ -137,7 +137,7 @@ export const PropertyPage: React.FC<PropertyPageProps> = ({
             <div className="text-6xl mb-6">🏜️</div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">No matching properties found</h3>
             <p className="text-gray-500 mb-8">Try adjusting your filters or search location to find what you're looking for.</p>
-            <button onClick={() => { setFilter('all'); window.location.reload(); }} className="text-blue-600 font-bold hover:underline">Reset all filters</button>
+            <button onClick={() => { setFilter('all'); window.location.reload(); }} className="text-teal-600 font-bold hover:underline">Reset all filters</button>
           </div>
         )}
 
