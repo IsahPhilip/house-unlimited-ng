@@ -19,9 +19,6 @@ export const PropertyPage: React.FC<PropertyPageProps> = ({
 }) => {
   const [filter, setFilter] = useState<'all' | 'rent' | 'sale'>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
-  const [dreamHousePrompt, setDreamHousePrompt] = useState('');
-  const [generatedHouse, setGeneratedHouse] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   // Functional Filtering Logic
@@ -58,20 +55,6 @@ export const PropertyPage: React.FC<PropertyPageProps> = ({
   };
 
   const filtered = getFilteredProperties();
-
-  const handleGenerate = async () => {
-    if (!dreamHousePrompt) return;
-    setLoading(true);
-    try {
-      // Mock AI generation for now
-      setGeneratedHouse('https://images.unsplash.com/photo-1600585154340-be6199f7a096?auto=format&fit=crop&q=80&w=800');
-    } catch (e) {
-      console.error(e);
-      alert('Failed to visualize. Please try again later.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="py-16 bg-gray-50 min-h-screen animate-in fade-in duration-500">
@@ -158,34 +141,6 @@ export const PropertyPage: React.FC<PropertyPageProps> = ({
           </div>
         )}
 
-        {/* AI Dream Home Feature */}
-        <div className="mt-24 bg-slate-900 rounded-3xl p-12 text-white overflow-hidden relative shadow-2xl border border-white/5">
-          <div className="max-w-3xl relative z-10">
-            <h2 className="text-3xl font-bold mb-4">AI Dream Home Visualizer</h2>
-            <p className="text-gray-400 mb-8 text-sm leading-relaxed">Can't find what you're looking for? Describe your perfect home and our Gemini AI will visualize it for you instantly. Let your imagination run wild!</p>
-            <div className="flex flex-col md:flex-row gap-4 mb-8">
-              <input 
-                value={dreamHousePrompt}
-                onChange={e => setDreamHousePrompt(e.target.value)}
-                placeholder="e.g. A minimalist glass villa on a cliff in Norway..." 
-                className="flex-1 bg-slate-800 border border-white/10 rounded-xl px-6 py-4 text-white focus:ring-2 focus:ring-blue-600 outline-none placeholder:text-gray-600 transition-all"
-              />
-              <button 
-                onClick={handleGenerate}
-                disabled={loading}
-                className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl font-bold transition-all disabled:opacity-50 flex items-center justify-center min-w-[150px] shadow-lg shadow-blue-600/20"
-              >
-                {loading ? <span className="flex items-center"><svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Generating...</span> : 'Visualize'}
-              </button>
-            </div>
-          </div>
-          <div className="absolute top-0 right-0 w-1/3 h-full opacity-10 pointer-events-none bg-gradient-to-l from-blue-600 to-transparent"></div>
-          {generatedHouse && (
-            <div className="mt-8 animate-in zoom-in duration-500 relative z-10">
-              <img src={generatedHouse} alt="AI Generated House" className="w-full rounded-2xl shadow-2xl border-4 border-slate-800" />
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );

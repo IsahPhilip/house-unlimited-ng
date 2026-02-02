@@ -183,6 +183,7 @@ const AppContent = () => {
             onWishlistToggle={(id) => handleWishlistToggle(id)}
             isWishlisted={wishlistIds.includes(selectedPropertyId)}
             onBack={() => setCurrentPage('property')}
+            openAuthModal={openAuthModal}
           />
         ) : (
           <Home onSearch={handleSearch} wishlistIds={wishlistIds} onWishlistToggle={handleWishlistToggle} onNavigate={navigateToProperty} />

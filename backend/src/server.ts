@@ -16,6 +16,9 @@ import propertyRoutes from './routes/properties.routes.js';
 import reviewRoutes from './routes/reviews.routes.js';
 import userRoutes from './routes/users.routes.js';
 import uploadRoutes from './routes/uploads.routes.js';
+import inquiryRoutes from './routes/inquiry.routes.js';
+import newsletterRoutes from './routes/newsletter.routes.js';
+import contactRoutes from './routes/contact.routes.js';
 
 const app = express();
 
@@ -89,6 +92,9 @@ app.use('/api/properties', propertyRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/uploads', uploadRoutes);
+app.use('/api/inquiries', inquiryRoutes);
+app.use('/api/newsletter', newsletterRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Welcome route
 app.get('/api', (req, res) => {
@@ -102,6 +108,9 @@ app.get('/api', (req, res) => {
       reviews: '/api/reviews',
       users: '/api/users',
       uploads: '/api/uploads',
+      inquiries: '/api/inquiries',
+      newsletter: '/api/newsletter',
+      contact: '/api/contact',
     },
   });
 });

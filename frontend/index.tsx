@@ -1,7 +1,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
+import { AuthProvider, useAuth } from './src/contexts/AuthContext';
 import { GoogleGenAI, Type } from '@google/genai';
+import PropertyDetailsPage from './src/pages/PropertyDetails';
 
 // Declare Leaflet globally to fix type errors
 declare const L: any;
@@ -412,26 +414,37 @@ const Modal = ({ isOpen, onClose, title, children }: { isOpen: boolean, onClose:
   );
 };
 
-const AuthModal = ({ isOpen, onClose, mode, setMode, onSuccess }: { 
+const AuthModal = ({ isOpen, onClose, mode, setMode }: { 
   isOpen: boolean, 
   onClose: () => void, 
   mode: AuthMode, 
-  setMode: (m: AuthMode) => void,
-  onSuccess: (u: User) => void
+  setMode: (m: AuthMode) => void
 }) => {
+  const { login, register } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSuccess({ name: name || 'Demo User', email });
-    onClose();
+    setError(null);
+    try {
+      if (mode === 'signin') {
+        await login(email, password);
+      } else {
+        await register({ name, email, password });
+      }
+      onClose();
+    } catch (err) {
+      setError('Invalid credentials or user already exists.');
+    }
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={mode === 'signin' ? 'Sign In' : 'Sign Up'}>
       <form onSubmit={handleSubmit} className="space-y-4">
+        {error && <p className="text-red-500 text-sm">{error}</p>}
         {mode === 'signup' && (
           <div className="space-y-2">
             <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Full Name</label>
@@ -695,7 +708,7 @@ const Footer = ({ onNavigate }: { onNavigate: (p: Page) => void }) => (
           </div>
           <span className="text-xl font-bold">Real Estate.</span>
         </div>
-        <p className="text-gray-400 text-sm">Empowering home seekers with AI-driven visualizers and expert human guidance since 1995.</p>
+        <p className="text-gray-400 text-sm">Empowering home seekers with expert human guidance since 1995.</p>
         <div className="flex space-x-4">
           <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-blue-600 transition-colors"><i className="fab fa-facebook-f text-xs"></i></div>
           <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-blue-600 transition-colors"><i className="fab fa-twitter text-xs"></i></div>
@@ -1614,318 +1627,11 @@ const ContactPage = () => (
   </div>
 );
 
-// --- PropertyDetailsPage Component ---
-const PropertyDetailsPage = ({ 
-  propertyId, 
-  wishlistIds, 
-  onWishlistToggle, 
-  onNavigate,
-  reviews,
-  onAddReview,
-  user,
-  openAuthModal
-}: { 
-  propertyId: number, 
-  wishlistIds: number[], 
-  onWishlistToggle: (id: number) => void,
-  onNavigate: (p: Page) => void,
-  reviews: Review[],
-  onAddReview: (r: Omit<Review, 'id' | 'date'>) => void,
-  user: User | null,
-  openAuthModal: (mode: AuthMode) => void
-}) => {
-  const property = PROPERTIES.find(p => p.id === propertyId);
-  if (!property) return <div className="p-20 text-center">Property not found.</div>;
-
-  const isWishlisted = wishlistIds.includes(property.id);
-  const propertyReviews = reviews.filter(r => r.propertyId === propertyId);
-  const avgRating = propertyReviews.length > 0 
-    ? (propertyReviews.reduce((sum, r) => sum + r.rating, 0) / propertyReviews.length).toFixed(1)
-    : "0.0";
-
-  const [newRating, setNewRating] = useState(5);
-  const [newComment, setNewComment] = useState('');
-  const [activeImage, setActiveImage] = useState(property.image);
-
-  const images = property.images || [property.image];
-
-  const handleSubmitReview = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) {
-      openAuthModal('signin');
-      return;
-    }
-    onAddReview({
-      propertyId,
-      userName: user.name,
-      rating: newRating,
-      comment: newComment
-    });
-    setNewComment('');
-    setNewRating(5);
-  };
-
-  return (
-    <div className="bg-gray-50 min-h-screen pb-24 animate-in fade-in duration-500">
-      {/* Breadcrumbs */}
-      <div className="bg-white border-b border-gray-100 mb-8">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center text-xs font-medium text-gray-500 space-x-2">
-          <button onClick={() => onNavigate('home')} className="hover:text-blue-600 transition-colors">Home</button>
-          <span>/</span>
-          <button onClick={() => onNavigate('property')} className="hover:text-blue-600 transition-colors">Properties</button>
-          <span>/</span>
-          <span className="text-gray-900 truncate max-w-[200px]">{property.title}</span>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Gallery */}
-            <div className="space-y-4">
-              <div className="aspect-[16/9] rounded-3xl overflow-hidden shadow-xl border border-gray-100 bg-gray-200">
-                <img src={activeImage} alt={property.title} className="w-full h-full object-cover" />
-              </div>
-              {images.length > 1 && (
-                <div className="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide">
-                  {images.map((img, idx) => (
-                    <button 
-                      key={idx}
-                      onClick={() => setActiveImage(img)}
-                      className={`flex-shrink-0 w-32 aspect-video rounded-xl overflow-hidden border-2 transition-all ${activeImage === img ? 'border-blue-600 ring-2 ring-blue-100' : 'border-transparent hover:border-gray-300'}`}
-                    >
-                      <img src={img} className="w-full h-full object-cover" />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Property Header & Info */}
-            <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-              <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
-                <div>
-                  <div className="flex items-center space-x-3 mb-3">
-                    <span className={`px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${property.category === 'rent' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'}`}>
-                      For {property.category === 'rent' ? 'Rent' : 'Sale'}
-                    </span>
-                    <span className="px-4 py-1 bg-gray-100 text-gray-600 rounded-full text-[10px] font-bold uppercase tracking-widest">
-                      {property.type}
-                    </span>
-                  </div>
-                  <h1 className="text-3xl font-extrabold text-gray-900 mb-2">{property.title}</h1>
-                  <p className="text-gray-500 flex items-center">
-                    <svg className="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    {property.address}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-3xl font-black text-blue-600">{property.price}</p>
-                  <div className="mt-4 flex space-x-2 justify-end">
-                    <button 
-                      onClick={() => onWishlistToggle(property.id)}
-                      className={`p-3 rounded-2xl transition-all shadow-sm border ${isWishlisted ? 'bg-red-500 text-white border-red-500' : 'bg-white text-gray-400 border-gray-200 hover:text-red-500 hover:border-red-200'}`}
-                    >
-                      <svg className="w-6 h-6" fill={isWishlisted ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                      </svg>
-                    </button>
-                    <button 
-                      onClick={() => handleShare(property)}
-                      className="p-3 rounded-2xl bg-white text-gray-400 border border-gray-200 hover:text-blue-600 hover:border-blue-200 transition-all shadow-sm"
-                    >
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-6 pt-8 border-t border-gray-100">
-                <div className="text-center p-4 bg-gray-50 rounded-2xl">
-                  <span className="text-2xl block mb-2">🛏️</span>
-                  <p className="text-sm font-black text-gray-900">{property.beds} Bedrooms</p>
-                </div>
-                <div className="text-center p-4 bg-gray-50 rounded-2xl">
-                  <span className="text-2xl block mb-2">🚿</span>
-                  <p className="text-sm font-black text-gray-900">{property.baths} Bathrooms</p>
-                </div>
-                <div className="text-center p-4 bg-gray-50 rounded-2xl">
-                  <span className="text-2xl block mb-2">📐</span>
-                  <p className="text-sm font-black text-gray-900">{property.sqft} Sq.Ft</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Description & Amenities */}
-            <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Description</h3>
-              <p className="text-gray-600 leading-relaxed text-sm mb-8">{property.description}</p>
-              
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Features & Amenities</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {property.amenities.map((amenity, idx) => (
-                  <div key={idx} className="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl">
-                    <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-xs">✓</div>
-                    <span className="text-xs font-bold text-gray-700">{amenity}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Location Map */}
-            <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Location Map</h3>
-              <div className="h-[400px] w-full rounded-2xl overflow-hidden border border-gray-100 shadow-inner">
-                <MapView properties={[property]} onNavigate={() => {}} />
-              </div>
-            </div>
-
-            {/* Reviews Section */}
-            <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">Reviews ({propertyReviews.length})</h3>
-                  <div className="flex items-center mt-1 space-x-2">
-                    <StarRating rating={Math.round(parseFloat(avgRating))} />
-                    <span className="text-sm font-bold text-gray-900">{avgRating} / 5.0</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Review Form */}
-              <div className="bg-gray-50 p-6 rounded-2xl mb-12">
-                <h4 className="font-bold text-gray-900 mb-4 text-sm">Write a Review</h4>
-                <form onSubmit={handleSubmitReview} className="space-y-4">
-                  <div className="flex items-center space-x-4">
-                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Your Rating:</span>
-                    <StarRating rating={newRating} setRating={setNewRating} interactive size="md" />
-                  </div>
-                  <textarea 
-                    required
-                    value={newComment}
-                    onChange={e => setNewComment(e.target.value)}
-                    placeholder="Share your experience with this property..."
-                    className="w-full bg-white border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-blue-600 outline-none resize-none shadow-sm h-32"
-                  />
-                  <button 
-                    type="submit" 
-                    className="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100"
-                  >
-                    Submit Review
-                  </button>
-                </form>
-              </div>
-
-              {/* Review List */}
-              <div className="space-y-8">
-                {propertyReviews.length > 0 ? (
-                  propertyReviews.map((review) => (
-                    <div key={review.id} className="pb-8 border-b border-gray-100 last:border-0 last:pb-0">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-sm uppercase">
-                            {review.userName.charAt(0)}
-                          </div>
-                          <div>
-                            <h5 className="font-bold text-gray-900 text-sm">{review.userName}</h5>
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{review.date}</p>
-                          </div>
-                        </div>
-                        <StarRating rating={review.rating} />
-                      </div>
-                      <p className="text-gray-600 text-sm leading-relaxed">{review.comment}</p>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-8 text-gray-400 text-sm italic">
-                    No reviews yet. Be the first to review this property!
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Sidebar */}
-          <div className="lg:col-span-1 space-y-8">
-            {/* Agent Card */}
-            <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 sticky top-32">
-              <h3 className="text-lg font-bold text-gray-900 mb-6">Contact Agent</h3>
-              <div className="flex items-center space-x-4 mb-8">
-                <img 
-                  src={TEAM[Math.floor(Math.random() * TEAM.length)].image} 
-                  className="w-16 h-16 rounded-2xl object-cover shadow-md" 
-                />
-                <div>
-                  <h4 className="font-black text-gray-900">Sarah Montgomery</h4>
-                  <p className="text-blue-600 text-[10px] font-bold uppercase tracking-widest">Senior Realtor</p>
-                </div>
-              </div>
-              
-              <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); alert('Message sent to agent!'); }}>
-                <input 
-                  type="text" 
-                  placeholder="Your Name" 
-                  className="w-full bg-gray-50 border-none rounded-xl px-5 py-3 text-sm focus:ring-2 focus:ring-blue-600 outline-none" 
-                />
-                <input 
-                  type="email" 
-                  placeholder="Your Email" 
-                  className="w-full bg-gray-50 border-none rounded-xl px-5 py-3 text-sm focus:ring-2 focus:ring-blue-600 outline-none" 
-                />
-                <input 
-                  type="tel" 
-                  placeholder="Your Phone" 
-                  className="w-full bg-gray-50 border-none rounded-xl px-5 py-3 text-sm focus:ring-2 focus:ring-blue-600 outline-none" 
-                />
-                <textarea 
-                  placeholder="I'm interested in this property..." 
-                  className="w-full bg-gray-50 border-none rounded-xl px-5 py-3 text-sm focus:ring-2 focus:ring-blue-600 outline-none h-24 resize-none"
-                />
-                <button className="w-full bg-blue-600 text-white py-4 rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all">
-                  Send Message
-                </button>
-              </form>
-
-              <div className="mt-8 pt-8 border-t border-gray-100 flex justify-between">
-                <button className="flex-1 flex flex-col items-center group">
-                  <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors mb-2">📞</div>
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest group-hover:text-gray-900">Call</span>
-                </button>
-                <button className="flex-1 flex flex-col items-center group">
-                  <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors mb-2">✉️</div>
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest group-hover:text-gray-900">Email</span>
-                </button>
-                <button className="flex-1 flex flex-col items-center group">
-                  <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors mb-2">💬</div>
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest group-hover:text-gray-900">Chat</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Side Banner */}
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl">
-              <div className="relative z-10">
-                <h4 className="text-xl font-bold mb-4">Discover Similar Homes</h4>
-                <p className="text-blue-100 text-xs leading-relaxed mb-6">Let our AI help you find more properties matching your unique style and needs.</p>
-                <button onClick={() => onNavigate('property')} className="bg-white text-blue-600 px-6 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest">Browse More</button>
-              </div>
-              <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 // --- App Container ---
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
-  const [user, setUser] = useState<User | null>(null);
+  const { user, login, logout, register } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<AuthMode>('signin');
   const [searchCriteria, setSearchCriteria] = useState<SearchCriteria | null>(null);
@@ -1966,11 +1672,6 @@ const App = () => {
   const openAuthModal = (mode: AuthMode) => {
     setAuthMode(mode);
     setIsAuthModalOpen(true);
-  };
-
-  const logout = () => {
-    setUser(null);
-    setWishlistIds([]);
   };
 
   const handleWishlistToggle = (id: number) => {
@@ -2034,13 +1735,13 @@ const App = () => {
       case 'property-details': 
         return selectedPropertyId ? (
           <PropertyDetailsPage 
-            propertyId={selectedPropertyId} 
-            wishlistIds={wishlistIds} 
-            onWishlistToggle={handleWishlistToggle} 
-            onNavigate={setCurrentPage} 
+            property={PROPERTIES.find(p => p.id === selectedPropertyId)}
             reviews={reviews}
-            onAddReview={handleAddReview}
             user={user}
+            onAddReview={handleAddReview}
+            onWishlistToggle={handleWishlistToggle}
+            isWishlisted={wishlistIds.includes(selectedPropertyId)}
+            onBack={() => setCurrentPage('property')}
             openAuthModal={openAuthModal}
           />
         ) : (
@@ -2094,7 +1795,6 @@ const App = () => {
         onClose={() => setIsAuthModalOpen(false)} 
         mode={authMode} 
         setMode={setAuthMode}
-        onSuccess={setUser}
       />
     </div>
   );
@@ -2102,7 +1802,11 @@ const App = () => {
 
 // --- Initialization ---
 const container = document.getElementById('root');
-if (container) {
-  const root = createRoot(container);
-  root.render(<App />);
-}
+const root = createRoot(container!);
+root.render(
+  <React.StrictMode>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  </React.StrictMode>
+);

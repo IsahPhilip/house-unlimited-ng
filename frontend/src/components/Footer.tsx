@@ -1,12 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Page } from '../types';
 
 interface FooterProps {
   onNavigate: (p: Page) => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onNavigate }) => (
-  <footer className="bg-slate-900 text-white pt-16 pb-8">
+export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
+  const [email, setEmail] = useState('');
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleNewsletterSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    
+    // Basic email validation
+    if (!email || !email.includes('@')) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const response = await fetch('http://localhost:5000/api/newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        setIsSubscribed(true);
+        setEmail('');
+      } else {
+        setError('Failed to subscribe. Please try again.');
+      }
+    } catch (error) {
+      console.error('Newsletter signup error:', error);
+      setError('An error occurred. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <footer className="bg-slate-900 text-white pt-16 pb-8">
     <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12">
       <div className="space-y-4">
         <div className="flex items-center cursor-pointer" onClick={() => onNavigate('home')}>
@@ -15,7 +56,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => (
           </div>
           <span className="text-xl font-bold">Real Estate.</span>
         </div>
-        <p className="text-gray-400 text-sm">Empowering home seekers with AI-driven visualizers and expert human guidance since 1995.</p>
+        <p className="text-gray-400 text-sm">Empowering home seekers with expert human guidance since 1995.</p>
         <div className="flex space-x-4">
           <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-blue-600 transition-colors"><i className="fab fa-facebook-f text-xs"></i></div>
           <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-blue-600 transition-colors"><i className="fab fa-twitter text-xs"></i></div>
@@ -43,9 +84,34 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => (
       <div>
         <h4 className="font-bold mb-6">Get the latest information</h4>
         <div className="relative">
-          <input type="email" placeholder="Email address" className="w-full bg-slate-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-600" />
-          <button className="absolute right-1 top-1 bottom-1 bg-blue-600 px-3 rounded-md hover:bg-blue-700 transition-colors">➤</button>
+          <form onSubmit={handleNewsletterSignup}>
+            <input 
+              type="email" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email address" 
+              className="w-full bg-slate-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-600 outline-none"
+              disabled={isLoading}
+            />
+            <button 
+              type="submit"
+              disabled={isLoading}
+              className={`absolute right-1 top-1 bottom-1 px-3 rounded-md transition-colors ${
+                isLoading 
+                  ? 'bg-gray-600 cursor-wait' 
+                  : 'bg-blue-600 hover:bg-blue-700'
+              }`}
+            >
+              {isLoading ? 'Subscribing...' : '➤'}
+            </button>
+          </form>
         </div>
+        {error && (
+          <p className="text-red-400 text-xs mt-2">{error}</p>
+        )}
+        {isSubscribed && (
+          <p className="text-green-400 text-xs mt-2">Thank you for subscribing!</p>
+        )}
       </div>
     </div>
     <div className="max-w-7xl mx-auto px-4 mt-16 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between text-gray-500 text-xs text-center md:text-left">
@@ -56,4 +122,5 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => (
       </div>
     </div>
   </footer>
-);
+  );
+};

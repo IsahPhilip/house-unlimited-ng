@@ -1,7 +1,167 @@
-import React, { useState, useEffect } from 'react';
-import { AuthMode, User, Review, Property, Page } from '../types';
-import { PROPERTIES, INITIAL_REVIEWS } from '../utils/mockData';
-import { StarRating } from '../components/StarRating';
+import React, { useState } from 'react';
+
+// Minimal types needed for this component
+type AuthMode = 'signin' | 'signup';
+
+interface User {
+  name: string;
+  email: string;
+}
+
+interface Review {
+  id: number;
+  propertyId: number;
+  userName: string;
+  rating: number;
+  comment: string;
+  date: string;
+}
+
+interface Property {
+  id: number;
+  title: string;
+  price: string;
+  type: string;
+  category: 'rent' | 'sale';
+  address: string;
+  beds: number;
+  baths: number;
+  sqft: number;
+  image: string;
+  images?: string[];
+  description: string;
+  amenities: string[];
+  virtualTourUrl?: string;
+  // New features
+  yearBuilt?: number;
+  lotSize?: string;
+  parkingSpaces?: number;
+  utilities?: string[];
+  status?: 'available' | 'pending' | 'sold';
+  daysOnMarket?: number;
+  priceHistory?: { date: string; price: string }[];
+  videoTourUrl?: string;
+  latitude?: number;
+  longitude?: number;
+  neighborhood?: {
+    name: string;
+    schools?: string[];
+    crimeRate?: string;
+    averagePrice?: string;
+  };
+  similarProperties?: Property[];
+}
+
+// Mock data - in real app you would get this from props/route params/API
+const SAMPLE_PROPERTY: Property = {
+  id: 1,
+  title: 'Riverview Retreat',
+  price: '$6,000/month',
+  type: 'Apartment',
+  category: 'rent',
+  address: '6391 Elgin St. Celina, Delaware 10299',
+  beds: 4,
+  baths: 2,
+  sqft: 2148,
+  image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1600',
+  images: [
+    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1600',
+    'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&q=80&w=1600',
+    'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&q=80&w=1600',
+  ],
+  description: 'Experience luxury living in this spacious 4-bedroom apartment featuring stunning river views. This modern residence offers an open-concept layout with high-end finishes, a gourmet kitchen, and floor-to-ceiling windows that flood the space with natural light.',
+  amenities: ['River View', 'Gourmet Kitchen', 'Parking', 'Gym', 'Balcony', 'Smart Home System'],
+  // New features data
+  yearBuilt: 2020,
+  lotSize: '0.25 acres',
+  parkingSpaces: 2,
+  utilities: ['Electricity', 'Water', 'Gas', 'Internet'],
+  status: 'available',
+  daysOnMarket: 15,
+  priceHistory: [
+    { date: '2024-01-01', price: '$5,800/month' },
+    { date: '2024-02-01', price: '$6,000/month' }
+  ],
+  videoTourUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+  latitude: 39.7392,
+  longitude: -104.9903,
+  neighborhood: {
+    name: 'Riverfront District',
+    schools: ['Riverfront Elementary', 'Central High School'],
+    crimeRate: 'Low',
+    averagePrice: '$5,500/month'
+  },
+  similarProperties: [
+    {
+      id: 2,
+      title: 'Modern Downtown Loft',
+      price: '$4,500/month',
+      type: 'Loft',
+      category: 'rent',
+      address: '123 Main St, Downtown',
+      beds: 2,
+      baths: 1,
+      sqft: 1200,
+      image: 'https://images.unsplash.com/photo-1560184897-6a0e5bd901d5?auto=format&fit=crop&q=80&w=1600',
+      amenities: ['Gym', 'Pool', 'Parking'],
+      status: 'available',
+      description: 'Stylish downtown loft with modern amenities and city views.'
+    },
+    {
+      id: 3,
+      title: 'Suburban Family Home',
+      price: '$3,200/month',
+      type: 'House',
+      category: 'rent',
+      address: '456 Oak Ave, Suburbia',
+      beds: 3,
+      baths: 2,
+      sqft: 1800,
+      image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1600',
+      amenities: ['Yard', 'Garage', 'School District'],
+      status: 'pending',
+      description: 'Spacious family home in quiet suburban neighborhood with excellent schools.'
+    }
+  ]
+};
+
+const INITIAL_REVIEWS: Review[] = [
+  { id: 1, propertyId: 1, userName: 'John Smith', rating: 5, comment: 'Absolutely stunning views and the interior is top-notch.', date: '2024-03-15' },
+  { id: 2, propertyId: 1, userName: 'Sarah Jenkins', rating: 4, comment: 'Great location, though parking can be a bit tight during peak hours.', date: '2024-04-02' },
+];
+
+// Reusable Star Rating Component
+const StarRating = ({ 
+  rating, 
+  setRating, 
+  interactive = false, 
+  size = "sm" 
+}: { 
+  rating: number; 
+  setRating?: (r: number) => void; 
+  interactive?: boolean; 
+  size?: "sm" | "md" | "lg"; 
+}) => {
+  const iconSize = size === "lg" ? "w-7 h-7" : size === "md" ? "w-6 h-6" : "w-5 h-5";
+  
+  return (
+    <div className="flex space-x-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          disabled={!interactive}
+          onClick={() => interactive && setRating?.(star)}
+          className={`transition-all ${interactive ? 'hover:scale-110 cursor-pointer' : ''} ${star <= rating ? 'text-yellow-400' : 'text-gray-200'}`}
+        >
+          <svg className={iconSize} fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+          </svg>
+        </button>
+      ))}
+    </div>
+  );
+};
 
 interface PropertyDetailsPageProps {
   property?: Property;              // optional - falls back to sample if not provided
@@ -11,6 +171,7 @@ interface PropertyDetailsPageProps {
   onWishlistToggle?: (id: number) => void;
   isWishlisted?: boolean;
   onBack?: () => void;
+  openAuthModal?: (mode: AuthMode) => void;
 }
 
 const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
@@ -21,13 +182,14 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
   onWishlistToggle,
   isWishlisted = false,
   onBack,
+  openAuthModal,
 }) => {
-  const property = propProperty || PROPERTIES[0];
+  const property = propProperty || SAMPLE_PROPERTY;
   
   const [activeImage, setActiveImage] = useState(property.image);
   const [inquirySent, setInquirySent] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isVirtualTourModalOpen, setIsVirtualTourModalOpen] = useState(false); // New state for virtual tour modal
+  const [isVirtualTourModalOpen, setIsVirtualTourModalOpen] = useState(false);
   
   // Review form
   const [newRating, setNewRating] = useState(5);
@@ -38,14 +200,78 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
     ? (propertyReviews.reduce((sum, r) => sum + r.rating, 0) / propertyReviews.length).toFixed(1)
     : "0.0";
 
-  const handleInquiry = (e: React.FormEvent) => {
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: property.title,
+          text: `Check out this property: ${property.title}`,
+          url: window.location.href,
+        });
+      } catch (error) {
+        console.log('Error sharing:', error);
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Link copied to clipboard!');
+    }
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleWhatsApp = () => {
+    const text = `Check out this property: ${property.title} - ${window.location.href}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  const handleEmail = () => {
+    const subject = `Check out this property: ${property.title}`;
+    const body = `I found this property and thought you might like it: ${window.location.href}`;
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
+  const handleCall = () => {
+    window.location.href = 'tel:+15551234567';
+  };
+
+  const handleScheduleViewing = () => {
+    const inquiryForm = document.getElementById('inquiry-form');
+    if (inquiryForm) {
+      inquiryForm.scrollIntoView({ behavior: 'smooth' });
+      const firstInput = inquiryForm.querySelector('input');
+      if (firstInput) (firstInput as HTMLElement).focus();
+    }
+  };
+
+  const handleInquiry = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate API / AI response
-    setTimeout(() => {
-      setInquirySent(true);
+
+    const formData = new FormData(e.currentTarget);
+    const inquiryData = {
+      propertyId: property.id,
+      name: formData.get('name'),
+      email: formData.get('email'),
+      message: formData.get('message'),
+    };
+
+    try {
+      const response = await fetch('http://localhost:5000/api/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(inquiryData),
+      });
+
+      if (response.ok) setInquirySent(true);
+      else alert('Failed to send inquiry. Please try again.');
+    } catch (error) {
+      console.error('Error sending inquiry:', error);
+      alert('An error occurred. Please try again later.');
+    } finally {
       setLoading(false);
-    }, 1200);
+    }
   };
 
   const handleReviewSubmit = (e: React.FormEvent) => {
@@ -130,6 +356,18 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                     <span className="px-4 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
                       {property.type}
                     </span>
+                    {/* Property Status Badge */}
+                    {property.status && (
+                      <span className={`inline-block px-4 py-1.5 rounded-full text-sm font-semibold ${
+                        property.status === 'available' 
+                          ? 'bg-green-100 text-green-800' 
+                          : property.status === 'pending'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {property.status.toUpperCase()}
+                      </span>
+                    )}
                   </div>
                   <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
                     {property.title}
@@ -138,6 +376,12 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                     <span className="mr-2">📍</span>
                     {property.address}
                   </p>
+                  {/* Property History Info */}
+                  {property.daysOnMarket && (
+                    <p className="text-sm text-gray-500 mt-1">
+                      {property.daysOnMarket} days on market
+                    </p>
+                  )}
                 </div>
                 <div className="text-right">
                   <p className="text-4xl md:text-5xl font-bold text-blue-600 mb-1">
@@ -202,6 +446,83 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               </div>
             </div>
 
+            {/* Property Specifications */}
+            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm">
+              <h2 className="text-2xl font-bold mb-6">Property Specifications</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {property.yearBuilt && (
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                      <span className="text-sm text-gray-500">Year Built</span>
+                      <p className="font-bold text-lg">{property.yearBuilt}</p>
+                    </div>
+                    <div className="text-2xl">🏠</div>
+                  </div>
+                )}
+                {property.lotSize && (
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                      <span className="text-sm text-gray-500">Lot Size</span>
+                      <p className="font-bold text-lg">{property.lotSize}</p>
+                    </div>
+                    <div className="text-2xl">📏</div>
+                  </div>
+                )}
+                {property.parkingSpaces && (
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                      <span className="text-sm text-gray-500">Parking Spaces</span>
+                      <p className="font-bold text-lg">{property.parkingSpaces}</p>
+                    </div>
+                    <div className="text-2xl">🚗</div>
+                  </div>
+                )}
+                {property.utilities && property.utilities.length > 0 && (
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                      <span className="text-sm text-gray-500">Utilities</span>
+                      <p className="font-bold text-lg">{property.utilities.join(', ')}</p>
+                    </div>
+                    <div className="text-2xl">⚡</div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Neighborhood Information */}
+            {property.neighborhood && (
+              <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm">
+                <h2 className="text-2xl font-bold mb-6">Neighborhood</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="font-bold text-lg mb-3">{property.neighborhood.name}</h3>
+                    <p className="text-gray-600 mb-4">A vibrant community with excellent amenities and convenient access to downtown.</p>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-green-600">•</span>
+                        <span className="text-sm">Crime Rate: {property.neighborhood.crimeRate}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-blue-600">•</span>
+                        <span className="text-sm">Average Price: {property.neighborhood.averagePrice}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-bold mb-3">Nearby Schools</h4>
+                    <ul className="space-y-2">
+                      {property.neighborhood.schools?.map((school, i) => (
+                        <li key={i} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+                          <span className="text-blue-600">🏫</span>
+                          <span>{school}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Reviews */}
             <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm">
               <div className="flex justify-between items-center mb-8">
@@ -246,7 +567,10 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                 {!user ? (
                   <div className="bg-blue-50 p-8 rounded-2xl text-center">
                     <p className="text-lg mb-4">Please sign in to write a review</p>
-                    <button className="bg-blue-600 text-white px-8 py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors">
+                    <button
+                      onClick={() => openAuthModal?.('signin')}
+                      className="bg-blue-600 text-white px-8 py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors"
+                    >
                       Sign In
                     </button>
                   </div>
@@ -284,6 +608,83 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                 )}
               </div>
             </div>
+
+            {/* Similar Properties */}
+            {property.similarProperties && property.similarProperties.length > 0 && (
+              <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm">
+                <h2 className="text-2xl font-bold mb-6">Similar Properties</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {property.similarProperties.map((similarProp) => (
+                    <div key={similarProp.id} className="border border-gray-100 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+                      <div className="aspect-[16/10] relative">
+                        <img
+                          src={similarProp.image}
+                          alt={similarProp.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-3 left-3">
+                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                            similarProp.category === 'rent' 
+                              ? 'bg-blue-600 text-white' 
+                              : 'bg-emerald-600 text-white'
+                          }`}>
+                            For {similarProp.category === 'rent' ? 'Rent' : 'Sale'}
+                          </span>
+                        </div>
+                        {similarProp.status && (
+                          <div className="absolute top-3 right-3">
+                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                              similarProp.status === 'available' 
+                                ? 'bg-green-100 text-green-800' 
+                                : similarProp.status === 'pending'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {similarProp.status.toUpperCase()}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-4">
+                        <h3 className="font-bold text-lg mb-2">{similarProp.title}</h3>
+                        <p className="text-gray-600 text-sm mb-3">{similarProp.address}</p>
+                        <div className="flex justify-between items-center">
+                          <div className="text-blue-600 font-bold text-lg">{similarProp.price}</div>
+                          <div className="flex gap-2">
+                            <span className="text-sm text-gray-500">{similarProp.beds} bd</span>
+                            <span className="text-sm text-gray-500">{similarProp.baths} ba</span>
+                            <span className="text-sm text-gray-500">{similarProp.sqft} sqft</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Share & Print Options */}
+            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm">
+              <h2 className="text-2xl font-bold mb-6">Share This Property</h2>
+              <div className="flex flex-wrap gap-4">
+                <button onClick={handleShare} className="flex items-center gap-3 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                  <span className="text-lg">📱</span>
+                  <span>Share</span>
+                </button>
+                <button onClick={handlePrint} className="flex items-center gap-3 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                  <span className="text-lg">🖨️</span>
+                  <span>Print</span>
+                </button>
+                <button onClick={handleWhatsApp} className="flex items-center gap-3 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                  <span className="text-lg">💬</span>
+                  <span>WhatsApp</span>
+                </button>
+                <button onClick={handleEmail} className="flex items-center gap-3 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                  <span className="text-lg">📧</span>
+                  <span>Email</span>
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Sidebar */}
@@ -294,44 +695,48 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                 <div className="p-6 md:p-8">
                   <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl md:text-2xl font-bold">Contact Agent</h3>
-                    {onWishlistToggle && (
-                      <button
-                        onClick={() => onWishlistToggle(property.id)}
-                        className={`p-3 rounded-full transition-colors ${
-                          isWishlisted 
-                            ? 'bg-red-50 text-red-600' 
-                            : 'bg-gray-100 text-gray-500 hover:text-red-600'
-                        }`}
-                      >
-                        {isWishlisted ? '❤️' : '♡'}
-                      </button>
-                    )}
-                    {/* New: Virtual Tour Button */}
-                    {property.virtualTourUrl && (
-                      <button
-                        onClick={() => setIsVirtualTourModalOpen(true)}
-                        className="p-3 rounded-full bg-gray-100 text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-                        title="View Virtual Tour"
-                      >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                      </button>
-                    )}
+                    <div className="flex space-x-2">
+                      {onWishlistToggle && (
+                        <button
+                          onClick={() => onWishlistToggle(property.id)}
+                          className={`p-3 rounded-full transition-colors ${
+                            isWishlisted 
+                              ? 'bg-red-50 text-red-600' 
+                              : 'bg-gray-100 text-gray-500 hover:text-red-600'
+                          }`}
+                        >
+                          {isWishlisted ? '❤️' : '♡'}
+                        </button>
+                      )}
+                      {property.virtualTourUrl && (
+                        <button
+                          onClick={() => setIsVirtualTourModalOpen(true)}
+                          className="p-3 rounded-full bg-gray-100 text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                          title="View Virtual Tour"
+                        >
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   {!inquirySent ? (
-                    <form onSubmit={handleInquiry} className="space-y-5">
+                    <form id="inquiry-form" onSubmit={handleInquiry} className="space-y-5">
                       <input
+                        name="name"
                         placeholder="Full Name"
                         className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                         required
                       />
                       <input
+                        name="email"
                         type="email"
                         placeholder="Email Address"
                         className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                         required
                       />
                       <textarea
+                        name="message"
                         rows={4}
                         placeholder="I'm interested in this property..."
                         className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
@@ -382,10 +787,10 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   </div>
                 </div>
                 <div className="space-y-3 text-sm">
-                  <button className="w-full py-3 bg-white/15 hover:bg-white/25 rounded-xl transition-colors">
+                  <button onClick={handleCall} className="w-full py-3 bg-white/15 hover:bg-white/25 rounded-xl transition-colors">
                     📞 Call Now
                   </button>
-                  <button className="w-full py-3 bg-white/15 hover:bg-white/25 rounded-xl transition-colors">
+                  <button onClick={handleScheduleViewing} className="w-full py-3 bg-white/15 hover:bg-white/25 rounded-xl transition-colors">
                     📅 Schedule Viewing
                   </button>
                 </div>
@@ -395,7 +800,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
         </div>
       </main>
 
-      {/* Virtual Tour Modal */}
+            {/* Virtual Tour Modal */}
       {isVirtualTourModalOpen && property.virtualTourUrl && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-75">
           <div className="relative w-full max-w-4xl h-3/4 bg-white rounded-lg shadow-lg overflow-hidden">
@@ -411,6 +816,28 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               allowFullScreen
               className="w-full h-full border-0"
             ></iframe>
+          </div>
+        </div>
+      )}
+
+      {/* Video Tour Modal */}
+      {isVirtualTourModalOpen && property.videoTourUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-75">
+          <div className="relative w-full max-w-4xl h-3/4 bg-white rounded-lg shadow-lg overflow-hidden">
+            <button
+              onClick={() => setIsVirtualTourModalOpen(false)}
+              className="absolute top-3 right-3 text-gray-700 hover:text-gray-900 z-10 p-2 bg-white rounded-full"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div className="w-full h-full bg-black flex items-center justify-center">
+              <iframe
+                src={property.videoTourUrl}
+                title="Video Tour"
+                allowFullScreen
+                className="w-full h-full"
+              ></iframe>
+            </div>
           </div>
         </div>
       )}
