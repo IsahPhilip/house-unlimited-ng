@@ -34,6 +34,11 @@ const sidebarItems = [
     icon: <Building2 className="h-5 w-5" />
   },
   {
+    name: 'Blog',
+    path: '/blog',
+    icon: <MessageSquare className="h-5 w-5" />
+  },
+  {
     name: 'Leads/CRM',
     path: '/leads',
     icon: <Users className="h-5 w-5" />

@@ -130,3 +130,27 @@ export interface ApiResponse<T> {
   message?: string;
   error?: string;
 }
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  featuredImage?: string;
+  category: string;
+  tags: string[];
+  author: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  status: 'draft' | 'published' | 'archived';
+  readTime: number;
+  views: number;
+  likes: number;
+  commentsCount: number;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string;
+}

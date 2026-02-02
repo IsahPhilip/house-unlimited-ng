@@ -11,14 +11,38 @@ import {
   Loader2
 } from 'lucide-react';
 
+interface DashboardData {
+  totalProperties?: number;
+  propertiesChange?: string;
+  totalLeads?: number;
+  leadsChange?: string;
+  totalRevenue?: number;
+  revenueChange?: string;
+  activeDeals?: number;
+  dealsChange?: string;
+  recentActivities?: Array<{
+    user: string;
+    action: string;
+    target: string;
+    time: string;
+  }>;
+  recentProperties?: Array<{
+    id: string;
+    title: string;
+    price: string;
+    status: string;
+    date: string;
+  }>;
+}
+
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<DashboardData | null>(null);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('authToken');
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/admin/dashboard`, {
           headers: {
             'Authorization': `Bearer ${token}`

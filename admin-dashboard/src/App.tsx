@@ -4,6 +4,8 @@ import MainLayout from './components/layout/MainLayout';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Properties from './pages/Properties';
+import Blog from './pages/Blog';
+import BlogForm from './components/BlogForm';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -23,6 +25,9 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="properties" element={<Properties />} />
+            <Route path="blog" element={<Blog />} />
+            <Route path="blog/create" element={<BlogForm isEditing={false} />} />
+            <Route path="blog/edit/:id" element={<BlogForm isEditing={true} />} />
             <Route path="leads" element={<div>Leads Page</div>} />
             <Route path="deals" element={<div>Deals Page</div>} />
             <Route path="agents" element={<div>Agents Page</div>} />

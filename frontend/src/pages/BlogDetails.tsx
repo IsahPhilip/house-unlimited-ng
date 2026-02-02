@@ -1,13 +1,60 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Page } from '../types';
-import { BLOGS } from '../utils/mockData';
+import { getBlogPostById } from '../services/blogApi';
 import { handleShare } from '../utils/helpers';
 
 const BlogDetailsPage = ({ blogId, onNavigate }: { blogId: number, onNavigate: (p: Page, id?: number) => void }) => {
-  const blog = BLOGS.find(b => b.id === blogId);
-  if (!blog) return <div className="p-20 text-center">Article not found.</div>;
+  const [blog, setBlog] = useState<any>(null);
+  const [relatedBlogs, setRelatedBlogs] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const relatedBlogs = BLOGS.filter(b => b.id !== blogId).slice(0, 3);
+  useEffect(() => {
+    const fetchBlog = async () => {
+      try {
+        setIsLoading(true);
+        const blogData = await getBlogPostById(blogId.toString());
+        setBlog(blogData);
+        
+        // For now, we'll use a simple related blogs logic
+        // In a real implementation, you might want to fetch related blogs from the API
+        setRelatedBlogs([]);
+      } catch (error) {
+        console.error('Error fetching blog:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchBlog();
+  }, [blogId]);
+
+  if (isLoading) {
+    return (
+      <div className="bg-white min-h-screen animate-in fade-in duration-500">
+        <div className="relative h-[400px] md:h-[500px] bg-gray-300 animate-pulse"></div>
+        <div className="max-w-7xl mx-auto px-4 py-16">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-300 rounded w-1/4 mb-4"></div>
+            <div className="h-12 bg-gray-300 rounded w-3/4 mb-8"></div>
+            <div className="space-y-4">
+              {[...Array(10)].map((_, i) => (
+                <div key={i} className="h-4 bg-gray-300 rounded w-full"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!blog) {
+    return (
+      <div className="p-20 text-center">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Article not found</h2>
+        <p className="text-gray-500">The blog post you're looking for doesn't exist or may have been moved.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white min-h-screen animate-in fade-in duration-500">
