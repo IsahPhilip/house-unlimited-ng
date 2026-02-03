@@ -45,9 +45,48 @@ export const getCurrentUser = async (): Promise<User> => {
       throw new Error('Failed to fetch user');
     }
 
-    return await response.json();
+    const data = await response.json();
+    return data.data ?? data;
   } catch (error) {
     console.error('Get user error:', error);
+    throw error;
+  }
+};
+
+export const getProfile = async (): Promise<User> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/profile`, {
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch profile');
+    }
+
+    const data = await response.json();
+    return data.data ?? data;
+  } catch (error) {
+    console.error('Get profile error:', error);
+    throw error;
+  }
+};
+
+export const updateProfile = async (profileData: Partial<User>): Promise<User> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/profile`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(profileData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update profile');
+    }
+
+    const data = await response.json();
+    return data.data ?? data;
+  } catch (error) {
+    console.error('Update profile error:', error);
     throw error;
   }
 };

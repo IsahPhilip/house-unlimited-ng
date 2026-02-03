@@ -113,7 +113,7 @@ blogPostSchema.index({ category: 1 });
 blogPostSchema.index({ author: 1 });
 
 // Pre-save middleware to generate slug from title and calculate read time
-blogPostSchema.pre('save', function(next: (err?: Error) => void) {
+blogPostSchema.pre('save', function() {
   if (this.isModified('title') || this.isNew) {
     this.slug = this.title
       .toLowerCase()
@@ -126,8 +126,6 @@ blogPostSchema.pre('save', function(next: (err?: Error) => void) {
     const wordCount = this.content.split(/\s+/).length;
     this.readTime = Math.ceil(wordCount / wordsPerMinute);
   }
-
-  next();
 });
 
 // Static method to find published posts

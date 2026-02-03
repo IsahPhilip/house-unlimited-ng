@@ -9,6 +9,8 @@ export interface User {
   avatar?: string;
   phone?: string;
   location?: string;
+  bio?: string;
+  authorRole?: string;
 }
 
 export interface Property {

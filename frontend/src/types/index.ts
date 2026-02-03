@@ -78,10 +78,11 @@ export interface BlogArticle {
   content: string;
   author: {
     name: string;
-    role: string;
-    image: string;
+    role?: string;
+    image?: string;
+    bio?: string;
   };
-  image: string;
+  image?: string;
   readTime: string;
   views?: number;
   likes?: number;

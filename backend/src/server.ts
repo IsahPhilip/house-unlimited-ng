@@ -5,8 +5,10 @@ import compression from 'compression';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import 'express-async-errors';
+import swaggerUi from 'swagger-ui-express';
 
 import { connectDB } from './config/database.js';
+import { swaggerSpec } from './config/swagger.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFound } from './middleware/notFound.js';
 
@@ -85,6 +87,12 @@ app.get('/api/health', (req, res) => {
     environment: process.env.NODE_ENV,
     version: process.env.npm_package_version,
   });
+});
+
+// Swagger docs
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/api/docs.json', (req, res) => {
+  res.json(swaggerSpec);
 });
 
 // API Routes

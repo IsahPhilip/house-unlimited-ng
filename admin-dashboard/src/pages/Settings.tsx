@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Settings as SettingsIcon, 
   User, 
@@ -15,6 +15,8 @@ import {
   EyeOff,
   Loader2
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { getProfile, updateProfile } from '../services/api';
 
 interface SettingSection {
   id: string;
@@ -26,6 +28,16 @@ interface SettingSection {
 const Settings = () => {
   const [activeSection, setActiveSection] = useState('general');
   const [isLoading, setIsLoading] = useState(false);
+  const [authorLoading, setAuthorLoading] = useState(true);
+  const [authorSaving, setAuthorSaving] = useState(false);
+  const [authorError, setAuthorError] = useState<string>('');
+  const [authorProfile, setAuthorProfile] = useState({
+    name: '',
+    email: '',
+    avatar: '',
+    bio: '',
+    authorRole: '',
+  });
   const [formData, setFormData] = useState({
     companyName: 'Real Estate Platform',
     companyEmail: 'info@realestate.com',
@@ -49,8 +61,15 @@ const Settings = () => {
       zapier: false
     }
   });
+  const { checkAuth } = useAuth();
 
   const sections: SettingSection[] = [
+    {
+      id: 'author',
+      title: 'Author Profile',
+      description: 'Update your public blog author information.',
+      icon: <User className="w-5 h-5" />
+    },
     {
       id: 'general',
       title: 'General Settings',
@@ -91,10 +110,30 @@ const Settings = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (activeSection === 'author') {
+      setAuthorSaving(true);
+      setAuthorError('');
+
+      try {
+        await updateProfile({
+          name: authorProfile.name,
+          avatar: authorProfile.avatar || undefined,
+          bio: authorProfile.bio || undefined,
+          authorRole: authorProfile.authorRole || undefined,
+        });
+        await checkAuth();
+      } catch (error) {
+        setAuthorError('Failed to update author profile.');
+        console.error('Error saving author profile:', error);
+      } finally {
+        setAuthorSaving(false);
+      }
+      return;
+    }
+
     setIsLoading(true);
-    
     try {
-      // Simulate API call
+      // TODO: Wire real settings API when available.
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log('Settings saved:', formData);
     } catch (error) {
@@ -103,6 +142,29 @@ const Settings = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    const loadAuthorProfile = async () => {
+      try {
+        setAuthorLoading(true);
+        const profile = await getProfile();
+        setAuthorProfile({
+          name: profile.name || '',
+          email: profile.email || '',
+          avatar: profile.avatar || '',
+          bio: profile.bio || '',
+          authorRole: profile.authorRole || '',
+        });
+      } catch (error) {
+        setAuthorError('Failed to load author profile.');
+        console.error('Error loading author profile:', error);
+      } finally {
+        setAuthorLoading(false);
+      }
+    };
+
+    loadAuthorProfile();
+  }, []);
 
   const renderGeneralSettings = () => (
     <div className="space-y-6">
@@ -182,6 +244,79 @@ const Settings = () => {
           </div>
         </div>
       </div>
+    </div>
+  );
+
+  const renderAuthorProfile = () => (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Author Profile</h3>
+      <p className="text-sm text-gray-500 mb-6">
+        This information appears on public blog posts.
+      </p>
+
+      {authorError && (
+        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded mb-4">
+          {authorError}
+        </div>
+      )}
+
+      {authorLoading ? (
+        <div className="flex items-center text-gray-500">
+          <Loader2 className="animate-spin h-4 w-4 mr-2" />
+          Loading author profile...
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Display Name</label>
+            <input
+              type="text"
+              value={authorProfile.name}
+              onChange={(e) => setAuthorProfile({ ...authorProfile, name: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+            <input
+              type="email"
+              value={authorProfile.email}
+              disabled
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500"
+            />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Author Role</label>
+            <input
+              type="text"
+              value={authorProfile.authorRole}
+              onChange={(e) => setAuthorProfile({ ...authorProfile, authorRole: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              placeholder="Editor in Chief"
+            />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Avatar URL</label>
+            <input
+              type="url"
+              value={authorProfile.avatar}
+              onChange={(e) => setAuthorProfile({ ...authorProfile, avatar: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              placeholder="https://example.com/avatar.jpg"
+            />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Short Bio</label>
+            <textarea
+              value={authorProfile.bio}
+              onChange={(e) => setAuthorProfile({ ...authorProfile, bio: e.target.value })}
+              rows={4}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              placeholder="Tell readers a bit about yourself..."
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -492,6 +627,7 @@ const Settings = () => {
 
   const renderSection = () => {
     switch(activeSection) {
+      case 'author': return renderAuthorProfile();
       case 'general': return renderGeneralSettings();
       case 'notifications': return renderNotifications();
       case 'security': return renderSecurity();
@@ -551,10 +687,10 @@ const Settings = () => {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isLoading || authorSaving}
                   className="flex items-center px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? (
+                  {(activeSection === 'author' ? authorSaving : isLoading) ? (
                     <>
                       <Loader2 className="animate-spin h-4 w-4 mr-2" />
                       Saving...

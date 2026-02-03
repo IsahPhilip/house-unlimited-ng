@@ -10,6 +10,7 @@ export interface IUser extends Document {
   phone?: string;
   avatar?: string;
   bio?: string;
+  authorRole?: string;
   location?: string;
   role: 'user' | 'agent' | 'admin';
   joinDate: Date;
@@ -80,6 +81,11 @@ const UserSchema: Schema<IUser> = new Schema(
     bio: {
       type: String,
       maxlength: [500, 'Bio can not be more than 500 characters'],
+    },
+    authorRole: {
+      type: String,
+      maxlength: [100, 'Author role can not be more than 100 characters'],
+      default: '',
     },
     location: {
       type: String,

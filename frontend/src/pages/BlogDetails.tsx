@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Page } from '../types';
-import { getBlogPostById, incrementBlogViews, incrementBlogLikes } from '../services/blogApi';
+import { Page, BlogArticle } from '../types';
+import { getBlogPostById, getRelatedBlogPosts, incrementBlogViews, incrementBlogLikes } from '../services/blogApi';
 import { handleShare } from '../utils/helpers';
 
 const BlogDetailsPage = ({ blogId, onNavigate }: { blogId: string, onNavigate: (p: Page, id?: string) => void }) => {
-  const [blog, setBlog] = useState<any>(null);
-  const [relatedBlogs, setRelatedBlogs] = useState<any[]>([]);
+  const [blog, setBlog] = useState<BlogArticle | null>(null);
+  const [relatedBlogs, setRelatedBlogs] = useState<BlogArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [views, setViews] = useState(0);
   const [likes, setLikes] = useState(0);
@@ -22,10 +22,10 @@ const BlogDetailsPage = ({ blogId, onNavigate }: { blogId: string, onNavigate: (
         // Increment views
         await incrementBlogViews(blogId);
         setViews(prev => prev + 1);
-        
-        // For now, we'll use a simple related blogs logic
-        // In a real implementation, you might want to fetch related blogs from the API
-        setRelatedBlogs([]);
+
+        // Fetch related blogs by category
+        const related = await getRelatedBlogPosts(blogId, 3);
+        setRelatedBlogs(related);
       } catch (error) {
         console.error('Error fetching blog:', error);
       } finally {
@@ -68,7 +68,13 @@ const BlogDetailsPage = ({ blogId, onNavigate }: { blogId: string, onNavigate: (
     <div className="bg-white min-h-screen animate-in fade-in duration-500">
       {/* Article Hero */}
       <div className="relative h-[400px] md:h-[500px]">
-        <img src={blog.image} alt={blog.title} className="w-full h-full object-cover" />
+        {blog.image ? (
+          <img src={blog.image} alt={blog.title} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs uppercase tracking-widest">
+            No Image
+          </div>
+        )}
         <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"></div>
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="max-w-4xl px-4 text-center">
@@ -80,8 +86,14 @@ const BlogDetailsPage = ({ blogId, onNavigate }: { blogId: string, onNavigate: (
             </h1>
             <div className="mt-8 flex items-center justify-center space-x-4 text-white/90">
               <div className="flex items-center space-x-2">
-                <img src={blog.author.image} className="w-8 h-8 rounded-full border-2 border-white/20" />
-                <span className="font-bold text-sm">{blog.author.name}</span>
+                {blog.author?.image ? (
+                  <img src={blog.author.image} className="w-8 h-8 rounded-full border-2 border-white/20" />
+                ) : (
+                  <div className="w-8 h-8 rounded-full border-2 border-white/20 bg-white/20 flex items-center justify-center text-[10px] font-bold uppercase">
+                    {blog.author?.name?.split(' ').map((part) => part[0]).join('').slice(0, 2) || 'NA'}
+                  </div>
+                )}
+                <span className="font-bold text-sm">{blog.author?.name || 'Unknown Author'}</span>
               </div>
               <span className="text-white/40">•</span>
               <span className="text-sm font-medium">{blog.date}</span>
@@ -145,13 +157,23 @@ const BlogDetailsPage = ({ blogId, onNavigate }: { blogId: string, onNavigate: (
           {/* Author Bio */}
           <div className="mt-16 pt-12 border-t border-gray-100">
             <div className="bg-gray-50 p-8 rounded-3xl flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-8">
-              <img src={blog.author.image} className="w-24 h-24 rounded-3xl object-cover shadow-xl" />
+              {blog.author?.image ? (
+                <img src={blog.author.image} className="w-24 h-24 rounded-3xl object-cover shadow-xl" />
+              ) : (
+                <div className="w-24 h-24 rounded-3xl bg-gray-200 flex items-center justify-center text-lg font-bold text-gray-600">
+                  {blog.author?.name?.split(' ').map((part) => part[0]).join('').slice(0, 2) || 'NA'}
+                </div>
+              )}
               <div>
-                <h4 className="text-xl font-bold text-gray-900 mb-1">{blog.author.name}</h4>
-                <p className="text-teal-600 text-xs font-bold uppercase tracking-widest mb-3">{blog.author.role}</p>
-                <p className="text-gray-500 text-sm leading-relaxed italic">
-                  Passionate about connecting people with their ideal living spaces. Sarah has over 15 years of experience in the luxury real estate sector.
-                </p>
+                <h4 className="text-xl font-bold text-gray-900 mb-1">{blog.author?.name || 'Unknown Author'}</h4>
+                {blog.author?.role && (
+                  <p className="text-teal-600 text-xs font-bold uppercase tracking-widest mb-3">{blog.author.role}</p>
+                )}
+                {blog.author?.bio && (
+                  <p className="text-gray-500 text-sm leading-relaxed italic">
+                    {blog.author.bio}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -165,7 +187,13 @@ const BlogDetailsPage = ({ blogId, onNavigate }: { blogId: string, onNavigate: (
               {relatedBlogs.map(rb => (
                 <div key={rb.id} className="group cursor-pointer" onClick={() => onNavigate('blog-details', rb.id)}>
                   <div className="aspect-video rounded-2xl overflow-hidden mb-4 shadow-sm">
-                    <img src={rb.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    {rb.image ? (
+                      <img src={rb.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    ) : (
+                      <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-[10px] uppercase tracking-widest">
+                        No Image
+                      </div>
+                    )}
                   </div>
                   <h5 className="font-bold text-gray-900 text-sm leading-snug group-hover:text-teal-600 transition-colors">
                     {rb.title}
