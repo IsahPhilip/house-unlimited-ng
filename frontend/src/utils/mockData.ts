@@ -1,4 +1,4 @@
-import { Property, BlogArticle, TeamMember, Principle, FAQ, Review } from '../types';
+import { Property, TeamMember, Principle, FAQ, Review } from '../types';
 
 // --- Mock Data ---
 export const PROPERTIES: Property[] = [
@@ -117,78 +117,6 @@ export const INITIAL_REVIEWS: Review[] = [
   { id: 1, propertyId: 1, userName: 'John Smith', rating: 5, comment: 'Absolutely stunning views and the interior is top-notch.', date: '2024-03-15' },
   { id: 2, propertyId: 1, userName: 'Sarah Jenkins', rating: 4, comment: 'Great location, though parking can be a bit tight during peak hours.', date: '2024-04-02' },
   { id: 3, propertyId: 5, userName: 'Michael Ross', rating: 5, comment: 'Modern, clean, and the rooftop is incredible.', date: '2024-02-20' },
-];
-
-export const BLOGS: BlogArticle[] = [
-  { 
-    id: 1, 
-    date: '15 May 2024', 
-    category: 'Apartment', 
-    title: 'Apartment Hunting 101: Finding Your Perfect Space', 
-    desc: 'Navigating the rental market can be daunting. We break down everything you need to know from budget planning to signing the lease.', 
-    readTime: '6 min read',
-    author: {
-      name: 'Sarah Montgomery',
-      role: 'Founder & CEO',
-      image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400'
-    },
-    image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=600',
-    content: `Finding the right apartment is more than just picking a building; it's about finding a sanctuary that matches your lifestyle and budget. In this guide, we explore the essential steps to securing your dream rental.
-
-First, established a clear budget. Experts suggest spending no more than 30% of your gross monthly income on rent. This ensures you have enough left for utilities, groceries, and savings.
-
-Next, prioritize your needs versus wants. Do you absolutely need a second bedroom, or would a home office nook suffice? Is proximity to public transit more important than a private balcony? Making a list helps narrow down options during the search.
-
-When viewing properties, look beyond the surface. Check the water pressure, look for ample power outlets, and visit the neighborhood at different times of day to gauge noise levels. Don't be afraid to ask the landlord about building management and recent maintenance.
-
-Finally, when you find the "one," be prepared to act fast. Have your documentation—proof of income, references, and deposit—ready to go. A well-prepared application can often be the difference between getting the keys or continuing the hunt.`
-  },
-  { 
-    id: 2, 
-    date: '14 May 2024', 
-    category: 'Villa', 
-    title: 'Redefining Luxury: Modern Amenities in Villa Living', 
-    desc: 'What does luxury look like in 2024? Explore the high-tech features and architectural trends shaping the modern villa.', 
-    readTime: '8 min read',
-    author: {
-      name: 'David Chen',
-      role: 'Head of Real Estate',
-      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400'
-    },
-    image: 'https://images.unsplash.com/photo-1600585154340-be6199f7a096?auto=format&fit=crop&q=80&w=600',
-    content: `Luxury today isn't just about marble floors and gold fixtures; it's about seamless integration of technology and nature. The modern villa is a masterpiece of smart engineering designed to provide ultimate comfort and sustainability.
-
-One major trend is the "Biophilic Design" approach. Architects are now building homes that flow directly into their surroundings. Large glass walls that disappear into the floor, indoor waterfalls, and vertical gardens are becoming standard in high-end villas.
-
-Smart home automation has also reached new heights. Imagine a home that adjusts the lighting based on your circadian rhythm, pre-heats the pool when you're 10 minutes away, and manages its own energy grid through advanced solar and battery systems.
-
-Furthermore, wellness suites are replacing basic gym rooms. Owners are investing in cryotherapy chambers, infra-red saunas, and sound-proof meditation pods. Home offices have also evolved into "Executive command centers" with professional-grade video conferencing equipment and soundproofing.
-
-Living in a villa today means experiencing a tailored environment that anticipates your needs before you even realize them.`
-  },
-  { 
-    id: 3, 
-    date: '13 May 2024', 
-    category: 'Interior', 
-    title: 'Minimalism vs. Maximalism: Which Home Style is for You?', 
-    desc: 'Choosing an aesthetic is a personal journey. We compare two of the most popular design philosophies to help you decide.', 
-    readTime: '5 min read',
-    author: {
-      name: 'Michael Smith',
-      role: 'Senior Interior Designer',
-      image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=400'
-    },
-    image: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&q=80&w=600',
-    content: `The age-old debate of "less is more" versus "more is more" continues to shape interior design trends. But which one truly makes a house feel like a home?
-
-Minimalism, popularized by the "Marie Kondo" movement, focuses on simplicity and functionality. It's about intentional living. A minimalist home often features a neutral palette, clean lines, and hidden storage. The goal is to reduce visual noise and create a sense of calm. Proponents argue that a clutter-free space leads to a clutter-free mind.
-
-On the other end of the spectrum is Maximalism. This is not about mess, but about expression. It's about bold colors, rich textures, and layers of history. A maximalist home might feature a gallery wall of eccentric art, mismatched vintage furniture, and vibrant patterns. It's a celebration of personality and curated collections.
-
-Which one should you choose? It often depends on your temperament. If you find peace in order and empty space, minimalism is your ally. If you find inspiration in objects and vivid environments, maximalism will fuel your creativity.
-
-Many modern homeowners are finding a "middle ground," blending the clean foundations of minimalism with the expressive details of maximalism—a style sometimes called 'Minimalist Maximalism'.`
-  },
 ];
 
 export const TEAM: TeamMember[] = [

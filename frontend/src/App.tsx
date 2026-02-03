@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Page, User, Review, Property, BlogArticle } from './types';
-import { PROPERTIES, INITIAL_REVIEWS, BLOGS } from './utils/mockData';
+import { PROPERTIES, INITIAL_REVIEWS } from './utils/mockData';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 import { Navbar } from './components/Navbar';
@@ -35,7 +35,7 @@ const AppContent = () => {
   const [searchCriteria, setSearchCriteria] = useState<any | null>(null);
   const [wishlistIds, setWishlistIds] = useState<number[]>([]);
   const [selectedPropertyId, setSelectedPropertyId] = useState<number | null>(null);
-  const [selectedBlogId, setSelectedBlogId] = useState<number | null>(null);
+  const [selectedBlogId, setSelectedBlogId] = useState<string | null>(null);
   const [reviews, setReviews] = useState<Review[]>(INITIAL_REVIEWS);
   const [isForgotPasswordFlowActive, setIsForgotPasswordFlowActive] = useState(false);
   const [resetPasswordEmail, setResetPasswordEmail] = useState<string | null>(null);
@@ -59,11 +59,9 @@ const AppContent = () => {
         setCurrentPage('property-details');
       }
     } else if (blogId) {
-      const bId = parseInt(blogId);
-      if (BLOGS.some(b => b.id === bId)) {
-        setSelectedBlogId(bId);
-        setCurrentPage('blog-details');
-      }
+      // Blog IDs will be validated when fetching from API
+      setSelectedBlogId(blogId);
+      setCurrentPage('blog-details');
     } else if (token) {
       setResetToken(token);
       setIsForgotPasswordFlowActive(true);
@@ -112,7 +110,7 @@ const AppContent = () => {
     setCurrentPage('property-details');
   };
 
-  const handleNavigateToBlog = (page: Page, id?: number) => {
+  const handleNavigateToBlog = (page: Page, id?: string) => {
     if (id) setSelectedBlogId(id);
     setCurrentPage(page);
   };

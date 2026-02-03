@@ -65,8 +65,17 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
         status: blogPost.status,
         readTime: blogPost.readTime
       });
-    } catch (err) {
-      setError('Failed to fetch blog post');
+    } catch (err: any) {
+      // Check if it's a 404 error (blog post not found)
+      if (err.message && err.message.includes('not found')) {
+        setError('Blog post not found. Please check the URL or create a new post.');
+        // Redirect to create new post if editing a non-existent post
+        setTimeout(() => {
+          navigate('/blog/create');
+        }, 2000);
+      } else {
+        setError('Failed to fetch blog post. Please try again later.');
+      }
       console.error('Error fetching blog post:', err);
     } finally {
       setIsLoading(false);

@@ -84,21 +84,21 @@ const ContactPage = () => {
                 <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-xl">📞</div>
                 <div>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Phone Number</p>
-                  <p className="font-bold text-gray-900">+1 (408) 555-0120</p>
+                  <p className="font-bold text-gray-900">+234 904 375 2708</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4 mb-6">
                 <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-xl">✉️</div>
                 <div>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Email Address</p>
-                  <p className="font-bold text-gray-900">example@gmail.com</p>
+                  <p className="font-bold text-gray-900">official@houseunlimitednigeria.com</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-xl">📍</div>
                 <div>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Office Location</p>
-                  <p className="font-bold text-gray-900 text-sm">2464 Royal Ln. Mesa, New Jersey 45463</p>
+                  <p className="font-bold text-gray-900 text-sm">Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria</p>
                 </div>
               </div>
             </div>
@@ -108,11 +108,11 @@ const ContactPage = () => {
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between border-b border-white/10 pb-2">
                   <span className="text-gray-400">Monday - Friday</span>
-                  <span className="font-bold">09 AM - 06 PM</span>
+                  <span className="font-bold">08 AM - 05 PM</span>
                 </div>
                 <div className="flex justify-between border-b border-white/10 pb-2">
                   <span className="text-gray-400">Saturday</span>
-                  <span className="font-bold">10 AM - 04 PM</span>
+                  <span className="font-bold text-teal-400">Closed</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Sunday</span>

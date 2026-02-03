@@ -76,9 +76,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
       <div>
         <h4 className="font-bold mb-6">Contact</h4>
         <ul className="space-y-3 text-gray-400 text-sm">
-          <li className="flex items-center"><span className="mr-2 text-teal-500">📞</span> +1 (408) 555-0120</li>
-          <li className="flex items-center"><span className="mr-2 text-teal-500">✉️</span> example@gmail.com</li>
-          <li className="flex items-center"><span className="mr-2 text-teal-500">📍</span> 2464 Royal Ln. Mesa, New Jersey 45463</li>
+          <li className="flex items-center"><span className="mr-2 text-teal-500">📞</span> +234 904 375 2708</li>
+          <li className="flex items-center"><span className="mr-2 text-teal-500">✉️</span> official@houseunlimitednigeria.com</li>
+          <li className="flex items-center"><span className="mr-2 text-teal-500">📍</span> Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria</li>
         </ul>
       </div>
       <div>

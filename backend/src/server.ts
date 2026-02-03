@@ -19,6 +19,7 @@ import uploadRoutes from './routes/uploads.routes.js';
 import inquiryRoutes from './routes/inquiry.routes.js';
 import newsletterRoutes from './routes/newsletter.routes.js';
 import contactRoutes from './routes/contact.routes.js';
+import blogRoutes from './routes/blog.routes.js';
 
 const app = express();
 
@@ -95,6 +96,7 @@ app.use('/api/uploads', uploadRoutes);
 app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/blog', blogRoutes);
 
 // Welcome route
 app.get('/api', (req, res) => {

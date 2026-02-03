@@ -13,7 +13,8 @@
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "format": "prettier --write src/**/*.ts",
-    "seed": "tsx src/scripts/seed.ts"
+    "seed": "tsx src/scripts/seed.ts",
+    "create-admin": "tsx src/scripts/create-admin.ts"
   },
   "keywords": [
     "real-estate",
@@ -44,6 +45,7 @@
     "multer-storage-cloudinary": "^2.2.1",
     "nodemailer": "^7.0.12",
     "sharp": "^0.33.4",
+    "slugify": "^1.6.6",
     "winston": "^3.11.0"
   },
   "devDependencies": {

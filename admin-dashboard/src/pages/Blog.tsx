@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { getBlogPosts, deleteBlogPost, publishBlogPost, unpublishBlogPost } from '../services/api';
+import { getBlogPosts, deleteBlogPost, publishBlogPost, unpublishBlogPost, archiveBlogPost, unarchiveBlogPost } from '../services/api';
 import { BlogPost } from '../types/admin';
 import { 
   Plus, 
@@ -14,7 +14,9 @@ import {
   Tag,
   FileText,
   Clock,
-  EyeIcon
+  EyeIcon,
+  Archive,
+  RotateCcw
 } from 'lucide-react';
 
 export default function Blog() {
@@ -73,6 +75,26 @@ export default function Blog() {
     } catch (err) {
       setError('Failed to unpublish blog post');
       console.error('Error unpublishing blog post:', err);
+    }
+  };
+
+  const handleArchive = async (id: string) => {
+    try {
+      const updatedPost = await archiveBlogPost(id);
+      setBlogPosts(blogPosts.map(post => post.id === id ? updatedPost : post));
+    } catch (err) {
+      setError('Failed to archive blog post');
+      console.error('Error archiving blog post:', err);
+    }
+  };
+
+  const handleUnarchive = async (id: string) => {
+    try {
+      const updatedPost = await unarchiveBlogPost(id);
+      setBlogPosts(blogPosts.map(post => post.id === id ? updatedPost : post));
+    } catch (err) {
+      setError('Failed to unarchive blog post');
+      console.error('Error unarchiving blog post:', err);
     }
   };
 
@@ -268,20 +290,46 @@ export default function Blog() {
                       
                       <div className="flex space-x-2">
                         {post.status === 'published' ? (
-                          <button
-                            onClick={() => handleUnpublish(post.id)}
-                            className="p-2 text-gray-400 hover:text-yellow-600 transition-colors"
-                            title="Unpublish"
-                          >
-                            <EyeOff className="h-5 w-5" />
-                          </button>
+                          <>
+                            <button
+                              onClick={() => handleUnpublish(post.id)}
+                              className="p-2 text-gray-400 hover:text-yellow-600 transition-colors"
+                              title="Unpublish"
+                            >
+                              <EyeOff className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={() => handleArchive(post.id)}
+                              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                              title="Archive"
+                            >
+                              <Archive className="h-5 w-5" />
+                            </button>
+                          </>
+                        ) : post.status === 'draft' ? (
+                          <>
+                            <button
+                              onClick={() => handlePublish(post.id)}
+                              className="p-2 text-gray-400 hover:text-green-600 transition-colors"
+                              title="Publish"
+                            >
+                              <Eye className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={() => handleArchive(post.id)}
+                              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                              title="Archive"
+                            >
+                              <Archive className="h-5 w-5" />
+                            </button>
+                          </>
                         ) : (
                           <button
-                            onClick={() => handlePublish(post.id)}
-                            className="p-2 text-gray-400 hover:text-green-600 transition-colors"
-                            title="Publish"
+                            onClick={() => handleUnarchive(post.id)}
+                            className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                            title="Unarchive"
                           >
-                            <Eye className="h-5 w-5" />
+                            <RotateCcw className="h-5 w-5" />
                           </button>
                         )}
                       </div>

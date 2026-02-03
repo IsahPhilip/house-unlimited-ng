@@ -70,7 +70,7 @@ export interface Property {
 }
 
 export interface BlogArticle {
-  id: number;
+  id: string;
   date: string;
   category: string;
   title: string;
@@ -83,6 +83,8 @@ export interface BlogArticle {
   };
   image: string;
   readTime: string;
+  views?: number;
+  likes?: number;
 }
 
 export interface TeamMember {

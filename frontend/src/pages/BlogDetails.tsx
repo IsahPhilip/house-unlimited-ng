@@ -1,19 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Page } from '../types';
-import { getBlogPostById } from '../services/blogApi';
+import { getBlogPostById, incrementBlogViews, incrementBlogLikes } from '../services/blogApi';
 import { handleShare } from '../utils/helpers';
 
-const BlogDetailsPage = ({ blogId, onNavigate }: { blogId: number, onNavigate: (p: Page, id?: number) => void }) => {
+const BlogDetailsPage = ({ blogId, onNavigate }: { blogId: string, onNavigate: (p: Page, id?: string) => void }) => {
   const [blog, setBlog] = useState<any>(null);
   const [relatedBlogs, setRelatedBlogs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [views, setViews] = useState(0);
+  const [likes, setLikes] = useState(0);
 
   useEffect(() => {
     const fetchBlog = async () => {
       try {
         setIsLoading(true);
-        const blogData = await getBlogPostById(blogId.toString());
+        const blogData = await getBlogPostById(blogId);
         setBlog(blogData);
+        setViews(blogData.views || 0);
+        setLikes(blogData.likes || 0);
+        
+        // Increment views
+        await incrementBlogViews(blogId);
+        setViews(prev => prev + 1);
         
         // For now, we'll use a simple related blogs logic
         // In a real implementation, you might want to fetch related blogs from the API
@@ -79,6 +87,8 @@ const BlogDetailsPage = ({ blogId, onNavigate }: { blogId: number, onNavigate: (
               <span className="text-sm font-medium">{blog.date}</span>
               <span className="text-white/40">•</span>
               <span className="text-sm font-medium">{blog.readTime}</span>
+              <span className="text-white/40">•</span>
+              <span className="text-sm font-medium">{views} views</span>
             </div>
           </div>
         </div>
@@ -117,6 +127,20 @@ const BlogDetailsPage = ({ blogId, onNavigate }: { blogId: number, onNavigate: (
               </p>
             ))}
           </article>
+
+          {/* Likes Section */}
+          <div className="mt-8 flex items-center space-x-4">
+            <button 
+              className="flex items-center space-x-2 text-gray-600 hover:text-red-500 transition-colors"
+              onClick={async () => {
+                const newLikes = await incrementBlogLikes(blogId);
+                setLikes(newLikes);
+              }}
+            >
+              <i className="fas fa-heart"></i>
+              <span>{likes} Likes</span>
+            </button>
+          </div>
 
           {/* Author Bio */}
           <div className="mt-16 pt-12 border-t border-gray-100">

@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Page } from '../types';
-import { getBlogPosts } from '../services/blogApi';
+import { getBlogPosts, getBlogPostsByCategory } from '../services/blogApi';
 
-const BlogPage = ({ onNavigate }: { onNavigate: (p: Page, id?: number) => void }) => {
+const BlogPage = ({ onNavigate }: { onNavigate: (p: Page, id?: string) => void }) => {
   const [blogs, setBlogs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
         setIsLoading(true);
-        const blogData = await getBlogPosts();
+        let blogData;
+        if (selectedCategory === 'all') {
+          blogData = await getBlogPosts();
+        } else {
+          blogData = await getBlogPostsByCategory(selectedCategory);
+        }
         setBlogs(blogData);
       } catch (error) {
         console.error('Error fetching blogs:', error);
@@ -20,7 +26,9 @@ const BlogPage = ({ onNavigate }: { onNavigate: (p: Page, id?: number) => void }
     };
 
     fetchBlogs();
-  }, []);
+  }, [selectedCategory]);
+
+  const categories = ['all', 'Real Estate', 'Market Trends', 'Home Buying', 'Home Selling', 'Investment', 'Property Management', 'Architecture', 'Interior Design', 'Finance', 'Lifestyle'];
 
   if (isLoading) {
     return (
@@ -56,6 +64,23 @@ const BlogPage = ({ onNavigate }: { onNavigate: (p: Page, id?: number) => void }
         <div className="text-center mb-16">
           <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Latest Updates</p>
           <h1 className="text-4xl font-bold text-gray-900">Industry Insights & <span className="text-gray-400 font-light italic">News</span></h1>
+        </div>
+
+        {/* Category Filter */}
+        <div className="flex flex-wrap justify-center gap-3 mb-12">
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
+                selectedCategory === category
+                  ? 'bg-teal-600 text-white'
+                  : 'bg-white text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              {category === 'all' ? 'All Categories' : category}
+            </button>
+          ))}
         </div>
         {blogs.length === 0 ? (
           <div className="text-center py-16">

@@ -10,7 +10,7 @@ export const handleShare = async (property: Property | BlogArticle) => {
   const shareData = {
     title: `${title} on Real Estate.`,
     text: text,
-    url: `${window.location.origin}${window.location.pathname}?${isBlog ? 'blogId' : 'id'}=${property.id}`
+    url: `${window.location.origin}${isBlog ? '/blog' : '/property'}?${isBlog ? 'blogId' : 'id'}=${property.id}`
   };
 
   try {
