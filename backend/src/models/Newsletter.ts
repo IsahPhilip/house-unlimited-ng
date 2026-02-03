@@ -25,8 +25,6 @@ const newsletterSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index for email to ensure uniqueness and improve query performance
-newsletterSchema.index({ email: 1 });
 
 // Static method to check if email already exists
 newsletterSchema.statics.isEmailSubscribed = async function(email: string): Promise<boolean> {

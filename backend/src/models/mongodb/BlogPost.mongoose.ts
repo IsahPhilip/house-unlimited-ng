@@ -111,7 +111,6 @@ const blogPostSchema = new Schema<IBlogPost>({
 blogPostSchema.index({ status: 1, createdAt: -1 });
 blogPostSchema.index({ category: 1 });
 blogPostSchema.index({ author: 1 });
-blogPostSchema.index({ slug: 1 }, { unique: true });
 
 // Pre-save middleware to generate slug from title and calculate read time
 blogPostSchema.pre('save', function(next: (err?: Error) => void) {

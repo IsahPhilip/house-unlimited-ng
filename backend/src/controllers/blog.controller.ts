@@ -85,11 +85,28 @@ export const createBlogPost = asyncHandler(async (req: AuthRequest, res: Respons
 // @route   GET /api/blog/public
 // @access  Public
 export const getBlogPosts = asyncHandler(async (req: Request, res: Response) => {
-  const posts = await BlogPost.find({ status: 'published' })
-    .populate('author', 'name email')
-    .sort({ createdAt: -1 });
+  const limit = Number(req.query.limit) || 10;
+  const page = Number(req.query.page) || 1;
+  const skip = (page - 1) * limit;
 
-  res.status(200).json(posts.map(formatPostResponse));
+  const query = { status: 'published' };
+
+  const count = await BlogPost.countDocuments(query);
+  const posts = await BlogPost.find(query)
+    .populate('author', 'name email')
+    .sort({ createdAt: -1 })
+    .limit(limit)
+    .skip(skip);
+
+  res.status(200).json({
+    posts: posts.map(formatPostResponse),
+    pagination: {
+      currentPage: page,
+      totalPages: Math.ceil(count / limit),
+      totalPosts: count,
+      limit,
+    },
+  });
 });
 
 // @desc    Get a single blog post by slug
