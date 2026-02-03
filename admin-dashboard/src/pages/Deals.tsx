@@ -14,6 +14,7 @@ import {
   Home,
   Loader2
 } from 'lucide-react';
+import { getDeals, approveDeal, closeDeal, createDeal, updateDeal, getProperties, getUsers } from '../services/api';
 
 interface Deal {
   id: string;
@@ -37,77 +38,38 @@ const Deals = () => {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingDealId, setEditingDealId] = useState<string | null>(null);
+  const [properties, setProperties] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [formError, setFormError] = useState('');
+  const [buyerFilter, setBuyerFilter] = useState('');
+  const [sellerFilter, setSellerFilter] = useState('');
+  const [formState, setFormState] = useState({
+    property: '',
+    buyer: '',
+    seller: '',
+    agent: '',
+    offerPrice: '',
+    acceptedPrice: '',
+    status: 'pending',
+  });
+  const [editState, setEditState] = useState({
+    property: '',
+    buyer: '',
+    seller: '',
+    agent: '',
+    offerPrice: '',
+    acceptedPrice: '',
+    status: 'pending',
+  });
 
   useEffect(() => {
-    // Simulate fetching data
     const fetchDeals = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        const mockDeals: Deal[] = [
-          {
-            id: '1',
-            propertyId: '123',
-            propertyTitle: 'Modern Downtown Loft',
-            buyerId: 'buyer1',
-            buyerName: 'John Smith',
-            sellerId: 'seller1',
-            sellerName: 'Jane Doe',
-            agentId: 'agent1',
-            agentName: 'Mike Wilson',
-            offerPrice: 450000,
-            acceptedPrice: 445000,
-            status: 'closed',
-            createdAt: '2024-03-15T10:30:00Z',
-            updatedAt: '2024-03-20T14:20:00Z'
-          },
-          {
-            id: '2',
-            propertyId: '456',
-            propertyTitle: 'Suburban Family Home',
-            buyerId: 'buyer2',
-            buyerName: 'Sarah Johnson',
-            sellerId: 'seller2',
-            sellerName: 'Robert Brown',
-            agentId: 'agent2',
-            agentName: 'Lisa Thompson',
-            offerPrice: 850000,
-            acceptedPrice: 840000,
-            status: 'accepted',
-            createdAt: '2024-03-14T09:15:00Z',
-            updatedAt: '2024-03-18T11:45:00Z'
-          },
-          {
-            id: '3',
-            propertyId: '789',
-            propertyTitle: 'Luxury Beach Villa',
-            buyerId: 'buyer3',
-            buyerName: 'Mike Davis',
-            sellerId: 'seller3',
-            sellerName: 'Emily Wilson',
-            agentId: 'agent3',
-            agentName: 'David Miller',
-            offerPrice: 2100000,
-            status: 'pending',
-            createdAt: '2024-03-16T16:45:00Z',
-            updatedAt: '2024-03-16T16:45:00Z'
-          },
-          {
-            id: '4',
-            propertyId: '101',
-            propertyTitle: 'Cozy City Studio',
-            buyerId: 'buyer4',
-            buyerName: 'Emily Brown',
-            sellerId: 'seller4',
-            sellerName: 'Chris Lee',
-            agentId: 'agent4',
-            agentName: 'Anna Garcia',
-            offerPrice: 250000,
-            status: 'rejected',
-            createdAt: '2024-03-10T14:30:00Z',
-            updatedAt: '2024-03-12T10:15:00Z'
-          }
-        ];
-        setDeals(mockDeals);
+        const data = await getDeals();
+        setDeals(data);
       } catch (error) {
         console.error('Error fetching deals:', error);
       } finally {
@@ -116,6 +78,20 @@ const Deals = () => {
     };
 
     fetchDeals();
+  }, []);
+
+  useEffect(() => {
+    const fetchFormOptions = async () => {
+      try {
+        const [propsData, usersData] = await Promise.all([getProperties(), getUsers()]);
+        setProperties(propsData);
+        setUsers(usersData);
+      } catch (error) {
+        console.error('Error loading deal form options:', error);
+      }
+    };
+
+    fetchFormOptions();
   }, []);
 
   const filteredDeals = deals.filter(deal => {
@@ -145,6 +121,111 @@ const Deals = () => {
     }).format(amount);
   };
 
+  const exportDealsCsv = () => {
+    const headers = ['ID', 'Property', 'Buyer', 'Seller', 'Agent', 'Offer Price', 'Accepted Price', 'Status', 'Created At'];
+    const rows = filteredDeals.map((deal) => ([
+      deal.id,
+      deal.propertyTitle,
+      deal.buyerName,
+      deal.sellerName,
+      deal.agentName,
+      deal.offerPrice,
+      deal.acceptedPrice ?? '',
+      deal.status,
+      deal.createdAt,
+    ]));
+    const csv = [headers, ...rows].map((row) =>
+      row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(',')
+    ).join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `deals-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const suggestedAcceptedPrice = (offer: string) => {
+    const value = Number(offer);
+    if (!value || Number.isNaN(value)) return '';
+    return Math.round(value * 1.05).toString();
+  };
+
+  const submitDeal = async () => {
+    setFormError('');
+    if (!formState.property || !formState.buyer || !formState.seller || !formState.agent || !formState.offerPrice) {
+      setFormError('Please fill in all required fields.');
+      return;
+    }
+    try {
+      const created = await createDeal({
+        property: formState.property,
+        buyer: formState.buyer,
+        seller: formState.seller,
+        agent: formState.agent,
+        offerPrice: Number(formState.offerPrice),
+        acceptedPrice: formState.acceptedPrice ? Number(formState.acceptedPrice) : undefined,
+        status: formState.status as Deal['status'],
+      } as any);
+      setDeals([created as any, ...deals]);
+      setShowCreateModal(false);
+      setFormState({
+        property: '',
+        buyer: '',
+        seller: '',
+        agent: '',
+        offerPrice: '',
+        acceptedPrice: '',
+        status: 'pending',
+      });
+    } catch (error) {
+      console.error('Failed to create deal:', error);
+      setFormError('Failed to create deal.');
+    }
+  };
+
+  const openEditModal = (deal: Deal) => {
+    setEditingDealId(deal.id);
+    setEditState({
+      property: deal.propertyId,
+      buyer: deal.buyerId,
+      seller: deal.sellerId,
+      agent: deal.agentId,
+      offerPrice: deal.offerPrice.toString(),
+      acceptedPrice: deal.acceptedPrice ? deal.acceptedPrice.toString() : '',
+      status: deal.status,
+    });
+    setShowEditModal(true);
+  };
+
+  const submitEdit = async () => {
+    if (!editingDealId) return;
+    setFormError('');
+    if (!editState.property || !editState.buyer || !editState.seller || !editState.agent || !editState.offerPrice) {
+      setFormError('Please fill in all required fields.');
+      return;
+    }
+    try {
+      const updated = await updateDeal(editingDealId, {
+        property: editState.property,
+        buyer: editState.buyer,
+        seller: editState.seller,
+        agent: editState.agent,
+        offerPrice: Number(editState.offerPrice),
+        acceptedPrice: editState.acceptedPrice ? Number(editState.acceptedPrice) : undefined,
+        status: editState.status as Deal['status'],
+      } as any);
+      setDeals(deals.map((d) => (d.id === editingDealId ? (updated as any) : d)));
+      setShowEditModal(false);
+      setEditingDealId(null);
+    } catch (error) {
+      console.error('Failed to update deal:', error);
+      setFormError('Failed to update deal.');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[60vh]">
@@ -160,10 +241,22 @@ const Deals = () => {
           <h1 className="text-2xl font-bold text-gray-900">Deals Pipeline</h1>
           <p className="text-gray-500 text-sm mt-1">Track and manage your property deals.</p>
         </div>
-        <button className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors shadow-sm shadow-teal-200">
-          <Plus className="w-4 h-4 mr-2" />
-          Add Deal
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={exportDealsCsv}
+            className="flex items-center px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+          >
+            <DollarSign className="w-4 h-4 mr-2" />
+            Export CSV
+          </button>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors shadow-sm shadow-teal-200"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Deal
+          </button>
+        </div>
       </div>
 
       <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col lg:flex-row gap-4 justify-between items-center">
@@ -279,10 +372,43 @@ const Deals = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex space-x-2">
+                      {deal.status === 'pending' && (
+                        <button
+                          className="px-2 py-1 text-xs font-medium text-green-700 bg-green-50 rounded hover:bg-green-100"
+                          onClick={async () => {
+                            try {
+                              const updated = await approveDeal(deal.id);
+                              setDeals(deals.map((d) => (d.id === deal.id ? updated : d)));
+                            } catch (error) {
+                              console.error('Failed to approve deal:', error);
+                            }
+                          }}
+                        >
+                          Approve
+                        </button>
+                      )}
+                      {deal.status !== 'closed' && (
+                        <button
+                          className="px-2 py-1 text-xs font-medium text-blue-700 bg-blue-50 rounded hover:bg-blue-100"
+                          onClick={async () => {
+                            try {
+                              const updated = await closeDeal(deal.id);
+                              setDeals(deals.map((d) => (d.id === deal.id ? updated : d)));
+                            } catch (error) {
+                              console.error('Failed to close deal:', error);
+                            }
+                          }}
+                        >
+                          Close
+                        </button>
+                      )}
                       <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
                         <Eye className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                      <button
+                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                        onClick={() => openEditModal(deal)}
+                      >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
@@ -306,6 +432,291 @@ const Deals = () => {
           </div>
         )}
       </div>
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Create Deal</h2>
+              <button onClick={() => setShowCreateModal(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+
+            {formError && (
+              <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded mb-3 text-sm">
+                {formError}
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Property</label>
+                <select
+                  value={formState.property}
+                  onChange={(e) => setFormState({ ...formState, property: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                >
+                  <option value="">Select property</option>
+                  {properties.map((p) => (
+                    <option key={p._id || p.id} value={p._id || p.id}>{p.title}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Buyer</label>
+                  <input
+                    type="text"
+                    placeholder="Filter buyers..."
+                    value={buyerFilter}
+                    onChange={(e) => setBuyerFilter(e.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-2"
+                  />
+                  <select
+                    value={formState.buyer}
+                    onChange={(e) => setFormState({ ...formState, buyer: e.target.value })}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  >
+                    <option value="">Select buyer</option>
+                    {users
+                      .filter((u) => u.role !== 'agent')
+                      .filter((u) => u.name?.toLowerCase().includes(buyerFilter.toLowerCase()))
+                      .map((u) => (
+                      <option key={u._id || u.id} value={u._id || u.id}>{u.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Seller</label>
+                  <input
+                    type="text"
+                    placeholder="Filter sellers..."
+                    value={sellerFilter}
+                    onChange={(e) => setSellerFilter(e.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-2"
+                  />
+                  <select
+                    value={formState.seller}
+                    onChange={(e) => setFormState({ ...formState, seller: e.target.value })}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  >
+                    <option value="">Select seller</option>
+                    {users
+                      .filter((u) => u.role !== 'user')
+                      .filter((u) => u.name?.toLowerCase().includes(sellerFilter.toLowerCase()))
+                      .map((u) => (
+                      <option key={u._id || u.id} value={u._id || u.id}>{u.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Agent</label>
+                <select
+                  value={formState.agent}
+                  onChange={(e) => setFormState({ ...formState, agent: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                >
+                  <option value="">Select agent</option>
+                  {users.filter((u) => u.role === 'agent').map((u) => (
+                    <option key={u._id || u.id} value={u._id || u.id}>{u.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Offer Price</label>
+                  <input
+                    type="number"
+                    value={formState.offerPrice}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const suggested = suggestedAcceptedPrice(value);
+                      setFormState({
+                        ...formState,
+                        offerPrice: value,
+                        acceptedPrice: formState.acceptedPrice ? formState.acceptedPrice : suggested,
+                      });
+                    }}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Accepted Price</label>
+                  <input
+                    type="number"
+                    value={formState.acceptedPrice}
+                    onChange={(e) => setFormState({ ...formState, acceptedPrice: e.target.value })}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Suggested: {formState.offerPrice ? suggestedAcceptedPrice(formState.offerPrice) : '-'}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Status</label>
+                <select
+                  value={formState.status}
+                  onChange={(e) => setFormState({ ...formState, status: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="accepted">Accepted</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="closed">Closed</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="px-4 py-2 text-sm border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitDeal}
+                className="px-4 py-2 text-sm bg-teal-600 text-white rounded-lg hover:bg-teal-700"
+              >
+                Create Deal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showEditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Edit Deal</h2>
+              <button onClick={() => setShowEditModal(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+
+            {formError && (
+              <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded mb-3 text-sm">
+                {formError}
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Property</label>
+                <select
+                  value={editState.property}
+                  onChange={(e) => setEditState({ ...editState, property: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                >
+                  <option value="">Select property</option>
+                  {properties.map((p) => (
+                    <option key={p._id || p.id} value={p._id || p.id}>{p.title}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Buyer</label>
+                  <select
+                    value={editState.buyer}
+                    onChange={(e) => setEditState({ ...editState, buyer: e.target.value })}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  >
+                    <option value="">Select buyer</option>
+                    {users.filter((u) => u.role !== 'agent').map((u) => (
+                      <option key={u._id || u.id} value={u._id || u.id}>{u.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Seller</label>
+                  <select
+                    value={editState.seller}
+                    onChange={(e) => setEditState({ ...editState, seller: e.target.value })}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  >
+                    <option value="">Select seller</option>
+                    {users.filter((u) => u.role !== 'user').map((u) => (
+                      <option key={u._id || u.id} value={u._id || u.id}>{u.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Agent</label>
+                <select
+                  value={editState.agent}
+                  onChange={(e) => setEditState({ ...editState, agent: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                >
+                  <option value="">Select agent</option>
+                  {users.filter((u) => u.role === 'agent').map((u) => (
+                    <option key={u._id || u.id} value={u._id || u.id}>{u.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Offer Price</label>
+                  <input
+                    type="number"
+                    value={editState.offerPrice}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const suggested = suggestedAcceptedPrice(value);
+                      setEditState({
+                        ...editState,
+                        offerPrice: value,
+                        acceptedPrice: editState.acceptedPrice ? editState.acceptedPrice : suggested,
+                      });
+                    }}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Accepted Price</label>
+                  <input
+                    type="number"
+                    value={editState.acceptedPrice}
+                    onChange={(e) => setEditState({ ...editState, acceptedPrice: e.target.value })}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Suggested: {editState.offerPrice ? suggestedAcceptedPrice(editState.offerPrice) : '-'}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Status</label>
+                <select
+                  value={editState.status}
+                  onChange={(e) => setEditState({ ...editState, status: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="accepted">Accepted</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="closed">Closed</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="px-4 py-2 text-sm border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitEdit}
+                className="px-4 py-2 text-sm bg-teal-600 text-white rounded-lg hover:bg-teal-700"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

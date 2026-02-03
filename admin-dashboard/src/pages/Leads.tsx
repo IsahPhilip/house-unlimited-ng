@@ -14,6 +14,7 @@ import {
   Loader2,
   Tag
 } from 'lucide-react';
+import { getLeads } from '../services/api';
 
 interface Lead {
   id: string;
@@ -37,70 +38,58 @@ const Leads = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterSource, setFilterSource] = useState('all');
 
+  const exportLeadsCsv = () => {
+    const headers = ['ID', 'Name', 'Email', 'Phone', 'Property', 'Status', 'Source', 'Created At'];
+    const rows = filteredLeads.map((lead) => ([
+      lead.id,
+      lead.name,
+      lead.email,
+      lead.phone,
+      lead.propertyTitle || '',
+      lead.status,
+      lead.source,
+      lead.createdAt,
+    ]));
+    const csv = [headers, ...rows].map((row) =>
+      row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(',')
+    ).join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `leads-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   useEffect(() => {
-    // Simulate fetching data
     const fetchLeads = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        const mockLeads: Lead[] = [
-          {
-            id: '1',
-            name: 'John Smith',
-            email: 'john.smith@example.com',
-            phone: '+1 (555) 123-4567',
-            propertyId: '123',
-            propertyTitle: 'Modern Downtown Loft',
-            budget: '$400,000 - $500,000',
-            requirements: ['2 bedrooms', '2 bathrooms', 'Gym access'],
-            status: 'contacted',
+        const data = await getLeads();
+        const mapped: Lead[] = data.map((lead: any) => {
+          const statusMap: Record<string, Lead['status']> = {
+            pending: 'new',
+            in_progress: 'contacted',
+            resolved: 'closed',
+            closed: 'closed',
+          };
+          return {
+            id: lead._id || lead.id,
+            name: lead.name,
+            email: lead.email,
+            phone: lead.phone || '',
+            propertyId: lead.propertyId?._id || lead.propertyId || undefined,
+            propertyTitle: lead.propertyId?.title || lead.subject || '',
+            budget: 'Not provided',
+            requirements: [],
+            status: statusMap[lead.status] || 'new',
             source: 'website',
-            createdAt: '2024-03-15T10:30:00Z',
-            updatedAt: '2024-03-15T14:20:00Z'
-          },
-          {
-            id: '2',
-            name: 'Sarah Johnson',
-            email: 'sarah.j@example.com',
-            phone: '+1 (555) 987-6543',
-            propertyId: '456',
-            propertyTitle: 'Suburban Family Home',
-            budget: '$700,000 - $900,000',
-            requirements: ['4 bedrooms', '3 bathrooms', 'Large backyard', 'Good schools'],
-            status: 'qualified',
-            source: 'referral',
-            createdAt: '2024-03-14T09:15:00Z',
-            updatedAt: '2024-03-16T11:45:00Z'
-          },
-          {
-            id: '3',
-            name: 'Mike Davis',
-            email: 'mike.davis@example.com',
-            phone: '+1 (555) 456-7890',
-            propertyId: '789',
-            propertyTitle: 'Luxury Beach Villa',
-            budget: '$1,500,000 - $2,500,000',
-            requirements: ['5 bedrooms', 'Ocean view', 'Private pool', 'Gated community'],
-            status: 'new',
-            source: 'agent',
-            createdAt: '2024-03-16T16:45:00Z',
-            updatedAt: '2024-03-16T16:45:00Z'
-          },
-          {
-            id: '4',
-            name: 'Emily Brown',
-            email: 'emily.b@example.com',
-            phone: '+1 (555) 789-0123',
-            propertyId: '101',
-            propertyTitle: 'Cozy City Studio',
-            budget: '$200,000 - $300,000',
-            requirements: ['1 bedroom', 'City center', 'Pet friendly'],
-            status: 'closed',
-            source: 'website',
-            createdAt: '2024-03-10T14:30:00Z',
-            updatedAt: '2024-03-12T10:15:00Z'
-          }
-        ];
-        setLeads(mockLeads);
+            createdAt: lead.createdAt,
+            updatedAt: lead.updatedAt,
+          };
+        });
+        setLeads(mapped);
       } catch (error) {
         console.error('Error fetching leads:', error);
       } finally {
@@ -155,10 +144,19 @@ const Leads = () => {
           <h1 className="text-2xl font-bold text-gray-900">Leads & CRM</h1>
           <p className="text-gray-500 text-sm mt-1">Manage your leads and customer relationships.</p>
         </div>
-        <button className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors shadow-sm shadow-teal-200">
-          <Plus className="w-4 h-4 mr-2" />
-          Add Lead
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={exportLeadsCsv}
+            className="flex items-center px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+          >
+            <Tag className="w-4 h-4 mr-2" />
+            Export CSV
+          </button>
+          <button className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors shadow-sm shadow-teal-200">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Lead
+          </button>
+        </div>
       </div>
 
       <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col lg:flex-row gap-4 justify-between items-center">

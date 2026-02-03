@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { Page, User, Review, Property, BlogArticle } from './types';
 import { PROPERTIES, INITIAL_REVIEWS } from './utils/mockData';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { getWishlist, addToWishlist, removeFromWishlist } from './services/api';
 
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -28,13 +29,14 @@ type AuthMode = 'signin' | 'signup';
 
 // --- App Container ---
 const AppContent = () => {
-  const { user, login, register, logout, isLoading } = useAuth();
+  const { user, login, register, logout, isLoading, updateProfile } = useAuth();
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<AuthMode>('signin');
   const [searchCriteria, setSearchCriteria] = useState<any | null>(null);
-  const [wishlistIds, setWishlistIds] = useState<number[]>([]);
-  const [selectedPropertyId, setSelectedPropertyId] = useState<number | null>(null);
+  const [wishlistIds, setWishlistIds] = useState<string[]>([]);
+  const [wishlistProperties, setWishlistProperties] = useState<Property[]>([]);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const [selectedBlogId, setSelectedBlogId] = useState<string | null>(null);
   const [reviews, setReviews] = useState<Review[]>(INITIAL_REVIEWS);
   const [isForgotPasswordFlowActive, setIsForgotPasswordFlowActive] = useState(false);
@@ -45,6 +47,25 @@ const AppContent = () => {
     window.scrollTo(0, 0);
   }, [currentPage, selectedBlogId, isForgotPasswordFlowActive]);
 
+  useEffect(() => {
+    const loadWishlist = async () => {
+      if (!user) {
+        setWishlistIds([]);
+        setWishlistProperties([]);
+        return;
+      }
+      try {
+        const wishlist = await getWishlist();
+        setWishlistIds(wishlist.map((p: any) => p._id || p.id));
+        setWishlistProperties(wishlist as Property[]);
+      } catch (error) {
+        console.error('Failed to load wishlist:', error);
+      }
+    };
+
+    loadWishlist();
+  }, [user]);
+
   // Handle URL query for direct property links and reset password links
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -53,11 +74,8 @@ const AppContent = () => {
     const token = params.get('token'); // Check for reset token in URL
 
     if (id) {
-      const propertyId = parseInt(id);
-      if (PROPERTIES.some(p => p.id === propertyId)) {
-        setSelectedPropertyId(propertyId);
-        setCurrentPage('property-details');
-      }
+      setSelectedPropertyId(id);
+      setCurrentPage('property-details');
     } else if (blogId) {
       // Blog IDs will be validated when fetching from API
       setSelectedBlogId(blogId);
@@ -85,27 +103,56 @@ const AppContent = () => {
     setWishlistIds([]);
   };
 
-  const handleWishlistToggle = (id: number) => {
+  const handleWishlistToggle = (id: string, property?: Property) => {
     if (!user) {
       openAuthModal('signin');
       return;
     }
-    
-    setWishlistIds(prev => 
-      prev.includes(id) ? prev.filter(wishId => wishId !== id) : [...prev, id]
-    );
+
+    const prevIds = [...wishlistIds];
+    const prevProps = [...wishlistProperties];
+    const isSaved = wishlistIds.includes(id);
+
+    if (isSaved) {
+      setWishlistIds(prev => prev.filter(wishId => wishId !== id));
+      setWishlistProperties(prev => prev.filter(p => (p.id || (p as any)._id) !== id));
+    } else {
+      setWishlistIds(prev => [...prev, id]);
+      if (property) {
+        setWishlistProperties(prev => [...prev, property]);
+      }
+    }
+
+    const update = async () => {
+      try {
+        if (isSaved) {
+          await removeFromWishlist(id);
+        } else {
+          await addToWishlist(id);
+        }
+        const wishlist = await getWishlist();
+        setWishlistIds(wishlist.map((p: any) => p._id || p.id));
+        setWishlistProperties(wishlist as Property[]);
+      } catch (error) {
+        console.error('Failed to update wishlist:', error);
+        setWishlistIds(prevIds);
+        setWishlistProperties(prevProps);
+      }
+    };
+
+    update();
   };
 
   const handleAddReview = (reviewData: Omit<Review, 'id' | 'date'>) => {
     const newReview: Review = {
       ...reviewData,
-      id: Date.now(),
+      id: Date.now().toString(),
       date: new Date().toISOString().split('T')[0]
     };
     setReviews(prev => [newReview, ...prev]);
   };
 
-  const navigateToProperty = (id: number) => {
+  const navigateToProperty = (id: string) => {
     setSelectedPropertyId(id);
     setCurrentPage('property-details');
   };
@@ -170,14 +217,12 @@ const AppContent = () => {
         "Your data is used to provide personalized property recommendations, facilitate communication with agents, and improve our services.",
         "We do not sell your personal data to third parties. We use industry-standard encryption to protect your sensitive information."
       ]} />;
-      case 'wishlist': return <WishlistPage wishlistIds={wishlistIds} onWishlistToggle={handleWishlistToggle} setCurrentPage={setCurrentPage} onNavigate={navigateToProperty} />;
+      case 'wishlist': return <WishlistPage wishlistIds={wishlistIds} wishlistProperties={wishlistProperties} onWishlistToggle={handleWishlistToggle} setCurrentPage={setCurrentPage} onNavigate={navigateToProperty} />;
       case 'property-details':
         return selectedPropertyId ? (
           <PropertyDetailsPage
-            property={PROPERTIES.find(p => p.id === selectedPropertyId)}
-            reviews={reviews.filter(r => r.propertyId === selectedPropertyId)}
+            propertyId={selectedPropertyId}
             user={user}
-            onAddReview={handleAddReview}
             onWishlistToggle={(id) => handleWishlistToggle(id)}
             isWishlisted={wishlistIds.includes(selectedPropertyId)}
             onBack={() => setCurrentPage('property')}
@@ -193,10 +238,9 @@ const AppContent = () => {
             wishlistIds={wishlistIds}
             reviews={reviews}
             onNavigate={setCurrentPage}
+            onNavigateProperty={navigateToProperty}
             onUpdateProfile={(updates) => {
-              // Profile updates would be handled via API call
-              // For now, we'll just log the update
-              console.log('Profile update:', updates);
+              updateProfile(updates);
             }}
             onWishlistToggle={handleWishlistToggle}
           />

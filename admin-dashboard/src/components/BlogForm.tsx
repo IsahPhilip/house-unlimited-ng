@@ -3,7 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getBlogPostById, createBlogPost, updateBlogPost } from '../services/api';
 import { BlogPost } from '../types/admin';
-import { Loader2, Save, ArrowLeft } from 'lucide-react';
+import { Loader2, Save, ArrowLeft, Eye, Edit3 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface BlogFormProps {
   isEditing?: boolean;
@@ -32,16 +34,25 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
     category: 'Real Estate',
     tags: '',
     status: 'draft' as 'draft' | 'published' | 'archived',
-    readTime: 5
+    readTime: 5,
+    metaTitle: '',
+    metaDescription: ''
   });
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+  const [editorTab, setEditorTab] = useState<'write' | 'preview'>('write');
+  const [wordCount, setWordCount] = useState(0);
+  const [lastSavedAt, setLastSavedAt] = useState<string>('');
+  const [draftAvailable, setDraftAvailable] = useState(false);
+  const [slugLocked, setSlugLocked] = useState(false);
+  const [checklistOpen, setChecklistOpen] = useState(true);
+
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const draftKey = `blog-draft-${id || 'new'}`;
 
   useEffect(() => {
     if (isEditing && id) {
@@ -49,11 +60,45 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
     }
   }, [isEditing, id]);
 
+  useEffect(() => {
+    const stored = localStorage.getItem(draftKey);
+    if (stored) {
+      setDraftAvailable(true);
+    }
+  }, [draftKey]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      localStorage.setItem(draftKey, JSON.stringify(formData));
+      const ts = new Date().toLocaleTimeString();
+      setLastSavedAt(ts);
+      setDraftAvailable(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [formData, draftKey]);
+
+  const restoreDraft = () => {
+    const stored = localStorage.getItem(draftKey);
+    if (!stored) return;
+    try {
+      const parsed = JSON.parse(stored);
+      setFormData((prev) => ({ ...prev, ...parsed }));
+      setDraftAvailable(false);
+    } catch {
+      setDraftAvailable(false);
+    }
+  };
+
+  const discardDraft = () => {
+    localStorage.removeItem(draftKey);
+    setDraftAvailable(false);
+  };
+
   const fetchBlogPost = async (blogId: string) => {
     try {
       setIsLoading(true);
       const blogPost = await getBlogPostById(blogId);
-      
+
       setFormData({
         title: blogPost.title,
         slug: blogPost.slug,
@@ -63,13 +108,13 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
         category: blogPost.category,
         tags: blogPost.tags.join(', '),
         status: blogPost.status,
-        readTime: blogPost.readTime
+        readTime: blogPost.readTime,
+        metaTitle: blogPost.metaTitle || '',
+        metaDescription: blogPost.metaDescription || ''
       });
     } catch (err: any) {
-      // Check if it's a 404 error (blog post not found)
       if (err.message && err.message.includes('not found')) {
         setError('Blog post not found. Please check the URL or create a new post.');
-        // Redirect to create new post if editing a non-existent post
         setTimeout(() => {
           navigate('/blog/create');
         }, 2000);
@@ -84,14 +129,13 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    
+
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
 
-    // Auto-generate slug from title
-    if (name === 'title') {
+    if (name === 'title' && !slugLocked) {
       const slug = value
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
@@ -113,14 +157,16 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
 
   const calculateReadTime = (content: string): number => {
     const wordsPerMinute = 200;
-    const wordCount = content.split(/\s+/).length;
-    return Math.ceil(wordCount / wordsPerMinute);
+    const words = content.trim().length ? content.trim().split(/\s+/) : [];
+    const count = words.length;
+    setWordCount(count);
+    return Math.max(1, Math.ceil(count / wordsPerMinute));
   };
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = e.target;
     const readTime = calculateReadTime(value);
-    
+
     setFormData(prev => ({
       ...prev,
       content: value,
@@ -128,12 +174,37 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
     }));
   };
 
+  const handleFeaturedImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setFormData((prev) => ({ ...prev, featuredImage: reader.result as string }));
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.title || !formData.content || !formData.excerpt) {
       setError('Please fill in all required fields');
       return;
+    }
+
+    const isPublishing = formData.status === 'published';
+    if (isPublishing) {
+      const excerptLength = formData.excerpt.trim().length;
+      const hasImage = Boolean(formData.featuredImage);
+      const hasSeo = Boolean(formData.metaTitle.trim() && formData.metaDescription.trim());
+      const excerptOk = excerptLength >= 80 && excerptLength <= 300;
+
+      if (!excerptOk || !hasImage || !hasSeo) {
+        setError('Publishing requires a complete checklist (SEO, excerpt length, featured image).');
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -152,6 +223,7 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
         await createBlogPost(blogData);
       }
 
+      localStorage.removeItem(draftKey);
       navigate('/blog');
     } catch (err) {
       setError(isEditing ? 'Failed to update blog post' : 'Failed to create blog post');
@@ -186,7 +258,6 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow">
-          {/* Header */}
           <div className="border-b border-gray-200 px-8 py-6">
             <div className="flex items-center justify-between">
               <div>
@@ -201,7 +272,7 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
                   {isEditing ? 'Edit Blog Post' : 'Create New Blog Post'}
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  {isEditing 
+                  {isEditing
                     ? 'Update your blog post content and settings'
                     : 'Create a new blog post to share with your audience'
                   }
@@ -219,16 +290,22 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
             </div>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="p-8 space-y-6">
-            {/* Error Message */}
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
                 {error}
               </div>
             )}
+            {draftAvailable && (
+              <div className="bg-amber-50 border border-amber-200 text-amber-700 px-4 py-3 rounded flex items-center justify-between">
+                <span>A saved draft is available.</span>
+                <div className="flex items-center gap-2">
+                  <button type="button" onClick={restoreDraft} className="text-sm font-medium text-amber-700 hover:underline">Restore</button>
+                  <button type="button" onClick={discardDraft} className="text-sm text-amber-600 hover:underline">Discard</button>
+                </div>
+              </div>
+            )}
 
-            {/* Title */}
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
                 Title *
@@ -245,26 +322,33 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
               />
             </div>
 
-            {/* Slug */}
             <div>
               <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-2">
                 URL Slug
               </label>
-              <input
-                type="text"
-                id="slug"
-                name="slug"
-                value={formData.slug}
-                onChange={handleInputChange}
-                className="form-input"
-                placeholder="auto-generated-from-title"
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  id="slug"
+                  name="slug"
+                  value={formData.slug}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  placeholder="auto-generated-from-title"
+                />
+                <button
+                  type="button"
+                  className={`px-3 py-2 text-xs rounded border ${slugLocked ? 'border-teal-500 text-teal-600' : 'border-gray-200 text-gray-600'}`}
+                  onClick={() => setSlugLocked(!slugLocked)}
+                >
+                  {slugLocked ? 'Unlock' : 'Lock'}
+                </button>
+              </div>
               <p className="mt-1 text-sm text-gray-500">
                 This will be used in the URL. Leave empty to auto-generate from title.
               </p>
             </div>
 
-            {/* Excerpt */}
             <div>
               <label htmlFor="excerpt" className="block text-sm font-medium text-gray-700 mb-2">
                 Excerpt *
@@ -284,32 +368,75 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
               </p>
             </div>
 
-            {/* Content */}
             <div>
               <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
                 Content *
               </label>
-              <textarea
-                id="content"
-                name="content"
-                value={formData.content}
-                onChange={handleContentChange}
-                rows={12}
-                className="form-input resize-none font-mono text-sm"
-                placeholder="Write your blog post content here..."
-                required
-              />
+              <div className="flex items-center gap-2 mb-2">
+                <button
+                  type="button"
+                  onClick={() => setEditorTab('write')}
+                  className={`px-3 py-1 text-xs rounded ${editorTab === 'write' ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-600'}`}
+                >
+                  <Edit3 className="h-3 w-3 inline mr-1" />
+                  Write
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditorTab('preview')}
+                  className={`px-3 py-1 text-xs rounded ${editorTab === 'preview' ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-600'}`}
+                >
+                  <Eye className="h-3 w-3 inline mr-1" />
+                  Preview
+                </button>
+                <span className="text-xs text-gray-400 ml-auto">
+                  {wordCount} words • {formData.readTime} min read {lastSavedAt ? `• Autosaved ${lastSavedAt}` : ''}
+                </span>
+              </div>
+              {editorTab === 'write' ? (
+                <textarea
+                  id="content"
+                  name="content"
+                  value={formData.content}
+                  onChange={handleContentChange}
+                  rows={12}
+                  className="form-input resize-none font-mono text-sm"
+                  placeholder="Write your blog post content here..."
+                  required
+                />
+              ) : (
+                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 prose prose-sm max-w-none">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {formData.content || 'Nothing to preview yet.'}
+                  </ReactMarkdown>
+                </div>
+              )}
               <div className="mt-2 flex items-center justify-between text-sm text-gray-500">
                 <span>Tip: Use markdown for formatting</span>
-                <span>Estimated read time: {formData.readTime} min</span>
               </div>
             </div>
 
-            {/* Featured Image */}
             <div>
               <label htmlFor="featuredImage" className="block text-sm font-medium text-gray-700 mb-2">
                 Featured Image
               </label>
+              <div className="flex items-center gap-3 mb-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFeaturedImageUpload}
+                  className="block w-full text-sm text-gray-600"
+                />
+                {formData.featuredImage && (
+                  <button
+                    type="button"
+                    onClick={() => setFormData((prev) => ({ ...prev, featuredImage: '' }))}
+                    className="text-sm text-red-500 hover:underline"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
               <input
                 type="url"
                 id="featuredImage"
@@ -322,9 +449,13 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
               <p className="mt-1 text-sm text-gray-500">
                 URL of the featured image for this blog post.
               </p>
+              {formData.featuredImage && (
+                <div className="mt-3">
+                  <img src={formData.featuredImage} alt="Featured preview" className="w-full max-h-64 object-cover rounded-lg border" />
+                </div>
+              )}
             </div>
 
-            {/* Category and Status */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
@@ -361,7 +492,6 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
               </div>
             </div>
 
-            {/* Tags */}
             <div>
               <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
                 Tags
@@ -380,7 +510,82 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
               </p>
             </div>
 
-            {/* Actions */}
+            <div className="border-t border-gray-200 pt-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-gray-900">Publish Checklist</h3>
+                <button
+                  type="button"
+                  className="text-xs text-gray-500 hover:text-gray-700"
+                  onClick={() => setChecklistOpen(!checklistOpen)}
+                >
+                  {checklistOpen ? 'Hide' : 'Show'}
+                </button>
+              </div>
+              {checklistOpen && (
+                <div className="mt-3 space-y-2 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span>SEO title + description</span>
+                    <span className={formData.metaTitle.trim() && formData.metaDescription.trim() ? 'text-green-600' : 'text-gray-400'}>
+                      {formData.metaTitle.trim() && formData.metaDescription.trim() ? 'Ready' : 'Missing'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Excerpt length (80–300 chars)</span>
+                    <span className={
+                      formData.excerpt.trim().length >= 80 && formData.excerpt.trim().length <= 300
+                        ? 'text-green-600'
+                        : 'text-gray-400'
+                    }>
+                      {formData.excerpt.trim().length} chars
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Featured image</span>
+                    <span className={formData.featuredImage ? 'text-green-600' : 'text-gray-400'}>
+                      {formData.featuredImage ? 'Ready' : 'Missing'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    Checklist is enforced when status is set to Published.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="border-t border-gray-200 pt-6">
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">SEO</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="metaTitle" className="block text-sm font-medium text-gray-700 mb-2">
+                    Meta Title
+                  </label>
+                  <input
+                    type="text"
+                    id="metaTitle"
+                    name="metaTitle"
+                    value={formData.metaTitle}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    placeholder="SEO title (optional)"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="metaDescription" className="block text-sm font-medium text-gray-700 mb-2">
+                    Meta Description
+                  </label>
+                  <textarea
+                    id="metaDescription"
+                    name="metaDescription"
+                    value={formData.metaDescription}
+                    onChange={handleInputChange}
+                    rows={3}
+                    className="form-input resize-none"
+                    placeholder="SEO description (optional)"
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="flex items-center justify-between pt-6 border-t border-gray-200">
               <button
                 type="button"
@@ -389,7 +594,7 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
               >
                 Cancel
               </button>
-              
+
               <button
                 type="submit"
                 disabled={isSubmitting}

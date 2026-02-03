@@ -20,6 +20,8 @@ import {
   Calendar
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { Notification } from '../../types/admin';
+import { getNotifications, markNotificationRead, markAllNotificationsRead } from '../../services/api';
 
 // Sidebar navigation items
 const sidebarItems = [
@@ -70,30 +72,10 @@ const sidebarItems = [
   }
 ];
 
-// Mock notifications
-const mockNotifications = [
-  {
-    id: '1',
-    type: 'new_lead',
-    title: 'New Lead',
-    message: 'John Doe submitted a new lead for property #123',
-    read: false,
-    createdAt: '2023-01-15T10:30:00'
-  },
-  {
-    id: '2',
-    type: 'deal_update',
-    title: 'Deal Update',
-    message: 'Offer accepted for property #456',
-    read: true,
-    createdAt: '2023-01-14T15:45:00'
-  }
-];
-
 export default function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [notifications, setNotifications] = useState(mockNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
@@ -104,13 +86,31 @@ export default function MainLayout() {
     setSidebarOpen(false);
   }, [location.pathname]);
 
+  useEffect(() => {
+    const loadNotifications = async () => {
+      try {
+        const data = await getNotifications();
+        setNotifications(data);
+      } catch (error) {
+        console.error('Error loading notifications:', error);
+      }
+    };
+
+    loadNotifications();
+  }, []);
+
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const toggleNotifications = () => setNotificationsOpen(!notificationsOpen);
 
-  const markNotificationAsRead = (id: string) => {
-    setNotifications(notifications.map(notification =>
-      notification.id === id ? { ...notification, read: true } : notification
-    ));
+  const markNotificationAsRead = async (id: string) => {
+    try {
+      const updated = await markNotificationRead(id, true);
+      setNotifications(notifications.map(notification =>
+        notification.id === id ? updated : notification
+      ));
+    } catch (error) {
+      console.error('Failed to update notification:', error);
+    }
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -300,15 +300,38 @@ export default function MainLayout() {
                       )}
                     </div>
                     <div className="p-2 border-t">
-                      <button
-                        className="w-full text-sm text-primary-600 hover:bg-gray-50 py-2"
-                        onClick={() => {
-                          setNotifications(notifications.map(n => ({ ...n, read: true })));
-                          setNotificationsOpen(false);
-                        }}
-                      >
-                        Mark all as read
-                      </button>
+                      <div className="flex">
+                        <button
+                          className="flex-1 text-sm text-primary-600 hover:bg-gray-50 py-2"
+                          onClick={async () => {
+                            try {
+                              await markAllNotificationsRead(true);
+                              setNotifications(notifications.map((n) => ({ ...n, read: true })));
+                            } catch (error) {
+                              console.error('Failed to mark notifications as read:', error);
+                            } finally {
+                              setNotificationsOpen(false);
+                            }
+                          }}
+                        >
+                          Mark all as read
+                        </button>
+                        <button
+                          className="flex-1 text-sm text-gray-600 hover:bg-gray-50 py-2 border-l border-gray-100"
+                          onClick={async () => {
+                            try {
+                              await markAllNotificationsRead(false);
+                              setNotifications(notifications.map((n) => ({ ...n, read: false })));
+                            } catch (error) {
+                              console.error('Failed to mark notifications as unread:', error);
+                            } finally {
+                              setNotificationsOpen(false);
+                            }
+                          }}
+                        >
+                          Mark all as unread
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 )}

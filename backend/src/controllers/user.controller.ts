@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import User from '../models/mongodb/User.mongoose.js';
 import { AuthRequest } from '../middleware/auth.js';
+import Property from '../models/mongodb/Property.mongoose.js';
 
 // @desc    Get all users
 // @route   GET /api/users
@@ -269,6 +270,55 @@ export const uploadAvatar = async (req: AuthRequest, res: Response, next: NextFu
       success: true,
       data: user,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get current user's wishlist
+// @route   GET /api/users/wishlist
+// @access  Private
+export const getWishlist = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const user = await User.findById(req.user._id)
+      .populate('wishlist', 'title price priceValue type category address beds baths sqft featuredImage images');
+
+    res.status(200).json({
+      success: true,
+      data: user?.wishlist || [],
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Add property to wishlist
+// @route   POST /api/users/wishlist/:propertyId
+// @access  Private
+export const addToWishlist = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { propertyId } = req.params;
+    const property = await Property.findById(propertyId);
+    if (!property) {
+      res.status(404).json({ success: false, error: 'Property not found' });
+      return;
+    }
+
+    await User.findByIdAndUpdate(req.user._id, { $addToSet: { wishlist: propertyId } });
+    res.status(200).json({ success: true, data: { propertyId } });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Remove property from wishlist
+// @route   DELETE /api/users/wishlist/:propertyId
+// @access  Private
+export const removeFromWishlist = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { propertyId } = req.params;
+    await User.findByIdAndUpdate(req.user._id, { $pull: { wishlist: propertyId } });
+    res.status(200).json({ success: true, data: { propertyId } });
   } catch (error) {
     next(error);
   }

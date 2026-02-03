@@ -10,7 +10,7 @@ import { sendEmail } from '../services/emailService.js';
 // @access  Public
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { name, email, password, phone, role } = req.body;
+    const { name, email, password, phone } = req.body;
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
@@ -28,7 +28,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       email,
       password,
       phone,
-      role: role || 'user', // Allow role to be set, default to 'user'
+      role: 'user',
     });
 
     // Generate email verification token

@@ -10,6 +10,7 @@ import {
   ArrowDownRight,
   Loader2
 } from 'lucide-react';
+import { getDashboardStats } from '../services/api';
 
 interface DashboardData {
   totalProperties?: number;
@@ -42,17 +43,8 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const token = localStorage.getItem('authToken');
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/admin/dashboard`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        if (response.ok) {
-          const result = await response.json();
-          setData(result);
-        }
+        const result = await getDashboardStats();
+        setData(result);
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       } finally {
@@ -112,6 +104,20 @@ const Dashboard = () => {
 
   const recentActivities = data?.recentActivities || [];
   const recentProperties = data?.recentProperties || [];
+
+  const getPropertyStatusColor = (status: string) => {
+    switch (status) {
+      case 'available':
+        return 'bg-green-100 text-green-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'sold':
+      case 'rented':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -178,13 +184,11 @@ const Dashboard = () => {
                     <td className="px-6 py-4 font-medium text-gray-900">{property.title}</td>
                     <td className="px-6 py-4 text-gray-600">{property.price}</td>
                     <td className="px-6 py-4">
-                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        property.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                      }`}>
+                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getPropertyStatusColor(property.status)}`}>
                         {property.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-gray-500">{property.date}</td>
+                    <td className="px-6 py-4 text-gray-500">{property.date ? new Date(property.date).toLocaleDateString() : '-'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -211,7 +215,7 @@ const Dashboard = () => {
                   <p className="text-sm text-gray-600 truncate">{activity.target}</p>
                   <p className="text-xs text-gray-400 mt-1 flex items-center">
                     <Calendar className="w-3 h-3 mr-1" />
-                    {activity.time}
+                    {activity.time ? new Date(activity.time).toLocaleString() : '-'}
                   </p>
                 </div>
               </div>

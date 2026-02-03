@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import { Page, User, Property, Review } from '../types';
-import { PROPERTIES } from '../utils/mockData';
+import React, { useEffect, useState } from 'react';
+import { Page, User, Review } from '../types';
+import { getWishlist, getMyReviews } from '../services/api';
 
 interface UserProfilePageProps {
   user: User | null;
-  wishlistIds: number[];
+  wishlistIds: string[];
   reviews: Review[];
   onNavigate: (page: Page) => void;
+  onNavigateProperty: (id: string) => void;
   onUpdateProfile: (updates: Partial<User>) => void;
-  onWishlistToggle: (id: number) => void;
+  onWishlistToggle: (id: string, property?: any) => void;
 }
 
 const UserProfilePage: React.FC<UserProfilePageProps> = ({
@@ -16,6 +17,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
   wishlistIds,
   reviews,
   onNavigate,
+  onNavigateProperty,
   onUpdateProfile,
   onWishlistToggle
 }) => {
@@ -27,6 +29,8 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
     bio: user?.bio || '',
     location: user?.location || '',
   });
+  const [wishlistProperties, setWishlistProperties] = useState<any[]>([]);
+  const [userReviews, setUserReviews] = useState<any[]>([]);
 
   if (!user) {
     return (
@@ -44,8 +48,24 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
     );
   }
 
-  const userReviews = reviews.filter(review => review.userName === user.name);
-  const wishlistProperties = PROPERTIES.filter(property => wishlistIds.includes(property.id));
+  useEffect(() => {
+    const loadProfileData = async () => {
+      try {
+        const [wishlistData, reviewsData] = await Promise.all([
+          getWishlist(),
+          getMyReviews(),
+        ]);
+        setWishlistProperties(wishlistData || []);
+        setUserReviews(reviewsData || []);
+      } catch (error) {
+        console.error('Failed to load profile data:', error);
+      }
+    };
+
+    if (user) {
+      loadProfileData();
+    }
+  }, [user]);
 
   const handleSaveProfile = () => {
     onUpdateProfile(editForm);
@@ -72,11 +92,11 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-teal-600">{wishlistIds.length}</div>
+            <div className="text-2xl font-bold text-teal-600">{wishlistProperties.length}</div>
               <div className="text-sm text-gray-600">Saved Properties</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{userReviews.length}</div>
+            <div className="text-2xl font-bold text-green-600">{userReviews.length}</div>
               <div className="text-sm text-gray-600">Reviews</div>
             </div>
             <div className="text-center">
@@ -190,7 +210,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
   const PropertiesTab = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Saved Properties ({wishlistProperties.length})</h2>
+      <h2 className="text-2xl font-bold">Saved Properties ({wishlistProperties.length})</h2>
         <button
           onClick={() => onNavigate('wishlist')}
           className="text-teal-600 hover:underline font-medium"
@@ -203,17 +223,17 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {wishlistProperties.map((property) => (
             <div key={property.id} className="bg-white rounded-2xl shadow-sm overflow-hidden">
-              <img src={property.image} alt={property.title} className="w-full h-48 object-cover" />
+              <img src={property.featuredImage || property.image || property.images?.[0]} alt={property.title} className="w-full h-48 object-cover" />
               <div className="p-6">
                 <h3 className="font-bold text-lg mb-2">{property.title}</h3>
-                <p className="text-teal-600 font-bold mb-2">{property.price}</p>
+                <p className="text-teal-600 font-bold mb-2">{property.price || property.priceValue}</p>
                 <p className="text-gray-600 text-sm mb-4">{property.address}</p>
                 <div className="flex justify-between items-center">
                   <div className="text-sm text-gray-500">
                     {property.beds} beds • {property.baths} baths • {property.sqft} sqft
                   </div>
                   <button
-                    onClick={() => onNavigate('property-details')}
+                    onClick={() => onNavigateProperty(property._id || property.id)}
                     className="text-teal-600 hover:underline text-sm font-medium"
                   >
                     View Details
@@ -245,27 +265,24 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
 
       {userReviews.length > 0 ? (
         <div className="space-y-6">
-          {userReviews.map((review) => {
-            const property = PROPERTIES.find(p => p.id === review.propertyId);
-            return (
-              <div key={review.id} className="bg-white rounded-2xl p-6 shadow-sm">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="font-bold text-lg">{property?.title || 'Unknown Property'}</h3>
-                    <p className="text-sm text-gray-600">{review.date}</p>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <span key={star} className={star <= review.rating ? 'text-yellow-400' : 'text-gray-300'}>
-                        ★
-                      </span>
-                    ))}
-                  </div>
+          {userReviews.map((review) => (
+            <div key={review._id || review.id} className="bg-white rounded-2xl p-6 shadow-sm">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="font-bold text-lg">{review.property?.title || 'Unknown Property'}</h3>
+                  <p className="text-sm text-gray-600">{new Date(review.createdAt || review.date).toLocaleDateString()}</p>
                 </div>
-                <p className="text-gray-700 italic">"{review.comment}"</p>
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span key={star} className={star <= review.rating ? 'text-yellow-400' : 'text-gray-300'}>
+                      ★
+                    </span>
+                  ))}
+                </div>
               </div>
-            );
-          })}
+              <p className="text-gray-700 italic">"{review.comment}"</p>
+            </div>
+          ))}
         </div>
       ) : (
         <div className="text-center py-12 bg-white rounded-2xl shadow-sm">

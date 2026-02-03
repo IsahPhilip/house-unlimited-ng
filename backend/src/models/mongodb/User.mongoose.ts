@@ -13,6 +13,7 @@ export interface IUser extends Document {
   authorRole?: string;
   location?: string;
   role: 'user' | 'agent' | 'admin';
+  wishlist?: mongoose.Types.ObjectId[];
   joinDate: Date;
   isEmailVerified: boolean;
   emailVerificationToken?: string;
@@ -96,6 +97,10 @@ const UserSchema: Schema<IUser> = new Schema(
       enum: ['user', 'agent', 'admin'],
       default: 'user',
     },
+    wishlist: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Property',
+    }],
     joinDate: {
       type: Date,
       default: Date.now,

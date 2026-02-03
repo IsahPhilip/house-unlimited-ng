@@ -16,7 +16,16 @@ import {
   Loader2
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { getProfile, updateProfile } from '../services/api';
+import { getProfile, updateProfile, getUsers, getAdminSettings, updateAdminSettings } from '../services/api';
+
+interface AdminUserRow {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  isActive: boolean;
+  joinDate: string;
+}
 
 interface SettingSection {
   id: string;
@@ -31,6 +40,9 @@ const Settings = () => {
   const [authorLoading, setAuthorLoading] = useState(true);
   const [authorSaving, setAuthorSaving] = useState(false);
   const [authorError, setAuthorError] = useState<string>('');
+  const [settingsNotice, setSettingsNotice] = useState<string>('');
+  const [settingsError, setSettingsError] = useState<string>('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [authorProfile, setAuthorProfile] = useState({
     name: '',
     email: '',
@@ -38,6 +50,9 @@ const Settings = () => {
     bio: '',
     authorRole: '',
   });
+  const [usersLoading, setUsersLoading] = useState(true);
+  const [usersError, setUsersError] = useState('');
+  const [users, setUsers] = useState<AdminUserRow[]>([]);
   const [formData, setFormData] = useState({
     companyName: 'Real Estate Platform',
     companyEmail: 'info@realestate.com',
@@ -132,12 +147,38 @@ const Settings = () => {
     }
 
     setIsLoading(true);
+    setSettingsError('');
+    setSettingsNotice('');
+    setFieldErrors({});
     try {
-      // TODO: Wire real settings API when available.
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Settings saved:', formData);
+      const saved = await updateAdminSettings(formData as any);
+      setFormData({
+        companyName: saved.companyName,
+        companyEmail: saved.companyEmail,
+        companyPhone: saved.companyPhone,
+        timezone: saved.timezone,
+        dateFormat: saved.dateFormat,
+        currency: saved.currency,
+        notifications: saved.notifications,
+        security: saved.security,
+      });
+      setSettingsNotice('Settings saved.');
     } catch (error) {
       console.error('Error saving settings:', error);
+      const err: any = error;
+      const apiErrors = err?.errors || err?.response?.errors;
+      if (Array.isArray(apiErrors)) {
+        const mapped = apiErrors.reduce<Record<string, string>>((acc, item) => {
+          if (item?.field && item?.message) {
+            acc[item.field] = item.message;
+          }
+          return acc;
+        }, {});
+        setFieldErrors(mapped);
+        setSettingsError('Please correct the highlighted fields.');
+      } else {
+        setSettingsError('Failed to save settings.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -166,6 +207,55 @@ const Settings = () => {
     loadAuthorProfile();
   }, []);
 
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const settings = await getAdminSettings();
+        setFormData({
+          companyName: settings.companyName,
+          companyEmail: settings.companyEmail,
+          companyPhone: settings.companyPhone,
+          timezone: settings.timezone,
+          dateFormat: settings.dateFormat,
+          currency: settings.currency,
+          notifications: settings.notifications,
+          security: settings.security,
+        });
+      } catch (error) {
+        console.error('Error loading settings:', error);
+        setSettingsError('Failed to load settings.');
+      }
+    };
+
+    loadSettings();
+  }, []);
+
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        setUsersLoading(true);
+        setUsersError('');
+        const data = await getUsers();
+        const mapped = (data || []).map((user: any) => ({
+          id: user._id || user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          isActive: user.isActive ?? true,
+          joinDate: user.joinDate || user.createdAt || user.updatedAt || new Date().toISOString(),
+        }));
+        setUsers(mapped);
+      } catch (error) {
+        console.error('Error loading users:', error);
+        setUsersError('Failed to load users.');
+      } finally {
+        setUsersLoading(false);
+      }
+    };
+
+    loadUsers();
+  }, []);
+
   const renderGeneralSettings = () => (
     <div className="space-y-6">
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -177,8 +267,9 @@ const Settings = () => {
               type="text"
               value={formData.companyName}
               onChange={(e) => setFormData({...formData, companyName: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent ${fieldErrors.companyName ? 'border-red-400' : 'border-gray-200'}`}
             />
+            {fieldErrors.companyName && <p className="text-xs text-red-600 mt-1">{fieldErrors.companyName}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Company Email</label>
@@ -186,8 +277,9 @@ const Settings = () => {
               type="email"
               value={formData.companyEmail}
               onChange={(e) => setFormData({...formData, companyEmail: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent ${fieldErrors.companyEmail ? 'border-red-400' : 'border-gray-200'}`}
             />
+            {fieldErrors.companyEmail && <p className="text-xs text-red-600 mt-1">{fieldErrors.companyEmail}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Company Phone</label>
@@ -195,8 +287,9 @@ const Settings = () => {
               type="tel"
               value={formData.companyPhone}
               onChange={(e) => setFormData({...formData, companyPhone: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent ${fieldErrors.companyPhone ? 'border-red-400' : 'border-gray-200'}`}
             />
+            {fieldErrors.companyPhone && <p className="text-xs text-red-600 mt-1">{fieldErrors.companyPhone}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Timezone</label>
@@ -572,55 +665,74 @@ const Settings = () => {
             Add User
           </button>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-xs text-gray-500 uppercase bg-gray-50">
-              <tr>
-                <th className="px-6 py-3">User</th>
-                <th className="px-6 py-3">Role</th>
-                <th className="px-6 py-3">Status</th>
-                <th className="px-6 py-3">Last Login</th>
-                <th className="px-6 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-gray-50 hover:bg-gray-50/50">
-                <td className="px-6 py-4">
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center mr-3">
-                      <User className="w-4 h-4 text-teal-600" />
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-900">Admin User</div>
-                      <div className="text-gray-500 text-sm">admin@example.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    Admin
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    Active
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-gray-500">2 hours ago</td>
-                <td className="px-6 py-4">
-                  <div className="flex space-x-2">
-                    <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        {usersError && (
+          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded mb-4">
+            {usersError}
+          </div>
+        )}
+        {usersLoading ? (
+          <div className="flex items-center text-gray-500">
+            <Loader2 className="animate-spin h-4 w-4 mr-2" />
+            Loading users...
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="text-xs text-gray-500 uppercase bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3">User</th>
+                  <th className="px-6 py-3">Role</th>
+                  <th className="px-6 py-3">Status</th>
+                  <th className="px-6 py-3">Joined</th>
+                  <th className="px-6 py-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((u) => (
+                  <tr key={u.id} className="border-b border-gray-50 hover:bg-gray-50/50">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center mr-3">
+                          <User className="w-4 h-4 text-teal-600" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900">{u.name}</div>
+                          <div className="text-gray-500 text-sm">{u.email}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 capitalize">
+                        {u.role}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${u.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                        {u.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-gray-500">
+                      {new Date(u.joinDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex space-x-2">
+                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {users.length === 0 && (
+              <div className="text-center py-10 text-gray-500">No users found.</div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -681,6 +793,16 @@ const Settings = () => {
         {/* Main Content */}
         <div className="lg:col-span-3">
           <form onSubmit={handleSubmit}>
+            {activeSection !== 'author' && settingsError && (
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded mb-4">
+                {settingsError}
+              </div>
+            )}
+            {activeSection !== 'author' && settingsNotice && (
+              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
+                {settingsNotice}
+              </div>
+            )}
             {renderSection()}
             
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-6">

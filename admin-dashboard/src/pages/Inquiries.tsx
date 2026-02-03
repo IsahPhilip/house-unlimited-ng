@@ -15,6 +15,7 @@ import {
   CheckCircle,
   XCircle
 } from 'lucide-react';
+import { getInquiries } from '../services/api';
 
 interface Inquiry {
   id: string;
@@ -36,61 +37,22 @@ const Inquiries = () => {
   const [filterStatus, setFilterStatus] = useState('all');
 
   useEffect(() => {
-    // Simulate fetching data
     const fetchInquiries = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        const mockInquiries: Inquiry[] = [
-          {
-            id: '1',
-            name: 'John Smith',
-            email: 'john.smith@example.com',
-            phone: '+1 (555) 123-4567',
-            propertyId: '123',
-            propertyTitle: 'Modern Downtown Loft',
-            message: 'Hi, I\'m interested in this property. Can you provide more details about the amenities and parking options?',
-            status: 'in_progress',
-            createdAt: '2024-03-15T10:30:00Z',
-            updatedAt: '2024-03-15T14:20:00Z'
-          },
-          {
-            id: '2',
-            name: 'Sarah Johnson',
-            email: 'sarah.j@example.com',
-            phone: '+1 (555) 987-6543',
-            propertyId: '456',
-            propertyTitle: 'Suburban Family Home',
-            message: 'Hello, I would like to schedule a viewing for this property. What are the available time slots?',
-            status: 'new',
-            createdAt: '2024-03-14T09:15:00Z',
-            updatedAt: '2024-03-14T09:15:00Z'
-          },
-          {
-            id: '3',
-            name: 'Mike Davis',
-            email: 'mike.davis@example.com',
-            phone: '+1 (555) 456-7890',
-            propertyId: '789',
-            propertyTitle: 'Luxury Beach Villa',
-            message: 'I have a few questions about the property taxes and HOA fees for this villa.',
-            status: 'resolved',
-            createdAt: '2024-03-16T16:45:00Z',
-            updatedAt: '2024-03-17T11:30:00Z'
-          },
-          {
-            id: '4',
-            name: 'Emily Brown',
-            email: 'emily.b@example.com',
-            phone: '+1 (555) 789-0123',
-            propertyId: '101',
-            propertyTitle: 'Cozy City Studio',
-            message: 'Is this property pet-friendly? Also, what\'s the lease duration options?',
-            status: 'closed',
-            createdAt: '2024-03-10T14:30:00Z',
-            updatedAt: '2024-03-12T10:15:00Z'
-          }
-        ];
-        setInquiries(mockInquiries);
+        const data = await getInquiries();
+        const mapped: Inquiry[] = data.map((inquiry: any) => ({
+          id: inquiry._id || inquiry.id,
+          name: inquiry.name,
+          email: inquiry.email,
+          phone: inquiry.phone || '',
+          propertyId: inquiry.propertyId?._id || inquiry.propertyId || undefined,
+          propertyTitle: inquiry.propertyId?.title || inquiry.subject || '',
+          message: inquiry.message,
+          status: inquiry.status === 'pending' ? 'new' : inquiry.status || 'new',
+          createdAt: inquiry.createdAt,
+          updatedAt: inquiry.updatedAt,
+        }));
+        setInquiries(mapped);
       } catch (error) {
         console.error('Error fetching inquiries:', error);
       } finally {

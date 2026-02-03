@@ -1,28 +1,34 @@
-import { Property, Review, User, AuthResponse } from '../types';
+import { Property, Review, User } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 // Properties API
-export const getProperties = async (): Promise<Property[]> => {
+export const getProperties = async (page?: number, limit?: number): Promise<any> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/properties`);
+    const params = new URLSearchParams();
+    if (page) params.set('page', String(page));
+    if (limit) params.set('limit', String(limit));
+    const query = params.toString();
+    const response = await fetch(`${API_BASE_URL}/properties${query ? `?${query}` : ''}`);
     if (!response.ok) {
       throw new Error('Failed to fetch properties');
     }
-    return await response.json();
+    const result = await response.json();
+    return result;
   } catch (error) {
     console.error('Error fetching properties:', error);
-    return []; // Return empty array as fallback
+    return { data: [], pagination: null };
   }
 };
 
-export const getPropertyById = async (id: number): Promise<Property | null> => {
+export const getPropertyById = async (id: string): Promise<Property | null> => {
   try {
     const response = await fetch(`${API_BASE_URL}/properties/${id}`);
     if (!response.ok) {
       throw new Error('Failed to fetch property');
     }
-    return await response.json();
+    const result = await response.json();
+    return result.data || result;
   } catch (error) {
     console.error('Error fetching property:', error);
     return null;
@@ -35,7 +41,8 @@ export const getFeaturedProperties = async (): Promise<Property[]> => {
     if (!response.ok) {
       throw new Error('Failed to fetch featured properties');
     }
-    return await response.json();
+    const result = await response.json();
+    return result.data || result;
   } catch (error) {
     console.error('Error fetching featured properties:', error);
     return [];
@@ -43,13 +50,14 @@ export const getFeaturedProperties = async (): Promise<Property[]> => {
 };
 
 // Reviews API
-export const getReviewsByPropertyId = async (propertyId: number): Promise<Review[]> => {
+export const getReviewsByPropertyId = async (propertyId: string): Promise<Review[]> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/reviews?propertyId=${propertyId}`);
+    const response = await fetch(`${API_BASE_URL}/reviews/property/${propertyId}`);
     if (!response.ok) {
       throw new Error('Failed to fetch reviews');
     }
-    return await response.json();
+    const result = await response.json();
+    return result.data || result;
   } catch (error) {
     console.error('Error fetching reviews:', error);
     return [];
@@ -62,13 +70,15 @@ export const addReview = async (reviewData: Omit<Review, 'id' | 'date'>): Promis
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...(localStorage.getItem('authToken') ? { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` } : {}),
       },
       body: JSON.stringify(reviewData),
     });
     if (!response.ok) {
       throw new Error('Failed to add review');
     }
-    return await response.json();
+    const result = await response.json();
+    return result.data || result;
   } catch (error) {
     console.error('Error adding review:', error);
     throw error;
@@ -89,7 +99,7 @@ export const login = async (email: string, password: string): Promise<User & { t
       throw new Error('Login failed');
     }
     const result = await response.json();
-    return result.data;
+    return { ...result.data, token: result.token };
   } catch (error) {
     console.error('Login error:', error);
     throw error;
@@ -109,10 +119,106 @@ export const register = async (userData: Omit<User, 'id'> & { password: string }
       throw new Error('Registration failed');
     }
     const result = await response.json();
-    return result.data;
+    return { ...result.data, token: result.token };
   } catch (error) {
     console.error('Registration error:', error);
     throw error;
+  }
+};
+
+// Profile API
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('authToken');
+  return {
+    'Content-Type': 'application/json',
+    ...(token && { 'Authorization': `Bearer ${token}` }),
+  };
+};
+
+export const getCurrentUser = async (): Promise<User> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/me`, {
+      headers: getAuthHeaders(),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch user');
+    }
+    const result = await response.json();
+    return result.data;
+  } catch (error) {
+    console.error('Get user error:', error);
+    throw error;
+  }
+};
+
+export const updateProfile = async (updates: Partial<User>): Promise<User> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/profile`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(updates),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to update profile');
+    }
+    const result = await response.json();
+    return result.data;
+  } catch (error) {
+    console.error('Update profile error:', error);
+    throw error;
+  }
+};
+
+// Wishlist API
+export const getWishlist = async (): Promise<Property[]> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/wishlist`, {
+      headers: getAuthHeaders(),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch wishlist');
+    }
+    const result = await response.json();
+    return result.data || [];
+  } catch (error) {
+    console.error('Get wishlist error:', error);
+    return [];
+  }
+};
+
+export const addToWishlist = async (propertyId: string): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/users/wishlist/${propertyId}`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to add to wishlist');
+  }
+};
+
+export const removeFromWishlist = async (propertyId: string): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/users/wishlist/${propertyId}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to remove from wishlist');
+  }
+};
+
+export const getMyReviews = async (): Promise<Review[]> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/reviews/user/me`, {
+      headers: getAuthHeaders(),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch user reviews');
+    }
+    const result = await response.json();
+    return result.data || [];
+  } catch (error) {
+    console.error('Get user reviews error:', error);
+    return [];
   }
 };
 

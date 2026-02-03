@@ -110,6 +110,40 @@ export interface Notification {
   relatedId?: string;
 }
 
+export interface AdminSettings {
+  companyName: string;
+  companyEmail: string;
+  companyPhone: string;
+  timezone: string;
+  dateFormat: string;
+  currency: string;
+  notifications: {
+    email: boolean;
+    push: boolean;
+    sms: boolean;
+  };
+  security: {
+    twoFactorAuth: boolean;
+    sessionTimeout: number;
+    passwordExpiry: number;
+  };
+}
+
+export interface RevenueReport {
+  totalRevenue: number;
+  monthlyRevenue: Array<{ month: string; revenue: number }>;
+}
+
+export interface LeadSourceReportItem {
+  source: string;
+  count: number;
+}
+
+export interface PropertyTypeReportItem {
+  type: string;
+  count: number;
+}
+
 export interface DashboardStats {
   totalProperties: number;
   totalLeads: number;

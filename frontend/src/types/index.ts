@@ -41,8 +41,8 @@ export interface SearchCriteria {
 }
 
 export interface Review {
-  id: number;
-  propertyId: number;
+  id: string;
+  propertyId: string;
   userName: string;
   rating: number;
   comment: string;
@@ -50,7 +50,7 @@ export interface Review {
 }
 
 export interface Property {
-  id: number;
+  id: string;
   title: string;
   price: string;
   priceValue: number;

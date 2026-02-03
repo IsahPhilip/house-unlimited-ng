@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types';
-import { login as apiLogin, register as apiRegister } from '../services/api';
+import { login as apiLogin, register as apiRegister, getCurrentUser, updateProfile as apiUpdateProfile } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -8,6 +8,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (userData: Omit<User, 'id'> & { password: string }) => Promise<void>;
+  updateProfile: (updates: Partial<User>) => Promise<void>;
   logout: () => void;
   checkAuth: () => Promise<void>;
 }
@@ -36,12 +37,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true);
       const response = await apiLogin(email, password);
       
-      // Store token and user data
-      localStorage.setItem('authToken', response.token);
-      localStorage.setItem('user', JSON.stringify(response));
+      const { token: authToken, ...userData } = response;
+      localStorage.setItem('authToken', authToken);
+      localStorage.setItem('user', JSON.stringify(userData));
       
-      setToken(response.token);
-      setUser(response);
+      setToken(authToken);
+      setUser(userData);
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -55,14 +56,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true);
       const response = await apiRegister(userData);
       
-      // Store token and user data
-      localStorage.setItem('authToken', response.token);
-      localStorage.setItem('user', JSON.stringify(response));
+      const { token: authToken, ...userData } = response;
+      localStorage.setItem('authToken', authToken);
+      localStorage.setItem('user', JSON.stringify(userData));
       
-      setToken(response.token);
-      setUser(response);
+      setToken(authToken);
+      setUser(userData);
     } catch (error) {
       console.error('Registration error:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateProfile = async (updates: Partial<User>): Promise<void> => {
+    try {
+      setIsLoading(true);
+      const updated = await apiUpdateProfile(updates);
+      setUser(updated);
+      localStorage.setItem('user', JSON.stringify(updated));
+    } catch (error) {
+      console.error('Update profile error:', error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -79,14 +94,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const checkAuth = async (): Promise<void> => {
     try {
       const storedToken = localStorage.getItem('authToken');
-      const storedUser = localStorage.getItem('user');
-
-      if (storedToken && storedUser) {
-        // Verify token is still valid by making a simple API call
-        // For now, we'll use the stored user data
-        const userData = JSON.parse(storedUser);
+      if (storedToken) {
+        const userData = await getCurrentUser();
         setToken(storedToken);
         setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
       }
     } catch (error) {
       console.error('Auth check error:', error);
@@ -106,6 +118,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isLoading,
     login,
     register,
+    updateProfile,
     logout,
     checkAuth,
   };

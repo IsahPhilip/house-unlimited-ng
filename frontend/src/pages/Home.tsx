@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SearchCriteria, Property } from '../types';
+import { getFeaturedProperties } from '../services/api';
 import { PropertyCard } from '../components/PropertyCard';
 
 interface HomeProps {
   onSearch: (criteria: SearchCriteria) => void;
-  wishlistIds: number[];
-  onWishlistToggle: (id: number) => void;
-  onNavigate: (id: number) => void;
+  wishlistIds: string[];
+  onWishlistToggle: (id: string, property?: Property) => void;
+  onNavigate: (id: string) => void;
 }
 
 export const Home: React.FC<HomeProps> = ({
@@ -15,6 +16,8 @@ export const Home: React.FC<HomeProps> = ({
   onWishlistToggle,
   onNavigate
 }) => {
+  const [featured, setFeatured] = useState<Property[]>([]);
+  const [loadingFeatured, setLoadingFeatured] = useState(true);
   const [criteria, setCriteria] = useState<SearchCriteria>({
     location: '',
     type: 'Apartment',
@@ -29,6 +32,38 @@ export const Home: React.FC<HomeProps> = ({
     { icon: '🏘️', label: 'Villa', count: '2,841 Properties' },
     { icon: '🏥', label: 'Medical', count: '1,052 Properties' },
   ];
+
+  useEffect(() => {
+    const loadFeatured = async () => {
+      try {
+        const data = await getFeaturedProperties();
+        const mapped = (data || []).map((p: any) => ({
+          id: p._id || p.id,
+          title: p.title,
+          price: p.price || p.priceValue,
+          priceValue: p.priceValue || 0,
+          type: p.type,
+          category: p.category,
+          address: p.address,
+          beds: p.beds,
+          baths: p.baths,
+          sqft: p.sqft,
+          image: p.featuredImage || p.image || p.images?.[0] || '',
+          images: p.images,
+          description: p.description || '',
+          amenities: p.amenities || [],
+          coordinates: p.coordinates || [0, 0],
+        }));
+        setFeatured(mapped);
+      } catch (error) {
+        console.error('Failed to load featured properties:', error);
+      } finally {
+        setLoadingFeatured(false);
+      }
+    };
+
+    loadFeatured();
+  }, []);
 
   return (
     <div className="animate-in fade-in duration-500">
@@ -238,70 +273,21 @@ export const Home: React.FC<HomeProps> = ({
           </button>
         </div>
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Mock properties would go here */}
-          <PropertyCard
-            property={{
-              id: 1,
-              title: 'Riverview Retreat',
-              price: '$6,000/month',
-              priceValue: 6000,
-              type: 'Apartment',
-              category: 'rent',
-              address: '6391 Elgin St. Celina, Delaware 10299',
-              beds: 4,
-              baths: 2,
-              sqft: 2148,
-              image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=800',
-              description: 'Experience luxury living in this spacious 4-bedroom apartment featuring stunning river views.',
-              amenities: ['River View', 'Gourmet Kitchen', 'Parking', 'Gym', 'Balcony', 'Smart Home System'],
-              coordinates: [39.7392, -104.9903]
-            }}
-            isWishlisted={wishlistIds.includes(1)}
-            onWishlistToggle={onWishlistToggle}
-            onNavigate={onNavigate}
-          />
-          <PropertyCard
-            property={{
-              id: 2,
-              title: 'Sunset Vista Villa',
-              price: '$396,000',
-              priceValue: 396000,
-              type: 'Villa',
-              category: 'sale',
-              address: '1901 Thornridge Cir., Hawaii 81063',
-              beds: 2,
-              baths: 1,
-              sqft: 1148,
-              image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&q=80&w=800',
-              description: 'Escape to paradise in this charming Hawaiian villa.',
-              amenities: ['Ocean View', 'Private Garden', 'Lanai', 'Outdoor Shower', 'Solar Panels'],
-              coordinates: [21.3069, -157.8583]
-            }}
-            isWishlisted={wishlistIds.includes(2)}
-            onWishlistToggle={onWishlistToggle}
-            onNavigate={onNavigate}
-          />
-          <PropertyCard
-            property={{
-              id: 3,
-              title: 'Pineview Place',
-              price: '$125,000',
-              priceValue: 125000,
-              type: 'Apartment',
-              category: 'sale',
-              address: '2464 Royal Ln., New Jersey 45463',
-              beds: 1,
-              baths: 1,
-              sqft: 1248,
-              image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=800',
-              description: 'Efficient and elegant, Pineview Place is an ideal starter home.',
-              amenities: ['Park View', 'Updated Appliances', 'Security System', 'Laundry In-unit'],
-              coordinates: [40.7128, -74.0060]
-            }}
-            isWishlisted={wishlistIds.includes(3)}
-            onWishlistToggle={onWishlistToggle}
-            onNavigate={onNavigate}
-          />
+          {loadingFeatured ? (
+            <div className="col-span-full text-center text-gray-500">Loading featured properties...</div>
+          ) : featured.length > 0 ? (
+            featured.map((p) => (
+              <PropertyCard
+                key={p.id}
+                property={p}
+                isWishlisted={wishlistIds.includes(p.id)}
+                onWishlistToggle={onWishlistToggle}
+                onNavigate={onNavigate}
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center text-gray-500">No featured properties available.</div>
+          )}
         </div>
       </section>
 

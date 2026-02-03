@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { getPropertyById, getReviewsByPropertyId, addReview } from '../services/api';
 
 // Minimal types needed for this component
 type AuthMode = 'signin' | 'signup';
@@ -9,8 +10,8 @@ interface User {
 }
 
 interface Review {
-  id: number;
-  propertyId: number;
+  id: string;
+  propertyId: string;
   userName: string;
   rating: number;
   comment: string;
@@ -18,7 +19,7 @@ interface Review {
 }
 
 interface Property {
-  id: number;
+  id: string;
   title: string;
   price: string;
   type: string;
@@ -52,83 +53,6 @@ interface Property {
   similarProperties?: Property[];
 }
 
-// Mock data - in real app you would get this from props/route params/API
-const SAMPLE_PROPERTY: Property = {
-  id: 1,
-  title: 'Riverview Retreat',
-  price: '$6,000/month',
-  type: 'Apartment',
-  category: 'rent',
-  address: '6391 Elgin St. Celina, Delaware 10299',
-  beds: 4,
-  baths: 2,
-  sqft: 2148,
-  image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1600',
-  images: [
-    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1600',
-    'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&q=80&w=1600',
-    'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&q=80&w=1600',
-  ],
-  description: 'Experience luxury living in this spacious 4-bedroom apartment featuring stunning river views. This modern residence offers an open-concept layout with high-end finishes, a gourmet kitchen, and floor-to-ceiling windows that flood the space with natural light.',
-  amenities: ['River View', 'Gourmet Kitchen', 'Parking', 'Gym', 'Balcony', 'Smart Home System'],
-  // New features data
-  yearBuilt: 2020,
-  lotSize: '0.25 acres',
-  parkingSpaces: 2,
-  utilities: ['Electricity', 'Water', 'Gas', 'Internet'],
-  status: 'available',
-  daysOnMarket: 15,
-  priceHistory: [
-    { date: '2024-01-01', price: '$5,800/month' },
-    { date: '2024-02-01', price: '$6,000/month' }
-  ],
-  videoTourUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-  latitude: 39.7392,
-  longitude: -104.9903,
-  neighborhood: {
-    name: 'Riverfront District',
-    schools: ['Riverfront Elementary', 'Central High School'],
-    crimeRate: 'Low',
-    averagePrice: '$5,500/month'
-  },
-  similarProperties: [
-    {
-      id: 2,
-      title: 'Modern Downtown Loft',
-      price: '$4,500/month',
-      type: 'Loft',
-      category: 'rent',
-      address: '123 Main St, Downtown',
-      beds: 2,
-      baths: 1,
-      sqft: 1200,
-      image: 'https://images.unsplash.com/photo-1560184897-6a0e5bd901d5?auto=format&fit=crop&q=80&w=1600',
-      amenities: ['Gym', 'Pool', 'Parking'],
-      status: 'available',
-      description: 'Stylish downtown loft with modern amenities and city views.'
-    },
-    {
-      id: 3,
-      title: 'Suburban Family Home',
-      price: '$3,200/month',
-      type: 'House',
-      category: 'rent',
-      address: '456 Oak Ave, Suburbia',
-      beds: 3,
-      baths: 2,
-      sqft: 1800,
-      image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1600',
-      amenities: ['Yard', 'Garage', 'School District'],
-      status: 'pending',
-      description: 'Spacious family home in quiet suburban neighborhood with excellent schools.'
-    }
-  ]
-};
-
-const INITIAL_REVIEWS: Review[] = [
-  { id: 1, propertyId: 1, userName: 'John Smith', rating: 5, comment: 'Absolutely stunning views and the interior is top-notch.', date: '2024-03-15' },
-  { id: 2, propertyId: 1, userName: 'Sarah Jenkins', rating: 4, comment: 'Great location, though parking can be a bit tight during peak hours.', date: '2024-04-02' },
-];
 
 // Reusable Star Rating Component
 const StarRating = ({ 
@@ -164,29 +88,26 @@ const StarRating = ({
 };
 
 interface PropertyDetailsPageProps {
-  property?: Property;              // optional - falls back to sample if not provided
-  reviews?: Review[];
+  propertyId?: string;
   user?: User | null;
-  onAddReview?: (review: Omit<Review, 'id' | 'date'>) => void;
-  onWishlistToggle?: (id: number) => void;
+  onWishlistToggle?: (id: string, property?: any) => void;
   isWishlisted?: boolean;
   onBack?: () => void;
   openAuthModal?: (mode: AuthMode) => void;
 }
 
 const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
-  property: propProperty,
-  reviews: propReviews = INITIAL_REVIEWS,
   user = null,
-  onAddReview,
   onWishlistToggle,
   isWishlisted = false,
   onBack,
   openAuthModal,
+  propertyId,
 }) => {
-  const property = propProperty || SAMPLE_PROPERTY;
-  
-  const [activeImage, setActiveImage] = useState(property.image);
+  const [property, setProperty] = useState<Property | null>(null);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeImage, setActiveImage] = useState('');
   const [inquirySent, setInquirySent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isVirtualTourModalOpen, setIsVirtualTourModalOpen] = useState(false);
@@ -195,7 +116,60 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
   const [newRating, setNewRating] = useState(5);
   const [newComment, setNewComment] = useState('');
 
-  const propertyReviews = propReviews.filter(r => r.propertyId === property.id);
+  useEffect(() => {
+    const loadDetails = async () => {
+      if (!propertyId) {
+        setIsLoading(false);
+        return;
+      }
+      try {
+        setIsLoading(true);
+        const [propertyData, reviewData] = await Promise.all([
+          getPropertyById(propertyId),
+          getReviewsByPropertyId(propertyId),
+        ]);
+        if (propertyData) {
+          setProperty({
+            ...propertyData,
+            image: (propertyData as any).featuredImage || (propertyData as any).image || (propertyData as any).images?.[0] || '',
+          } as any);
+          setActiveImage((propertyData as any).featuredImage || (propertyData as any).image || (propertyData as any).images?.[0] || '');
+        }
+        setReviews(reviewData || []);
+      } catch (error) {
+        console.error('Failed to load property details:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadDetails();
+  }, [propertyId]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center text-gray-600">Loading property...</div>
+      </div>
+    );
+  }
+
+  if (!property) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center text-gray-600">Property not found.</div>
+      </div>
+    );
+  }
+
+  const propertyReviews = reviews.map((r: any) => ({
+    id: r._id || r.id,
+    propertyId: r.property?._id || r.propertyId,
+    userName: r.user?.name || r.userName || 'User',
+    rating: r.rating,
+    comment: r.comment,
+    date: r.createdAt || r.date,
+  })).filter((r: any) => r.propertyId === property.id);
   const avgRating = propertyReviews.length > 0 
     ? (propertyReviews.reduce((sum, r) => sum + r.rating, 0) / propertyReviews.length).toFixed(1)
     : "0.0";
@@ -274,19 +248,25 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
     }
   };
 
-  const handleReviewSubmit = (e: React.FormEvent) => {
+  const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !onAddReview) return;
-    
-    onAddReview({
-      propertyId: property.id,
-      userName: user.name,
-      rating: newRating,
-      comment: newComment
-    });
-    
-    setNewComment('');
-    setNewRating(5);
+    if (!user) return;
+    try {
+      await addReview({
+        propertyId: property.id,
+        rating: newRating,
+        comment: newComment,
+        title: 'Review',
+        userName: user.name,
+      } as any);
+      const updatedReviews = await getReviewsByPropertyId(property.id);
+      setReviews(updatedReviews || []);
+      setNewComment('');
+      setNewRating(5);
+    } catch (error) {
+      console.error('Failed to submit review:', error);
+      alert('Failed to submit review. Please try again.');
+    }
   };
 
   return (
@@ -322,9 +302,9 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   className="w-full h-full object-cover"
                 />
               </div>
-              {property.images && property.images.length > 0 && (
-                <div className="p-4 flex gap-3 overflow-x-auto pb-2">
-                  {[property.image, ...property.images].map((img, i) => (
+                {property.images && property.images.length > 0 && (
+                  <div className="p-4 flex gap-3 overflow-x-auto pb-2">
+                  {[property.image, ...property.images].filter(Boolean).map((img, i) => (
                     <button
                       key={i}
                       onClick={() => setActiveImage(img)}
@@ -698,7 +678,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                     <div className="flex space-x-2">
                       {onWishlistToggle && (
                         <button
-                          onClick={() => onWishlistToggle(property.id)}
+                          onClick={() => onWishlistToggle(property.id, property)}
                           className={`p-3 rounded-full transition-colors ${
                             isWishlisted 
                               ? 'bg-red-50 text-red-600' 

@@ -6,7 +6,8 @@ declare const L: any;
 
 interface MapViewProps {
   properties: Property[];
-  onNavigate: (id: number) => void;
+  onNavigate: (id: string) => void;
+  onWishlistToggle?: (id: string, property?: Property) => void;
 }
 
 export const MapView: React.FC<MapViewProps> = ({ properties, onNavigate }) => {

@@ -4,8 +4,8 @@ import { Property } from '../types';
 interface PropertyCardProps {
   property: Property;
   isWishlisted: boolean;
-  onWishlistToggle: (id: number) => void;
-  onNavigate: (id: number) => void;
+  onWishlistToggle: (id: string, property?: Property) => void;
+  onNavigate: (id: string) => void;
 }
 
 export const PropertyCard: React.FC<PropertyCardProps> = ({ 
@@ -30,7 +30,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
         <button 
           onClick={(e) => {
             e.stopPropagation();
-            onWishlistToggle(property.id);
+            onWishlistToggle(property.id, property);
           }}
           className={`backdrop-blur p-2 rounded-full transition-all shadow-lg ${isWishlisted ? 'bg-red-500 text-white' : 'bg-white/80 text-gray-600 hover:text-red-500'}`}
           title="Save to wishlist"

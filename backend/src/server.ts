@@ -22,6 +22,7 @@ import inquiryRoutes from './routes/inquiry.routes.js';
 import newsletterRoutes from './routes/newsletter.routes.js';
 import contactRoutes from './routes/contact.routes.js';
 import blogRoutes from './routes/blog.routes.js';
+import adminRoutes from './routes/admin.routes.js';
 
 const app = express();
 
@@ -53,8 +54,27 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // CORS configuration
+const corsOrigins = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3001'],
+  origin: (origin, callback) => {
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      return callback(null, true);
+    }
+
+    if (corsOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
@@ -105,6 +125,7 @@ app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/blog', blogRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Welcome route
 app.get('/api', (req, res) => {

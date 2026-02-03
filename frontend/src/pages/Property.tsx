@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Property } from '../types';
-import { PROPERTIES } from '../utils/mockData';
+import { getProperties } from '../services/api';
 import { PropertyCard } from '../components/PropertyCard';
 import { MapView } from '../components/MapView';
 
 interface PropertyPageProps {
   searchCriteria: any | null;
-  wishlistIds: number[];
-  onWishlistToggle: (id: number) => void;
-  onNavigate: (id: number) => void;
+  wishlistIds: string[];
+  onWishlistToggle: (id: string, property?: Property) => void;
+  onNavigate: (id: string) => void;
 }
 
 export const PropertyPage: React.FC<PropertyPageProps> = ({ 
@@ -20,10 +20,15 @@ export const PropertyPage: React.FC<PropertyPageProps> = ({
   const [filter, setFilter] = useState<'all' | 'rent' | 'sale'>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [pagination, setPagination] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 9;
+  const [isLoading, setIsLoading] = useState(true);
 
   // Functional Filtering Logic
   const getFilteredProperties = () => {
-    let list = [...PROPERTIES];
+    let list = [...properties];
 
     // Category Filter
     if (filter !== 'all') {
@@ -55,6 +60,39 @@ export const PropertyPage: React.FC<PropertyPageProps> = ({
   };
 
   const filtered = getFilteredProperties();
+
+  useEffect(() => {
+    const loadProperties = async () => {
+      try {
+        const result = await getProperties(currentPage, pageSize);
+        const mapped = (result.data || []).map((p: any) => ({
+          id: p._id || p.id,
+          title: p.title,
+          price: p.price || p.priceValue,
+          priceValue: p.priceValue || 0,
+          type: p.type,
+          category: p.category,
+          address: p.address,
+          beds: p.beds,
+          baths: p.baths,
+          sqft: p.sqft,
+          image: p.featuredImage || p.image || p.images?.[0] || '',
+          images: p.images,
+          description: p.description || '',
+          amenities: p.amenities || [],
+          coordinates: p.coordinates || [0, 0],
+        }));
+        setProperties(mapped);
+        setPagination(result.pagination || null);
+      } catch (error) {
+        console.error('Failed to load properties:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadProperties();
+  }, [currentPage]);
 
   return (
     <div className="py-16 bg-gray-50 min-h-screen animate-in fade-in duration-500">
@@ -113,7 +151,9 @@ export const PropertyPage: React.FC<PropertyPageProps> = ({
           </div>
         </div>
 
-        {filtered.length > 0 ? (
+        {isLoading ? (
+          <div className="text-center py-16 text-gray-500">Loading properties...</div>
+        ) : filtered.length > 0 ? (
           viewMode === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {filtered.map((p) => (
@@ -138,6 +178,28 @@ export const PropertyPage: React.FC<PropertyPageProps> = ({
             <h3 className="text-2xl font-bold text-gray-900 mb-2">No matching properties found</h3>
             <p className="text-gray-500 mb-8">Try adjusting your filters or search location to find what you're looking for.</p>
             <button onClick={() => { setFilter('all'); window.location.reload(); }} className="text-teal-600 font-bold hover:underline">Reset all filters</button>
+          </div>
+        )}
+
+        {pagination && pagination.totalPages > 1 && (
+          <div className="flex justify-center items-center mt-10 gap-2">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={!pagination.hasPrev}
+              className="px-4 py-2 text-sm border border-gray-200 rounded-lg disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <span className="text-sm text-gray-500">
+              Page {pagination.currentPage} of {pagination.totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(pagination.totalPages, p + 1))}
+              disabled={!pagination.hasNext}
+              className="px-4 py-2 text-sm border border-gray-200 rounded-lg disabled:opacity-50"
+            >
+              Next
+            </button>
           </div>
         )}
 

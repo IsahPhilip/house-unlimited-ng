@@ -15,6 +15,7 @@ import {
   Phone,
   Loader2
 } from 'lucide-react';
+import { getAgents } from '../services/api';
 
 interface Agent {
   id: string;
@@ -37,65 +38,10 @@ const Agents = () => {
   const [filterStatus, setFilterStatus] = useState('all');
 
   useEffect(() => {
-    // Simulate fetching data
     const fetchAgents = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        const mockAgents: Agent[] = [
-          {
-            id: '1',
-            name: 'Mike Wilson',
-            email: 'mike.wilson@example.com',
-            phone: '+1 (555) 123-4567',
-            licenseNumber: 'LIC123456',
-            propertiesCount: 15,
-            dealsCount: 8,
-            totalSales: 3200000,
-            rating: 4.8,
-            isActive: true,
-            joinDate: '2024-01-15T10:30:00Z'
-          },
-          {
-            id: '2',
-            name: 'Lisa Thompson',
-            email: 'lisa.thompson@example.com',
-            phone: '+1 (555) 987-6543',
-            licenseNumber: 'LIC789012',
-            propertiesCount: 22,
-            dealsCount: 15,
-            totalSales: 5800000,
-            rating: 4.9,
-            isActive: true,
-            joinDate: '2023-12-01T09:15:00Z'
-          },
-          {
-            id: '3',
-            name: 'David Miller',
-            email: 'david.miller@example.com',
-            phone: '+1 (555) 456-7890',
-            licenseNumber: 'LIC345678',
-            propertiesCount: 8,
-            dealsCount: 3,
-            totalSales: 1200000,
-            rating: 4.6,
-            isActive: true,
-            joinDate: '2024-02-20T16:45:00Z'
-          },
-          {
-            id: '4',
-            name: 'Anna Garcia',
-            email: 'anna.garcia@example.com',
-            phone: '+1 (555) 789-0123',
-            licenseNumber: 'LIC901234',
-            propertiesCount: 12,
-            dealsCount: 6,
-            totalSales: 2100000,
-            rating: 4.7,
-            isActive: false,
-            joinDate: '2024-01-10T14:30:00Z'
-          }
-        ];
-        setAgents(mockAgents);
+        const data = await getAgents();
+        setAgents(data);
       } catch (error) {
         console.error('Error fetching agents:', error);
       } finally {

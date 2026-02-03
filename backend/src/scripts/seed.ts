@@ -10,6 +10,7 @@ import Review from '../models/mongodb/Review.mongoose.js';
 import { BlogPost } from '../models/mongodb/BlogPost.mongoose.js';
 import Newsletter from '../models/Newsletter.js';
 import Contact from '../models/Contact.js';
+import Deal from '../models/mongodb/Deal.mongoose.js';
 
 const readTimeFor = (content: string): number => {
   const wordsPerMinute = 200;
@@ -37,6 +38,7 @@ const run = async (): Promise<void> => {
       BlogPost.deleteMany({}),
       Newsletter.deleteMany({}),
       Contact.deleteMany({}),
+      Deal.deleteMany({}),
       User.deleteMany({}),
     ]);
   }
@@ -76,6 +78,25 @@ const run = async (): Promise<void> => {
     },
   });
   await agent.save();
+
+  const secondAgentUser = await User.findOne({ email: 'agent2@houseunlimited.com' }).select('+password');
+  const secondAgent = secondAgentUser ?? new User();
+  Object.assign(secondAgent, {
+    name: 'Tosin Adeyemi',
+    email: 'agent2@houseunlimited.com',
+    password: 'AgentPass123!',
+    role: 'agent',
+    isEmailVerified: true,
+    phone: '+234 803 442 9911',
+    location: 'Lagos, Nigeria',
+    preferences: {
+      emailNotifications: true,
+      smsNotifications: true,
+      favoritePropertyTypes: ['apartment', 'condo'],
+      priceRange: { min: 75000, max: 3500000 },
+    },
+  });
+  await secondAgent.save();
 
   const userUser = await User.findOne({ email: 'user@houseunlimited.com' }).select('+password');
   const endUser = userUser ?? new User();
@@ -193,6 +214,9 @@ const run = async (): Promise<void> => {
     .limit(2);
 
   if (propertyA && propertyB) {
+    propertyB.status = 'sold';
+    await propertyB.save();
+
     const blogPostsSeed = [
       {
         title: 'Top Neighborhoods to Watch in 2026',
@@ -307,6 +331,7 @@ const run = async (): Promise<void> => {
     status: 'pending',
     priority: 'high',
     assignedTo: agent._id,
+    propertyId: propertyA?._id,
   };
 
   const existingContact = await Contact.findOne({
@@ -315,6 +340,62 @@ const run = async (): Promise<void> => {
   });
   if (!existingContact) {
     await Contact.create(contactSeed);
+  }
+
+  const contactSeed2 = {
+    name: 'Chinedu Okafor',
+    email: 'chinedu.okafor@example.com',
+    subject: 'Schedule inspection for Lekki Phase One Apartment',
+    message: 'Looking to inspect this week. Please share available time slots.',
+    phone: '+2348091102233',
+    type: 'property_inquiry',
+    status: 'in_progress',
+    priority: 'medium',
+    assignedTo: secondAgent._id,
+    propertyId: propertyB?._id,
+  };
+
+  const existingContact2 = await Contact.findOne({
+    email: contactSeed2.email,
+    subject: contactSeed2.subject,
+  });
+  if (!existingContact2) {
+    await Contact.create(contactSeed2);
+  }
+
+  if (propertyA && propertyB) {
+    const existingDeal = await Deal.findOne({
+      property: propertyB._id,
+      buyer: endUser._id,
+    });
+
+    if (!existingDeal) {
+      await Deal.create({
+        property: propertyB._id,
+        buyer: endUser._id,
+        seller: admin._id,
+        agent: agent._id,
+        offerPrice: 170000000,
+        acceptedPrice: 175000000,
+        status: 'closed',
+      });
+    }
+
+    const existingDeal2 = await Deal.findOne({
+      property: propertyA._id,
+      buyer: admin._id,
+    });
+
+    if (!existingDeal2) {
+      await Deal.create({
+        property: propertyA._id,
+        buyer: admin._id,
+        seller: agent._id,
+        agent: secondAgent._id,
+        offerPrice: 630000000,
+        status: 'pending',
+      });
+    }
   }
 
   logger.info('Seed completed successfully.');

@@ -13,6 +13,7 @@ import {
   Square,
   Loader2
 } from 'lucide-react';
+import { getProperties } from '../services/api';
 
 interface Property {
   id: string;
@@ -35,65 +36,23 @@ const Properties = () => {
   const [filterStatus, setFilterStatus] = useState('all');
 
   useEffect(() => {
-    // Simulate fetching data
     const fetchProperties = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        const mockProperties: Property[] = [
-          {
-            id: '1',
-            title: 'Modern Downtown Loft',
-            address: '123 Main St, Downtown',
-            price: 450000,
-            type: 'Apartment',
-            status: 'active',
-            beds: 2,
-            baths: 2,
-            sqft: 1200,
-            image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=300',
-            dateAdded: '2024-03-15'
-          },
-          {
-            id: '2',
-            title: 'Suburban Family Home',
-            address: '456 Oak Ave, Suburbia',
-            price: 850000,
-            type: 'House',
-            status: 'pending',
-            beds: 4,
-            baths: 3,
-            sqft: 2400,
-            image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=300',
-            dateAdded: '2024-03-14'
-          },
-          {
-            id: '3',
-            title: 'Luxury Beach Villa',
-            address: '789 Ocean Dr, Seaside',
-            price: 2100000,
-            type: 'Villa',
-            status: 'active',
-            beds: 5,
-            baths: 4,
-            sqft: 3500,
-            image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&q=80&w=300',
-            dateAdded: '2024-03-12'
-          },
-          {
-            id: '4',
-            title: 'Cozy City Studio',
-            address: '101 Pine St, City Center',
-            price: 250000,
-            type: 'Studio',
-            status: 'sold',
-            beds: 1,
-            baths: 1,
-            sqft: 500,
-            image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=300',
-            dateAdded: '2024-02-28'
-          }
-        ];
-        setProperties(mockProperties);
+        const data = await getProperties();
+        const mapped = data.map((property: any) => ({
+          id: property._id || property.id,
+          title: property.title,
+          address: property.address,
+          price: property.priceValue || 0,
+          type: property.type,
+          status: property.status === 'available' ? 'active' : property.status,
+          beds: property.beds,
+          baths: property.baths,
+          sqft: property.sqft,
+          image: property.featuredImage || property.images?.[0] || '',
+          dateAdded: property.createdAt,
+        }));
+        setProperties(mapped);
       } catch (error) {
         console.error('Error fetching properties:', error);
       } finally {
