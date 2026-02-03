@@ -1,4 +1,5 @@
 import React from 'react';
+import { Mail } from 'lucide-react';
 import { Page } from '../types';
 
 interface ResetPasswordEmailSentPageProps {
@@ -10,8 +11,8 @@ const ResetPasswordEmailSentPage: React.FC<ResetPasswordEmailSentPageProps> = ({
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-200px)] bg-gray-50 p-4">
       <div className="bg-white rounded-3xl shadow-xl p-8 w-full max-w-md text-center">
-        <div className="mb-6">
-          <i className="fas fa-envelope text-6xl text-teal-500 mb-4"></i>
+        <div className="mb-6 flex justify-center">
+          <Mail className="w-16 h-16 text-teal-500" />
         </div>
         <h2 className="text-3xl font-extrabold text-gray-900 mb-6">Check Your Email</h2>
         <p className="text-gray-600 mb-6">

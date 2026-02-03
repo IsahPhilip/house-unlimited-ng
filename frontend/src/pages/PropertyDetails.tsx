@@ -1,4 +1,26 @@
 import React, { useEffect, useState } from 'react';
+import {
+  ArrowLeft,
+  Bath,
+  Bed,
+  Calendar,
+  Car,
+  Check,
+  Heart,
+  Home as HomeIcon,
+  Mail,
+  MapPin,
+  MessageCircle,
+  PhoneCall,
+  Printer,
+  Ruler,
+  School,
+  Share2,
+  Star,
+  Video,
+  X,
+  Zap,
+} from 'lucide-react';
 import { getPropertyById, getReviewsByPropertyId, addReview } from '../services/api';
 
 // Minimal types needed for this component
@@ -78,9 +100,7 @@ const StarRating = ({
           onClick={() => interactive && setRating?.(star)}
           className={`transition-all ${interactive ? 'hover:scale-110 cursor-pointer' : ''} ${star <= rating ? 'text-yellow-400' : 'text-gray-200'}`}
         >
-          <svg className={iconSize} fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-          </svg>
+          <Star className={iconSize} fill={star <= rating ? 'currentColor' : 'none'} />
         </button>
       ))}
     </div>
@@ -279,7 +299,9 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               onClick={onBack}
               className="hover:text-teal-600 transition-colors font-medium"
             >
-              ← Back to Properties
+              <span className="inline-flex items-center gap-2">
+                <ArrowLeft className="w-4 h-4" /> Back to Properties
+              </span>
             </button>
             <span className="text-gray-300">/</span>
             <span className="font-medium text-gray-900 truncate max-w-[300px]">
@@ -353,7 +375,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                     {property.title}
                   </h1>
                   <p className="text-gray-600 flex items-center text-lg">
-                    <span className="mr-2">📍</span>
+                    <MapPin className="w-4 h-4 mr-2 text-teal-600" />
                     {property.address}
                   </p>
                   {/* Property History Info */}
@@ -380,22 +402,30 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               {/* Key Features Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 py-8 border-y border-gray-100">
                 <div className="text-center">
-                  <div className="text-3xl mb-2">🛏️</div>
+                  <div className="text-3xl mb-2 text-teal-600">
+                    <Bed className="w-8 h-8 mx-auto" />
+                  </div>
                   <div className="text-2xl font-bold">{property.beds}</div>
                   <div className="text-sm text-gray-600 mt-1">Bedrooms</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl mb-2">🛁</div>
+                  <div className="text-3xl mb-2 text-teal-600">
+                    <Bath className="w-8 h-8 mx-auto" />
+                  </div>
                   <div className="text-2xl font-bold">{property.baths}</div>
                   <div className="text-sm text-gray-600 mt-1">Bathrooms</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl mb-2">📏</div>
+                  <div className="text-3xl mb-2 text-teal-600">
+                    <Ruler className="w-8 h-8 mx-auto" />
+                  </div>
                   <div className="text-2xl font-bold">{property.sqft}</div>
                   <div className="text-sm text-gray-600 mt-1">Sqft</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl mb-2">🏡</div>
+                  <div className="text-3xl mb-2 text-teal-600">
+                    <HomeIcon className="w-8 h-8 mx-auto" />
+                  </div>
                   <div className="text-2xl font-bold">{property.type}</div>
                   <div className="text-sm text-gray-600 mt-1">Type</div>
                 </div>
@@ -419,7 +449,9 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                     key={i} 
                     className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl"
                   >
-                    <div className="text-teal-600 text-xl">✓</div>
+                    <div className="text-teal-600">
+                      <Check className="w-5 h-5" />
+                    </div>
                     <span className="font-medium">{amenity}</span>
                   </div>
                 ))}
@@ -436,7 +468,9 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                       <span className="text-sm text-gray-500">Year Built</span>
                       <p className="font-bold text-lg">{property.yearBuilt}</p>
                     </div>
-                    <div className="text-2xl">🏠</div>
+                    <div className="text-2xl text-teal-600">
+                      <HomeIcon className="w-6 h-6" />
+                    </div>
                   </div>
                 )}
                 {property.lotSize && (
@@ -445,7 +479,9 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                       <span className="text-sm text-gray-500">Lot Size</span>
                       <p className="font-bold text-lg">{property.lotSize}</p>
                     </div>
-                    <div className="text-2xl">📏</div>
+                    <div className="text-2xl text-teal-600">
+                      <Ruler className="w-6 h-6" />
+                    </div>
                   </div>
                 )}
                 {property.parkingSpaces && (
@@ -454,7 +490,9 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                       <span className="text-sm text-gray-500">Parking Spaces</span>
                       <p className="font-bold text-lg">{property.parkingSpaces}</p>
                     </div>
-                    <div className="text-2xl">🚗</div>
+                    <div className="text-2xl text-teal-600">
+                      <Car className="w-6 h-6" />
+                    </div>
                   </div>
                 )}
                 {property.utilities && property.utilities.length > 0 && (
@@ -463,7 +501,9 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                       <span className="text-sm text-gray-500">Utilities</span>
                       <p className="font-bold text-lg">{property.utilities.join(', ')}</p>
                     </div>
-                    <div className="text-2xl">⚡</div>
+                    <div className="text-2xl text-teal-600">
+                      <Zap className="w-6 h-6" />
+                    </div>
                   </div>
                 )}
               </div>
@@ -493,7 +533,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                     <ul className="space-y-2">
                       {property.neighborhood.schools?.map((school, i) => (
                         <li key={i} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
-                          <span className="text-teal-600">🏫</span>
+                          <School className="w-4 h-4 text-teal-600" />
                           <span>{school}</span>
                         </li>
                       ))}
@@ -648,19 +688,19 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               <h2 className="text-2xl font-bold mb-6">Share This Property</h2>
               <div className="flex flex-wrap gap-4">
                 <button onClick={handleShare} className="flex items-center gap-3 px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors">
-                  <span className="text-lg">📱</span>
+                  <Share2 className="w-5 h-5" />
                   <span>Share</span>
                 </button>
                 <button onClick={handlePrint} className="flex items-center gap-3 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                  <span className="text-lg">🖨️</span>
+                  <Printer className="w-5 h-5" />
                   <span>Print</span>
                 </button>
                 <button onClick={handleWhatsApp} className="flex items-center gap-3 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                  <span className="text-lg">💬</span>
+                  <MessageCircle className="w-5 h-5" />
                   <span>WhatsApp</span>
                 </button>
                 <button onClick={handleEmail} className="flex items-center gap-3 px-6 py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors">
-                  <span className="text-lg">📧</span>
+                  <Mail className="w-5 h-5" />
                   <span>Email</span>
                 </button>
               </div>
@@ -685,7 +725,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                               : 'bg-gray-100 text-gray-500 hover:text-red-600'
                           }`}
                         >
-                          {isWishlisted ? '❤️' : '♡'}
+                          <Heart className="w-5 h-5" fill={isWishlisted ? 'currentColor' : 'none'} />
                         </button>
                       )}
                       {property.virtualTourUrl && (
@@ -694,7 +734,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                           className="p-3 rounded-full bg-gray-100 text-gray-500 hover:text-teal-600 hover:bg-teal-50 transition-colors"
                           title="View Virtual Tour"
                         >
-                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                          <Video className="w-6 h-6" />
                         </button>
                       )}
                     </div>
@@ -735,8 +775,8 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                     </form>
                   ) : (
                     <div className="text-center py-10">
-                      <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">
-                        ✓
+                      <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <Check className="w-10 h-10" />
                       </div>
                       <h4 className="text-xl font-bold mb-3">Thank You!</h4>
                       <p className="text-gray-600">
@@ -767,11 +807,11 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   </div>
                 </div>
                 <div className="space-y-3 text-sm">
-                  <button onClick={handleCall} className="w-full py-3 bg-white/15 hover:bg-white/25 rounded-xl transition-colors">
-                    📞 Call Now
+                  <button onClick={handleCall} className="w-full py-3 bg-white/15 hover:bg-white/25 rounded-xl transition-colors inline-flex items-center justify-center gap-2">
+                    <PhoneCall className="w-4 h-4" /> Call Now
                   </button>
-                  <button onClick={handleScheduleViewing} className="w-full py-3 bg-white/15 hover:bg-white/25 rounded-xl transition-colors">
-                    📅 Schedule Viewing
+                  <button onClick={handleScheduleViewing} className="w-full py-3 bg-white/15 hover:bg-white/25 rounded-xl transition-colors inline-flex items-center justify-center gap-2">
+                    <Calendar className="w-4 h-4" /> Schedule Viewing
                   </button>
                 </div>
               </div>
@@ -788,7 +828,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               onClick={() => setIsVirtualTourModalOpen(false)}
               className="absolute top-3 right-3 text-gray-700 hover:text-gray-900 z-10 p-2 bg-white rounded-full"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              <X className="w-6 h-6" />
             </button>
             <iframe
               src={property.virtualTourUrl}
@@ -808,7 +848,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               onClick={() => setIsVirtualTourModalOpen(false)}
               className="absolute top-3 right-3 text-gray-700 hover:text-gray-900 z-10 p-2 bg-white rounded-full"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              <X className="w-6 h-6" />
             </button>
             <div className="w-full h-full bg-black flex items-center justify-center">
               <iframe

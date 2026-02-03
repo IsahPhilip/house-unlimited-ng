@@ -1,4 +1,5 @@
 import React from 'react';
+import { Facebook, Linkedin, Twitter } from 'lucide-react';
 
 const AgentsPage = () => (
   <div className="py-24 bg-gray-50 min-h-screen animate-in fade-in duration-500">
@@ -19,9 +20,15 @@ const AgentsPage = () => (
             <h4 className="text-xl font-bold text-gray-900">{member.name}</h4>
             <p className="text-teal-600 text-xs font-bold uppercase tracking-widest mt-1 mb-6">{member.role}</p>
             <div className="flex justify-center space-x-3">
-              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-teal-600 hover:text-white transition-colors cursor-pointer"><i className="fab fa-facebook-f text-xs"></i></div>
-              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-teal-600 hover:text-white transition-colors cursor-pointer"><i className="fab fa-twitter text-xs"></i></div>
-              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-teal-600 hover:text-white transition-colors cursor-pointer"><i className="fab fa-linkedin-in text-xs"></i></div>
+              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-teal-600 hover:text-white transition-colors cursor-pointer">
+                <Facebook className="w-4 h-4" />
+              </div>
+              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-teal-600 hover:text-white transition-colors cursor-pointer">
+                <Twitter className="w-4 h-4" />
+              </div>
+              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-teal-600 hover:text-white transition-colors cursor-pointer">
+                <Linkedin className="w-4 h-4" />
+              </div>
             </div>
           </div>
         ))}

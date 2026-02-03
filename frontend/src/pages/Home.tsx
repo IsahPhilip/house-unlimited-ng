@@ -1,4 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import {
+  ArrowRight,
+  Briefcase,
+  Building,
+  Building2,
+  DollarSign,
+  Home as HomeIcon,
+  Phone,
+  Search,
+  Smartphone,
+  Star,
+  Stethoscope
+} from 'lucide-react';
 import { SearchCriteria, Property } from '../types';
 import { getFeaturedProperties } from '../services/api';
 import { PropertyCard } from '../components/PropertyCard';
@@ -26,11 +39,11 @@ export const Home: React.FC<HomeProps> = ({
   });
 
   const propertyTypes = [
-    { icon: '🏢', label: 'Apartment', count: '3,452 Properties' },
-    { icon: '💼', label: 'Office', count: '1,252 Properties' },
-    { icon: '🏠', label: 'House', count: '5,485 Properties' },
-    { icon: '🏘️', label: 'Villa', count: '2,841 Properties' },
-    { icon: '🏥', label: 'Medical', count: '1,052 Properties' },
+    { icon: Building2, label: 'Apartment', count: '3,452 Properties' },
+    { icon: Briefcase, label: 'Office', count: '1,252 Properties' },
+    { icon: HomeIcon, label: 'House', count: '5,485 Properties' },
+    { icon: Building, label: 'Villa', count: '2,841 Properties' },
+    { icon: Stethoscope, label: 'Medical', count: '1,052 Properties' },
   ];
 
   useEffect(() => {
@@ -137,7 +150,7 @@ export const Home: React.FC<HomeProps> = ({
                   onClick={() => onSearch(criteria)}
                   className="bg-teal-600 text-white h-14 w-14 md:w-full rounded-xl flex items-center justify-center font-bold hover:bg-teal-700 transition-all shadow-lg shadow-teal-200"
                 >
-                  <span className="md:hidden">🔍</span>
+                  <Search className="md:hidden w-5 h-5" />
                   <span className="hidden md:block">Search</span>
                 </button>
               </div>
@@ -153,17 +166,51 @@ export const Home: React.FC<HomeProps> = ({
           <h2 className="text-4xl font-bold text-gray-900">Explore Property <span className="text-gray-400 italic font-light">Types</span></h2>
         </div>
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-5 gap-6">
-          {propertyTypes.map((type, idx) => (
+          {propertyTypes.map((type, idx) => {
+            const Icon = type.icon;
+            return (
             <div
               key={idx}
               onClick={() => onSearch({ location: '', type: type.label, priceRange: 'all', category: 'all' })}
               className={`p-8 rounded-3xl transition-all cursor-pointer group bg-white border border-gray-100 hover:border-teal-500 hover:shadow-xl hover:-translate-y-1`}
             >
-              <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">{type.icon}</div>
+              <div className="text-teal-600 mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Icon className="w-10 h-10 mx-auto" />
+              </div>
               <h4 className="font-bold mb-1 text-gray-900 group-hover:text-teal-600 transition-colors">{type.label}</h4>
               <p className={`text-[10px] font-bold uppercase tracking-wider text-gray-400`}>{type.count}</p>
             </div>
-          ))}
+          )})}
+        </div>
+      </section>
+
+      {/* Verified Listings Highlight */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+            <div className="max-w-xl">
+              <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Trust & Transparency</p>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+                Verified Listings, Clearer Decisions
+              </h2>
+              <p className="text-gray-600">
+                Every listing goes through a verification process so you can focus on the right properties faster.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full md:w-auto">
+              {[
+                { label: 'Verified Owners', detail: 'ID & title check' },
+                { label: 'On‑Site Inspection', detail: 'Property condition' },
+                { label: 'Price Validation', detail: 'Market benchmarking' },
+                { label: 'Secure Inquiry', detail: 'Protected messaging' },
+              ].map((item) => (
+                <div key={item.label} className="border border-gray-100 rounded-2xl p-4 bg-gray-50">
+                  <div className="text-teal-600 font-bold text-sm mb-1">{item.label}</div>
+                  <div className="text-xs text-gray-500">{item.detail}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -180,36 +227,38 @@ export const Home: React.FC<HomeProps> = ({
             <div className="space-y-8">
               {[
                 {
-                  icon: '🔍',
+                  icon: Search,
                   title: 'Advanced Search',
                   description: 'Powerful search with AI-driven recommendations to find your perfect property match.'
                 },
                 {
-                  icon: '📱',
+                  icon: Smartphone,
                   title: 'Mobile Friendly',
                   description: 'Responsive design that works seamlessly on all devices for property browsing on-the-go.'
                 },
                 {
-                  icon: '⭐',
+                  icon: Star,
                   title: 'Expert Agents',
                   description: 'Connect with our network of experienced real estate professionals ready to assist you.'
                 },
                 {
-                  icon: '💰',
+                  icon: DollarSign,
                   title: 'Best Deals',
                   description: 'Access exclusive listings and competitive pricing you won\'t find elsewhere.'
                 }
-              ].map((feature, idx) => (
+              ].map((feature, idx) => {
+                const Icon = feature.icon;
+                return (
                 <div key={idx} className="flex items-start space-x-4 group cursor-pointer hover:translate-x-2 transition-transform">
                   <div className="flex-shrink-0 w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center text-2xl group-hover:bg-teal-600 group-hover:text-white transition-colors">
-                    {feature.icon}
+                    <Icon className="w-6 h-6" />
                   </div>
                   <div>
                     <h4 className="font-bold text-lg text-gray-900 mb-1 group-hover:text-teal-600 transition-colors">{feature.title}</h4>
                     <p className="text-gray-600 text-sm">{feature.description}</p>
                   </div>
                 </div>
-              ))}
+              )})}
             </div>
 
             {/* Benefits Image/Content */}
@@ -269,7 +318,7 @@ export const Home: React.FC<HomeProps> = ({
             <h2 className="text-4xl font-bold text-gray-900">Discover <span className="text-gray-400 italic font-light">Popular Properties</span></h2>
           </div>
           <button onClick={() => onSearch({ location: '', type: 'all', priceRange: 'all', category: 'all' })} className="bg-teal-600 text-white px-8 py-3 rounded-full flex items-center group font-bold text-sm shadow-lg shadow-teal-100">
-            Visit All Properties <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+            Visit All Properties <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -361,7 +410,7 @@ export const Home: React.FC<HomeProps> = ({
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 max-w-sm">
                   <div className="flex items-center space-x-4 mb-4">
                     <div className="bg-white/20 w-12 h-12 rounded-full flex items-center justify-center">
-                      <span className="text-2xl">📞</span>
+                      <Phone className="w-6 h-6" />
                     </div>
                     <div>
                       <p className="text-white/80 text-sm">Contact our team</p>

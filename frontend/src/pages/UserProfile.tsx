@@ -1,4 +1,16 @@
 import React, { useEffect, useState } from 'react';
+import {
+  ArrowLeft,
+  BarChart3,
+  Camera,
+  Heart,
+  Home as HomeIcon,
+  Phone,
+  Search,
+  Settings,
+  Star,
+  TrendingUp,
+} from 'lucide-react';
 import { Page, User, Review } from '../types';
 import { getWishlist, getMyReviews } from '../services/api';
 
@@ -81,7 +93,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
             {user.name.charAt(0).toUpperCase()}
           </div>
           <button className="absolute bottom-0 right-0 bg-teal-600 text-white p-3 rounded-full shadow-lg hover:bg-teal-700">
-            📷
+            <Camera className="w-4 h-4" />
           </button>
         </div>
 
@@ -134,11 +146,13 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
     <div className="bg-white rounded-2xl p-2 shadow-sm mb-8">
       <div className="flex space-x-2">
         {[
-          { id: 'overview', label: 'Overview', icon: '📊' },
-          { id: 'properties', label: 'Saved Properties', icon: '❤️' },
-          { id: 'reviews', label: 'My Reviews', icon: '⭐' },
-          { id: 'settings', label: 'Settings', icon: '⚙️' },
-        ].map((tab) => (
+          { id: 'overview', label: 'Overview', icon: BarChart3 },
+          { id: 'properties', label: 'Saved Properties', icon: Heart },
+          { id: 'reviews', label: 'My Reviews', icon: Star },
+          { id: 'settings', label: 'Settings', icon: Settings },
+        ].map((tab) => {
+          const Icon = tab.icon;
+          return (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
@@ -148,10 +162,10 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
                 : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
-            <span>{tab.icon}</span>
+            <Icon className="w-4 h-4" />
             <span className="hidden sm:inline">{tab.label}</span>
           </button>
-        ))}
+        )})}
       </div>
     </div>
   );
@@ -163,21 +177,27 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
         <h2 className="text-2xl font-bold mb-6">Recent Activity</h2>
         <div className="space-y-4">
           <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-            <div className="w-10 h-10 bg-teal-100 text-teal-600 rounded-lg flex items-center justify-center">❤️</div>
+            <div className="w-10 h-10 bg-teal-100 text-teal-600 rounded-lg flex items-center justify-center">
+              <Heart className="w-5 h-5" />
+            </div>
             <div className="flex-1">
               <p className="font-medium">Saved "Riverview Retreat" to wishlist</p>
               <p className="text-sm text-gray-600">2 hours ago</p>
             </div>
           </div>
           <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-            <div className="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center">⭐</div>
+            <div className="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center">
+              <Star className="w-5 h-5" />
+            </div>
             <div className="flex-1">
               <p className="font-medium">Left a review for "Modern Downtown Loft"</p>
               <p className="text-sm text-gray-600">1 day ago</p>
             </div>
           </div>
           <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-            <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center">🔍</div>
+            <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center">
+              <Search className="w-5 h-5" />
+            </div>
             <div className="flex-1">
               <p className="font-medium">Searched for apartments in downtown</p>
               <p className="text-sm text-gray-600">3 days ago</p>
@@ -189,17 +209,23 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-2xl p-6 shadow-sm text-center">
-          <div className="text-3xl mb-2">🏠</div>
+          <div className="text-3xl mb-2 text-teal-600 flex justify-center">
+            <HomeIcon className="w-8 h-8" />
+          </div>
           <div className="text-2xl font-bold text-teal-600 mb-1">24</div>
           <div className="text-sm text-gray-600">Properties Viewed</div>
         </div>
         <div className="bg-white rounded-2xl p-6 shadow-sm text-center">
-          <div className="text-3xl mb-2">📞</div>
+          <div className="text-3xl mb-2 text-green-600 flex justify-center">
+            <Phone className="w-8 h-8" />
+          </div>
           <div className="text-2xl font-bold text-green-600 mb-1">8</div>
           <div className="text-sm text-gray-600">Agent Inquiries</div>
         </div>
         <div className="bg-white rounded-2xl p-6 shadow-sm text-center">
-          <div className="text-3xl mb-2">📈</div>
+          <div className="text-3xl mb-2 text-purple-600 flex justify-center">
+            <TrendingUp className="w-8 h-8" />
+          </div>
           <div className="text-2xl font-bold text-purple-600 mb-1">92%</div>
           <div className="text-sm text-gray-600">Profile Completion</div>
         </div>
@@ -245,7 +271,9 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
         </div>
       ) : (
         <div className="text-center py-12 bg-white rounded-2xl shadow-sm">
-          <div className="text-6xl mb-4">🏠</div>
+          <div className="text-6xl mb-4 flex justify-center text-teal-600">
+            <HomeIcon className="w-12 h-12" />
+          </div>
           <h3 className="text-xl font-bold mb-2">No saved properties yet</h3>
           <p className="text-gray-600 mb-6">Start exploring properties and save your favorites!</p>
           <button
@@ -274,9 +302,11 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
                 </div>
                 <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
-                    <span key={star} className={star <= review.rating ? 'text-yellow-400' : 'text-gray-300'}>
-                      ★
-                    </span>
+                    <Star
+                      key={star}
+                      className={star <= review.rating ? 'text-yellow-400 w-4 h-4' : 'text-gray-300 w-4 h-4'}
+                      fill={star <= review.rating ? 'currentColor' : 'none'}
+                    />
                   ))}
                 </div>
               </div>
@@ -286,7 +316,9 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
         </div>
       ) : (
         <div className="text-center py-12 bg-white rounded-2xl shadow-sm">
-          <div className="text-6xl mb-4">⭐</div>
+          <div className="text-6xl mb-4 flex justify-center text-yellow-400">
+            <Star className="w-12 h-12" />
+          </div>
           <h3 className="text-xl font-bold mb-2">No reviews yet</h3>
           <p className="text-gray-600 mb-6">Share your experience by reviewing properties you've viewed!</p>
           <button
@@ -450,7 +482,9 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
               onClick={() => onNavigate('home')}
               className="hover:text-teal-600 transition-colors font-medium"
             >
-              ← Back to Home
+              <span className="inline-flex items-center gap-2">
+                <ArrowLeft className="w-4 h-4" /> Back to Home
+              </span>
             </button>
             <span className="text-gray-300">/</span>
             <span className="font-medium text-gray-900">My Profile</span>

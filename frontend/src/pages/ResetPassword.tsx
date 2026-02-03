@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AlertTriangle, Lock } from 'lucide-react';
 import { Page } from '../types';
 
 interface ResetPasswordPageProps {
@@ -52,8 +53,8 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ email, token, onS
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-200px)] bg-gray-50 p-4">
         <div className="bg-white rounded-3xl shadow-xl p-8 w-full max-w-md text-center">
-          <div className="mb-6">
-            <i className="fas fa-exclamation-triangle text-6xl text-red-500 mb-4"></i>
+          <div className="mb-6 flex justify-center">
+            <AlertTriangle className="w-16 h-16 text-red-500" />
           </div>
           <h2 className="text-3xl font-extrabold text-gray-900 mb-6">Invalid Reset Link</h2>
           <p className="text-gray-600 mb-6">
@@ -73,8 +74,8 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ email, token, onS
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-200px)] bg-gray-50 p-4">
       <div className="bg-white rounded-3xl shadow-xl p-8 w-full max-w-md text-center">
-        <div className="mb-6">
-          <i className="fas fa-lock text-6xl text-teal-500 mb-4"></i>
+        <div className="mb-6 flex justify-center">
+          <Lock className="w-16 h-16 text-teal-500" />
         </div>
         <h2 className="text-3xl font-extrabold text-gray-900 mb-6">Reset Your Password</h2>
         {email && (

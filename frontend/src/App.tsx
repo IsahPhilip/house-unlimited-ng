@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { Page, User, Review, Property, BlogArticle } from './types';
 import { PROPERTIES, INITIAL_REVIEWS } from './utils/mockData';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { Phone, Mail, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import { getWishlist, addToWishlist, removeFromWishlist } from './services/api';
 
 import { Navbar } from './components/Navbar';
@@ -254,14 +255,14 @@ const AppContent = () => {
       <div className="bg-slate-900 text-white py-2 text-[10px] uppercase tracking-widest font-bold">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
           <div className="flex space-x-6">
-            <span className="flex items-center"><i className="fas fa-phone mr-2 text-blue-500"></i> (408) 555-0120</span>
-            <span className="flex items-center"><i className="fas fa-envelope mr-2 text-blue-500"></i> example@gmail.com</span>
+            <span className="flex items-center"><Phone className="w-4 h-4 mr-2 text-blue-500" /> (408) 555-0120</span>
+            <span className="flex items-center"><Mail className="w-4 h-4 mr-2 text-blue-500" /> example@gmail.com</span>
           </div>
           <div className="flex space-x-4">
-            <i className="fab fa-facebook-f hover:text-blue-500 cursor-pointer transition-colors"></i>
-            <i className="fab fa-twitter hover:text-blue-500 cursor-pointer transition-colors"></i>
-            <i className="fab fa-instagram hover:text-blue-500 cursor-pointer transition-colors"></i>
-            <i className="fab fa-linkedin hover:text-blue-500 cursor-pointer transition-colors"></i>
+            <Facebook className="w-4 h-4 hover:text-blue-500 cursor-pointer transition-colors" />
+            <Twitter className="w-4 h-4 hover:text-blue-500 cursor-pointer transition-colors" />
+            <Instagram className="w-4 h-4 hover:text-blue-500 cursor-pointer transition-colors" />
+            <Linkedin className="w-4 h-4 hover:text-blue-500 cursor-pointer transition-colors" />
           </div>
         </div>
       </div>

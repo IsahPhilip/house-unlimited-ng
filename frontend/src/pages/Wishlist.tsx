@@ -1,4 +1,5 @@
 import React from 'react';
+import { Heart } from 'lucide-react';
 import { Page } from '../types';
 import { PropertyCard } from '../components/PropertyCard';
 
@@ -61,7 +62,9 @@ const WishlistPage = ({
           </div>
         ) : (
           <div className="bg-white rounded-3xl p-20 text-center border border-gray-100 shadow-sm">
-            <div className="w-24 h-24 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">❤️</div>
+            <div className="w-24 h-24 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Heart className="w-10 h-10" />
+            </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Your wishlist is empty</h3>
             <p className="text-gray-500 mb-8 max-w-md mx-auto">Start saving your favorite properties to keep track of them and get updates on price changes.</p>
             <button 

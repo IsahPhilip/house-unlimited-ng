@@ -1,4 +1,5 @@
 import React from 'react';
+import { ArrowRight, Cpu, Eye, Gem, Linkedin, Twitter, Users } from 'lucide-react';
 
 const AboutPage = () => (
   <div className="animate-in fade-in duration-500">
@@ -47,17 +48,21 @@ const AboutPage = () => (
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {[
-            { title: 'Radical Transparency', desc: 'We provide honest data and clear pricing, ensuring you have all the facts before making a decision.', icon: '👁️' },
-            { title: 'AI-Driven Innovation', desc: 'We leverage Gemini AI to visualize possibilities and find matches that traditional search engines miss.', icon: '🤖' },
-            { title: 'People First', desc: 'Beyond the tech, our primary focus is the human experience of finding a place to call home.', icon: '🤝' },
-            { title: 'Uncompromising Integrity', desc: 'We hold ourselves and our agents to the highest ethical standards in every transaction.', icon: '💎' },
-          ].map((p, idx) => (
+            { title: 'Radical Transparency', desc: 'We provide honest data and clear pricing, ensuring you have all the facts before making a decision.', icon: Eye },
+            { title: 'AI-Driven Innovation', desc: 'We leverage Gemini AI to visualize possibilities and find matches that traditional search engines miss.', icon: Cpu },
+            { title: 'People First', desc: 'Beyond the tech, our primary focus is the human experience of finding a place to call home.', icon: Users },
+            { title: 'Uncompromising Integrity', desc: 'We hold ourselves and our agents to the highest ethical standards in every transaction.', icon: Gem },
+          ].map((p, idx) => {
+            const Icon = p.icon;
+            return (
             <div key={idx} className="p-10 rounded-3xl bg-gray-50 border border-transparent hover:border-teal-100 hover:bg-white hover:shadow-xl transition-all duration-300 group">
-              <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-sm group-hover:scale-110 transition-transform">{p.icon}</div>
+              <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform text-teal-600">
+                <Icon className="w-7 h-7" />
+              </div>
               <h4 className="text-xl font-bold text-gray-900 mb-4">{p.title}</h4>
               <p className="text-gray-500 text-sm leading-relaxed">{p.desc}</p>
             </div>
-          ))}
+          )})}
         </div>
       </div>
     </section>
@@ -70,7 +75,9 @@ const AboutPage = () => (
             <p className="text-teal-400 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">The Brains Behind the Brand</p>
             <h2 className="text-4xl font-bold">Meet our <span className="text-teal-400 italic">Visionary</span> Team</h2>
           </div>
-          <button className="text-teal-400 font-bold hover:underline flex items-center">Join our growing team <span className="ml-2">→</span></button>
+          <button className="text-teal-400 font-bold hover:underline flex items-center">
+            Join our growing team <ArrowRight className="ml-2 w-4 h-4" />
+          </button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {[
@@ -84,8 +91,12 @@ const AboutPage = () => (
                 <img src={member.image} alt={member.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="absolute bottom-6 left-6 right-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-500 opacity-0 group-hover:opacity-100 flex space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-xs"><i className="fab fa-linkedin-in"></i></div>
-                  <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-xs"><i className="fab fa-twitter"></i></div>
+                  <div className="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-xs">
+                    <Linkedin className="w-4 h-4" />
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-xs">
+                    <Twitter className="w-4 h-4" />
+                  </div>
                 </div>
               </div>
               <h4 className="text-xl font-bold group-hover:text-teal-400 transition-colors">{member.name}</h4>

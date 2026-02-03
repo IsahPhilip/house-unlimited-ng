@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ArrowRight } from 'lucide-react';
 import { Page, BlogArticle } from '../types';
 import { getBlogPosts, getBlogPostsByCategory } from '../services/blogApi';
 
@@ -117,7 +118,9 @@ const BlogPage = ({ onNavigate }: { onNavigate: (p: Page, id?: string) => void }
                     </div>
                     <h3 className="text-lg font-bold text-gray-900 mb-4 group-hover:text-teal-600 transition-colors line-clamp-2 leading-snug">{blog.title}</h3>
                     <p className="text-gray-500 text-xs mb-6 line-clamp-3 leading-relaxed">{blog.desc}</p>
-                    <button className="text-gray-900 font-bold text-sm flex items-center group-hover:translate-x-1 transition-transform">Read More <span className="ml-2 text-teal-600">→</span></button>
+                    <button className="text-gray-900 font-bold text-sm flex items-center group-hover:translate-x-1 transition-transform">
+                      Read More <ArrowRight className="ml-2 w-4 h-4 text-teal-600" />
+                    </button>
                   </div>
                 </div>
               ))}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Facebook, Linkedin, Mail, MapPin, Phone, Send, Twitter } from 'lucide-react';
 import { Page } from '../types';
 
 interface FooterProps {
@@ -58,9 +59,15 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
         </div>
         <p className="text-gray-400 text-sm">Empowering home seekers with expert human guidance since 1995.</p>
         <div className="flex space-x-4">
-          <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-teal-600 transition-colors"><i className="fab fa-facebook-f text-xs"></i></div>
-          <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-teal-600 transition-colors"><i className="fab fa-twitter text-xs"></i></div>
-          <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-teal-600 transition-colors"><i className="fab fa-linkedin-in text-xs"></i></div>
+          <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-teal-600 transition-colors">
+            <Facebook className="w-4 h-4" />
+          </div>
+          <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-teal-600 transition-colors">
+            <Twitter className="w-4 h-4" />
+          </div>
+          <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-teal-600 transition-colors">
+            <Linkedin className="w-4 h-4" />
+          </div>
         </div>
       </div>
       <div>
@@ -76,9 +83,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
       <div>
         <h4 className="font-bold mb-6">Contact</h4>
         <ul className="space-y-3 text-gray-400 text-sm">
-          <li className="flex items-center"><span className="mr-2 text-teal-500">📞</span> +234 904 375 2708</li>
-          <li className="flex items-center"><span className="mr-2 text-teal-500">✉️</span> official@houseunlimitednigeria.com</li>
-          <li className="flex items-center"><span className="mr-2 text-teal-500">📍</span> Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria</li>
+          <li className="flex items-center"><Phone className="w-4 h-4 mr-2 text-teal-500" /> +234 904 375 2708</li>
+          <li className="flex items-center"><Mail className="w-4 h-4 mr-2 text-teal-500" /> official@houseunlimitednigeria.com</li>
+          <li className="flex items-center"><MapPin className="w-4 h-4 mr-2 text-teal-500" /> Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria</li>
         </ul>
       </div>
       <div>
@@ -102,7 +109,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   : 'bg-teal-600 hover:bg-teal-700'
               }`}
             >
-              {isLoading ? 'Subscribing...' : '➤'}
+              {isLoading ? 'Subscribing...' : <Send className="w-4 h-4" />}
             </button>
           </form>
         </div>

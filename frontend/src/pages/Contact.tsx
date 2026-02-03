@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Check, Mail, MapPin, Phone } from 'lucide-react';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -81,21 +82,27 @@ const ContactPage = () => {
           <div className="lg:col-span-1 space-y-8">
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
               <div className="flex items-center space-x-4 mb-6">
-                <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-xl">📞</div>
+                <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center">
+                  <Phone className="w-6 h-6" />
+                </div>
                 <div>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Phone Number</p>
                   <p className="font-bold text-gray-900">+234 904 375 2708</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4 mb-6">
-                <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-xl">✉️</div>
+                <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center">
+                  <Mail className="w-6 h-6" />
+                </div>
                 <div>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Email Address</p>
                   <p className="font-bold text-gray-900">official@houseunlimitednigeria.com</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-xl">📍</div>
+                <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center">
+                  <MapPin className="w-6 h-6" />
+                </div>
                 <div>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Office Location</p>
                   <p className="font-bold text-gray-900 text-sm">Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria</p>
@@ -130,7 +137,7 @@ const ContactPage = () => {
                 <div className="bg-green-50 border border-green-200 rounded-xl p-6 mb-8">
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
-                      ✓
+                      <Check className="w-4 h-4" />
                     </div>
                     <div>
                       <h4 className="font-bold text-green-800">Message Sent Successfully!</h4>

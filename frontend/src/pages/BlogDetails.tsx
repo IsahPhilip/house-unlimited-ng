@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Facebook, Heart, Link2, Linkedin, Twitter } from 'lucide-react';
 import { Page, BlogArticle } from '../types';
 import { getBlogPostById, getRelatedBlogPosts, incrementBlogViews, incrementBlogLikes } from '../services/blogApi';
 import { handleShare } from '../utils/helpers';
@@ -114,16 +115,16 @@ const BlogDetailsPage = ({ blogId, onNavigate }: { blogId: string, onNavigate: (
               <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-6">Share Article</h4>
               <div className="flex flex-col space-y-4">
                 <button onClick={() => handleShare(blog)} className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-teal-600 hover:text-white transition-all shadow-sm">
-                  <i className="fab fa-facebook-f"></i>
+                  <Facebook className="w-5 h-5" />
                 </button>
                 <button onClick={() => handleShare(blog)} className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-teal-400 hover:text-white transition-all shadow-sm">
-                  <i className="fab fa-twitter"></i>
+                  <Twitter className="w-5 h-5" />
                 </button>
                 <button onClick={() => handleShare(blog)} className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-teal-700 hover:text-white transition-all shadow-sm">
-                  <i className="fab fa-linkedin-in"></i>
+                  <Linkedin className="w-5 h-5" />
                 </button>
                 <button onClick={() => handleShare(blog)} className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-slate-900 hover:text-white transition-all shadow-sm">
-                  <i className="fas fa-link"></i>
+                  <Link2 className="w-5 h-5" />
                 </button>
               </div>
             </div>
@@ -149,7 +150,7 @@ const BlogDetailsPage = ({ blogId, onNavigate }: { blogId: string, onNavigate: (
                 setLikes(newLikes);
               }}
             >
-              <i className="fas fa-heart"></i>
+              <Heart className="w-4 h-4" />
               <span>{likes} Likes</span>
             </button>
           </div>
