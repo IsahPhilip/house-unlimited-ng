@@ -1,5 +1,11 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
+export interface IAuthor {
+  _id: string;
+  name: string;
+  email: string;
+}
+
 export interface IBlogPost extends Document {
   title: string;
   slug: string;
@@ -10,13 +16,15 @@ export interface IBlogPost extends Document {
   tags: string[];
   status: 'draft' | 'published' | 'archived';
   readTime: number;
-  author: mongoose.Types.ObjectId;
+  author: mongoose.Types.ObjectId | IAuthor;
   views: number;
   likes: number;
   commentsCount: number;
   createdAt: Date;
   updatedAt: Date;
   publishedAt?: Date;
+  metaTitle?: string;
+  metaDescription?: string;
 }
 
 const blogPostSchema = new Schema<IBlogPost>({
@@ -86,6 +94,14 @@ const blogPostSchema = new Schema<IBlogPost>({
   },
   publishedAt: {
     type: Date
+  },
+  metaTitle: {
+    type: String,
+    trim: true
+  },
+  metaDescription: {
+    type: String,
+    trim: true
   }
 }, {
   timestamps: true
