@@ -145,8 +145,8 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
       try {
         setIsLoading(true);
         const [propertyData, reviewData] = await Promise.all([
-          getPropertyById(propertyId),
-          getReviewsByPropertyId(propertyId),
+          getPropertyById(propertyId.toString()),
+          getReviewsByPropertyId(propertyId.toString()),
         ]);
         if (propertyData) {
           setProperty({

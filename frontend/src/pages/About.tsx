@@ -1,5 +1,6 @@
 import React from 'react';
-import { ArrowRight, Cpu, Eye, Gem, Linkedin, Twitter, Users } from 'lucide-react';
+import { ArrowRight, Eye, Linkedin, Target, Trophy, Twitter } from 'lucide-react';
+import maitamaExtension from '../img/maitama extension.jpeg';
 
 const AboutPage = () => (
   <div className="animate-in fade-in duration-500">
@@ -9,7 +10,10 @@ const AboutPage = () => (
         <div>
            <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Our Story</p>
            <h1 className="text-5xl font-bold text-gray-900 mb-8 leading-tight">We help you find your <span className="text-teal-600">Perfect Home</span> since 1995.</h1>
-           <p className="text-gray-600 mb-8 leading-relaxed text-sm">Founded in Los Angeles, Real Estate. has grown from a small family firm into a global leader in property management and brokerage. We believe everyone deserves a place they can truly call home, and we leverage the latest technology—including Gemini AI—to make that process as smooth as possible.</p>
+           <p className="text-gray-600 mb-8 leading-relaxed text-sm">House Unlimited & Land Services Nigeria Ltd with RC 1600988 (brand name House Unlimited Nigeria) is a premier real estate development company committed to delivering high-quality, value-driven properties in Abuja. Founded on the principles of integrity, reliability, and excellence, we specialize in off-plan luxury developments, estate plots, and investment properties tailored for discerning clients.</p>
+           <p className="text-gray-600 mb-8 leading-relaxed text-sm">At the helm of House Unlimited Nigeria is Julia Abege, our CEO—an ex-banker with over 11 years of experience in the financial sector. A passionate real estate enthusiast, she brings a wealth of knowledge in investment strategies, ensuring that every client enjoys exceptional returns on their property investments.</p>
+           <p className="text-gray-600 mb-8 leading-relaxed text-sm">Our Chairman, ARC Terzungwe Abege, is a seasoned architect with a keen eye for construction and development. With a deep understanding of design, functionality, and sustainable building practices, he ensures that every House Unlimited project meets the highest standards of quality and craftsmanship.</p>
+           <p className="text-gray-600 mb-8 leading-relaxed text-sm">Together, we lead a dedicated team focused on redefining real estate in Abuja. Whether you are an investor, a first-time homeowner, or looking for a luxurious residence, House Unlimited Nigeria guarantees properties that combine security, comfort, and long-term value.</p>
            <div className="grid grid-cols-3 gap-8 mb-10">
               <div className="text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
                 <p className="text-3xl font-bold text-teal-600 mb-1">25+</p>
@@ -27,7 +31,7 @@ const AboutPage = () => (
            <button className="bg-teal-600 text-white px-10 py-4 rounded-full font-bold shadow-lg shadow-teal-200 hover:shadow-teal-300 transition-all text-sm uppercase tracking-widest">Download Brochure</button>
         </div>
         <div className="relative">
-          <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800" className="rounded-3xl shadow-2xl relative z-10 w-full object-cover h-[500px]" alt="Modern Office" />
+          <img src={maitamaExtension} className="rounded-3xl shadow-2xl relative z-10 w-full object-cover h-[500px]" alt="Maitama Extension" />
           <div className="absolute -top-10 -right-10 w-48 h-48 bg-teal-100 rounded-full -z-0"></div>
           <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-teal-600/10 rounded-3xl -z-0"></div>
           <div className="absolute bottom-10 right-10 bg-white p-6 rounded-2xl shadow-xl z-20">
@@ -38,29 +42,40 @@ const AboutPage = () => (
       </div>
     </section>
 
-    {/* Purpose & Principles Section */}
+    {/* Mission / Vision / Core Goals Section */}
     <section className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
-          <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Our Philosophy</p>
-          <h2 className="text-4xl font-bold text-gray-900">Purpose & <span className="text-gray-400 font-light italic">Principles</span></h2>
-          <p className="text-gray-500 mt-4 max-w-2xl mx-auto">We are guided by a simple mission: to simplify the complex world of real estate through technology and human-centric design.</p>
+          <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Our Direction</p>
+          <h2 className="text-4xl font-bold text-gray-900">Mission, <span className="text-gray-400 font-light italic">Vision</span> & Core Goals</h2>
+          <p className="text-gray-500 mt-4 max-w-2xl mx-auto">Clear direction that keeps every project grounded in quality, trust, and long‑term value.</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
-            { title: 'Radical Transparency', desc: 'We provide honest data and clear pricing, ensuring you have all the facts before making a decision.', icon: Eye },
-            { title: 'AI-Driven Innovation', desc: 'We leverage Gemini AI to visualize possibilities and find matches that traditional search engines miss.', icon: Cpu },
-            { title: 'People First', desc: 'Beyond the tech, our primary focus is the human experience of finding a place to call home.', icon: Users },
-            { title: 'Uncompromising Integrity', desc: 'We hold ourselves and our agents to the highest ethical standards in every transaction.', icon: Gem },
-          ].map((p, idx) => {
-            const Icon = p.icon;
+            {
+              title: 'Mission',
+              desc: 'Deliver secure, high‑quality real estate opportunities that create measurable value for clients and communities across Abuja.',
+              icon: Target
+            },
+            {
+              title: 'Vision',
+              desc: 'To be Abuja’s most trusted real estate development brand, known for craftsmanship, transparency, and lasting investment returns.',
+              icon: Eye
+            },
+            {
+              title: 'Core Goals',
+              desc: 'Build premium estates, provide investment‑ready properties, and uphold integrity, reliability, and excellence in every transaction.',
+              icon: Trophy
+            }
+          ].map((item, idx) => {
+            const Icon = item.icon;
             return (
             <div key={idx} className="p-10 rounded-3xl bg-gray-50 border border-transparent hover:border-teal-100 hover:bg-white hover:shadow-xl transition-all duration-300 group">
               <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform text-teal-600">
                 <Icon className="w-7 h-7" />
               </div>
-              <h4 className="text-xl font-bold text-gray-900 mb-4">{p.title}</h4>
-              <p className="text-gray-500 text-sm leading-relaxed">{p.desc}</p>
+              <h4 className="text-xl font-bold text-gray-900 mb-4">{item.title}</h4>
+              <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
             </div>
           )})}
         </div>

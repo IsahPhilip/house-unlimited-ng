@@ -7,13 +7,13 @@ const WishlistPage = ({
   wishlistIds, 
   wishlistProperties,
   onWishlistToggle, 
-  setCurrentPage,
+  setAppPage,
   onNavigate
 }: { 
   wishlistIds: string[], 
   wishlistProperties: any[],
   onWishlistToggle: (id: string, property?: any) => void,
-  setCurrentPage: (p: Page) => void,
+  setAppPage: (p: Page) => void,
   onNavigate: (id: string) => void
 }) => {
   const pageSize = 9;
@@ -68,7 +68,7 @@ const WishlistPage = ({
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Your wishlist is empty</h3>
             <p className="text-gray-500 mb-8 max-w-md mx-auto">Start saving your favorite properties to keep track of them and get updates on price changes.</p>
             <button 
-              onClick={() => setCurrentPage('property')}
+              onClick={() => setAppPage('property')}
               className="bg-teal-600 text-white px-10 py-4 rounded-xl font-bold shadow-lg shadow-teal-200 hover:shadow-teal-300 transition-all uppercase tracking-widest text-xs"
             >
               Explore Properties

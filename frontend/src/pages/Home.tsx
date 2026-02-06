@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import maitamaHero from '../img/maitama-ii.jpeg';
 import {
   ArrowRight,
   Briefcase,
@@ -83,7 +84,7 @@ export const Home: React.FC<HomeProps> = ({
       {/* Hero Section */}
       <section className="relative h-[650px] flex items-center">
         <div className="absolute inset-0 z-0">
-          <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1920" alt="Hero" className="w-full h-full object-cover" />
+          <img src={maitamaHero} alt="Hero" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/40 to-transparent"></div>
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 w-full">

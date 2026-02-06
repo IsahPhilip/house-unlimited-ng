@@ -56,12 +56,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true);
       const response = await apiRegister(userData);
       
-      const { token: authToken, ...userData } = response;
+      const { token: authToken, ...userPayload } = response;
       localStorage.setItem('authToken', authToken);
-      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('user', JSON.stringify(userPayload));
       
       setToken(authToken);
-      setUser(userData);
+      setUser(userPayload);
     } catch (error) {
       console.error('Registration error:', error);
       throw error;

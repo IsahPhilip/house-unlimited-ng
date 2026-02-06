@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { createRoot } from 'react-dom/client';
 import { Page, User, Review, Property, BlogArticle } from './types';
-import { PROPERTIES, INITIAL_REVIEWS } from './utils/mockData';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Phone, Mail, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import { getWishlist, addToWishlist, removeFromWishlist } from './services/api';
@@ -23,7 +21,6 @@ import PropertyDetailsPage from './pages/PropertyDetails';
 import UserProfilePage from './pages/UserProfile';
 import ResetPasswordPage from './pages/ResetPassword';
 import ResetPasswordEmailSentPage from './pages/ResetPasswordEmailSent';
-import Banner from './components/Banner'; // Import the Banner component
 
 // --- Types ---
 type AuthMode = 'signin' | 'signup';
@@ -39,7 +36,7 @@ const AppContent = () => {
   const [wishlistProperties, setWishlistProperties] = useState<Property[]>([]);
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const [selectedBlogId, setSelectedBlogId] = useState<string | null>(null);
-  const [reviews, setReviews] = useState<Review[]>(INITIAL_REVIEWS);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [isForgotPasswordFlowActive, setIsForgotPasswordFlowActive] = useState(false);
   const [resetPasswordEmail, setResetPasswordEmail] = useState<string | null>(null);
   const [resetToken, setResetToken] = useState<string | null>(null);
@@ -218,7 +215,7 @@ const AppContent = () => {
         "Your data is used to provide personalized property recommendations, facilitate communication with agents, and improve our services.",
         "We do not sell your personal data to third parties. We use industry-standard encryption to protect your sensitive information."
       ]} />;
-      case 'wishlist': return <WishlistPage wishlistIds={wishlistIds} wishlistProperties={wishlistProperties} onWishlistToggle={handleWishlistToggle} setCurrentPage={setCurrentPage} onNavigate={navigateToProperty} />;
+      case 'wishlist': return <WishlistPage wishlistIds={wishlistIds} wishlistProperties={wishlistProperties} onWishlistToggle={handleWishlistToggle} setAppPage={setCurrentPage} onNavigate={navigateToProperty} />;
       case 'property-details':
         return selectedPropertyId ? (
           <PropertyDetailsPage
@@ -255,8 +252,8 @@ const AppContent = () => {
       <div className="bg-slate-900 text-white py-2 text-[10px] uppercase tracking-widest font-bold">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
           <div className="flex space-x-6">
-            <span className="flex items-center"><Phone className="w-4 h-4 mr-2 text-blue-500" /> (408) 555-0120</span>
-            <span className="flex items-center"><Mail className="w-4 h-4 mr-2 text-blue-500" /> example@gmail.com</span>
+            <span className="flex items-center"><Phone className="w-4 h-4 mr-2 text-blue-500" /> +234 904 375 2708</span>
+            <span className="flex items-center"><Mail className="w-4 h-4 mr-2 text-blue-500" /> official@houseunlimitednigeria.com</span>
           </div>
           <div className="flex space-x-4">
             <Facebook className="w-4 h-4 hover:text-blue-500 cursor-pointer transition-colors" />
@@ -300,7 +297,6 @@ const AppContent = () => {
         }}
         onForgotPasswordClick={handleForgotPasswordRequest}
       />
-      <Banner />
     </div>
   );
 };
@@ -314,9 +310,4 @@ const App = () => {
   );
 };
 
-// --- Initialization ---
-const container = document.getElementById('root');
-if (container) {
-  const root = createRoot(container);
-  root.render(<App />);
-}
+export default App;

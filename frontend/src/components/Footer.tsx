@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Facebook, Linkedin, Mail, MapPin, Phone, Send, Twitter } from 'lucide-react';
+import hunLogo from '../img/hun_logo.png';
 import { Page } from '../types';
 
 interface FooterProps {
@@ -52,11 +53,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
     <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12">
       <div className="space-y-4">
           <div className="flex items-center cursor-pointer" onClick={() => onNavigate('home')}>
-            <div className="w-8 h-8 bg-[#005555] rounded flex items-center justify-center mr-2">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+            <img
+              src={hunLogo}
+              alt="House Unlimited Nigeria"
+              className="h-8 w-auto mr-2"
+            />
           </div>
-          <span className="text-xl font-bold">Real Estate.</span>
-        </div>
         <p className="text-gray-400 text-sm">Empowering home seekers with expert human guidance since 1995.</p>
         <div className="flex space-x-4">
           <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-teal-600 transition-colors">
@@ -122,7 +124,14 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
       </div>
     </div>
     <div className="max-w-7xl mx-auto px-4 mt-16 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between text-gray-500 text-xs text-center md:text-left">
-      <p>© 2024 Real Estate. All Rights Reserved.</p>
+      <div className="flex items-center justify-center md:justify-start gap-3">
+        <img
+          src={hunLogo}
+          alt="House Unlimited Nigeria"
+          className="h-5 w-auto opacity-70"
+        />
+        <span>© 2024 All Rights Reserved.</span>
+      </div>
       <div className="space-x-6 mt-4 md:mt-0">
         <span className="hover:text-white cursor-pointer" onClick={() => onNavigate('terms')}>User Terms & Conditions</span>
         <span className="hover:text-white cursor-pointer" onClick={() => onNavigate('privacy')}>Privacy Policy</span>

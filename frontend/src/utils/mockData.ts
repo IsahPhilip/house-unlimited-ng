@@ -3,7 +3,7 @@ import { Property, TeamMember, Principle, FAQ, Review } from '../types';
 // --- Mock Data ---
 export const PROPERTIES: Property[] = [
   { 
-    id: 1, 
+    id: '1', 
     title: 'Riverview Retreat', 
     price: '$6,000/month', 
     priceValue: 6000, 
@@ -25,7 +25,7 @@ export const PROPERTIES: Property[] = [
         virtualTourUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' // Example YouTube video
       },
       {
-        id: 2,
+        id: '2',
         title: 'Sunset Vista Villa',
         price: '$396,000',
         priceValue: 396000,
@@ -46,7 +46,7 @@ export const PROPERTIES: Property[] = [
         coordinates: [21.3069, -157.8583],
         virtualTourUrl: 'https://my.matterport.com/show/?m=D4VM2W7fC1m' // Example 3D tour
       },  { 
-    id: 3, 
+    id: '3', 
     title: 'Pineview Place', 
     price: '$125,000', 
     priceValue: 125000, 
@@ -62,7 +62,7 @@ export const PROPERTIES: Property[] = [
     coordinates: [40.7128, -74.0060]
   },
   { 
-    id: 4, 
+    id: '4', 
     title: 'Azure Sky Villa', 
     price: '$8,000/month', 
     priceValue: 8000, 
@@ -78,7 +78,7 @@ export const PROPERTIES: Property[] = [
     coordinates: [41.6032, -73.0877]
   },
   { 
-    id: 5, 
+    id: '5', 
     title: 'MetroView Apartments', 
     price: '$245,000', 
     priceValue: 245000, 
@@ -95,7 +95,7 @@ export const PROPERTIES: Property[] = [
     coordinates: [39.7337, -89.6501]
   },
   { 
-    id: 6, 
+    id: '6', 
     title: 'Skyline Oasis Apartments', 
     price: '$315,000', 
     priceValue: 315000, 
@@ -113,11 +113,6 @@ export const PROPERTIES: Property[] = [
   },
 ];
 
-export const INITIAL_REVIEWS: Review[] = [
-  { id: 1, propertyId: 1, userName: 'John Smith', rating: 5, comment: 'Absolutely stunning views and the interior is top-notch.', date: '2024-03-15' },
-  { id: 2, propertyId: 1, userName: 'Sarah Jenkins', rating: 4, comment: 'Great location, though parking can be a bit tight during peak hours.', date: '2024-04-02' },
-  { id: 3, propertyId: 5, userName: 'Michael Ross', rating: 5, comment: 'Modern, clean, and the rooftop is incredible.', date: '2024-02-20' },
-];
 
 export const TEAM: TeamMember[] = [
   { name: 'Sarah Montgomery', role: 'CEO & Founder', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400' },
