@@ -7,7 +7,11 @@
     "dev": "cd frontend && vite",
     "start": "cd frontend && vite",
     "build": "cd frontend && vite build",
-    "preview": "cd frontend && vite preview"
+    "preview": "cd frontend && vite preview",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:admin": "cd admin-dashboard && npm run dev",
+    "dev:full": "concurrently -k -n frontend,backend,admin -c green,cyan,magenta \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:admin\""
   },
   "dependencies": {
     "@google/genai": "^1.4.0",
@@ -20,6 +24,7 @@
   "devDependencies": {
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
+    "concurrently": "^9.2.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   }

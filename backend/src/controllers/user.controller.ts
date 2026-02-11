@@ -254,7 +254,8 @@ export const uploadAvatar = async (req: AuthRequest, res: Response, next: NextFu
   try {
     // This would be handled by multer middleware
     // For now, just update the avatar URL
-    const avatarUrl = req.body.avatarUrl || req.file?.path;
+    const uploadedFile = req.file as (Express.Multer.File & { path?: string; secure_url?: string; url?: string }) | undefined;
+    const avatarUrl = req.body.avatarUrl || uploadedFile?.path || uploadedFile?.secure_url || uploadedFile?.url;
 
     if (!avatarUrl) {
       res.status(400).json({

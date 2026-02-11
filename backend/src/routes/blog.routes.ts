@@ -15,7 +15,17 @@ import {
   incrementViews,
   incrementLikes,
   getBlogPostsByCategory,
-  getRelatedBlogPosts
+  getRelatedBlogPosts,
+  getBlogComments,
+  addBlogComment,
+  updateBlogComment,
+  deleteBlogComment,
+  likeBlogPost,
+  unlikeBlogPost,
+  bookmarkBlogPost,
+  unbookmarkBlogPost,
+  getBlogInteraction,
+  getBookmarkedPosts
 } from '../controllers/blog.controller.js';
 import { protect, admin } from '../middleware/auth.middleware.js';
 
@@ -23,6 +33,9 @@ const router = express.Router();
 
 // Get all published blog posts (public)
 router.get('/public', getBlogPosts);
+
+// Get current user's bookmarked posts (public/auth)
+router.get('/public/bookmarks', protect, getBookmarkedPosts);
 
 // Get a specific published blog post by ID (public)
 router.get('/public/:id', getPublicBlogPostById);
@@ -67,5 +80,20 @@ router.patch('/public/:id/likes', incrementLikes);
 
 // Get blog posts by category (public)
 router.get('/public/category/:category', getBlogPostsByCategory);
+
+// Blog comments
+router.get('/public/:id/comments', getBlogComments);
+router.post('/public/:id/comments', protect, addBlogComment);
+router.put('/public/comments/:commentId', protect, updateBlogComment);
+router.delete('/public/comments/:commentId', protect, deleteBlogComment);
+
+// Blog likes (toggle)
+router.get('/public/:id/interaction', protect, getBlogInteraction);
+router.post('/public/:id/like', protect, likeBlogPost);
+router.delete('/public/:id/like', protect, unlikeBlogPost);
+
+// Blog bookmarks
+router.post('/public/:id/bookmark', protect, bookmarkBlogPost);
+router.delete('/public/:id/bookmark', protect, unbookmarkBlogPost);
 
 export default router;

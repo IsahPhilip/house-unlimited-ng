@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Page, User, Review, Property, BlogArticle } from './types';
+import { Page, User, Property, BlogArticle } from './types';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Phone, Mail, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import { getWishlist, addToWishlist, removeFromWishlist } from './services/api';
@@ -27,7 +27,7 @@ type AuthMode = 'signin' | 'signup';
 
 // --- App Container ---
 const AppContent = () => {
-  const { user, login, register, logout, isLoading, updateProfile } = useAuth();
+  const { user, login, register, logout, isLoading, updateProfile, updateAvatar } = useAuth();
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<AuthMode>('signin');
@@ -36,7 +36,6 @@ const AppContent = () => {
   const [wishlistProperties, setWishlistProperties] = useState<Property[]>([]);
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const [selectedBlogId, setSelectedBlogId] = useState<string | null>(null);
-  const [reviews, setReviews] = useState<Review[]>([]);
   const [isForgotPasswordFlowActive, setIsForgotPasswordFlowActive] = useState(false);
   const [resetPasswordEmail, setResetPasswordEmail] = useState<string | null>(null);
   const [resetToken, setResetToken] = useState<string | null>(null);
@@ -141,15 +140,6 @@ const AppContent = () => {
     update();
   };
 
-  const handleAddReview = (reviewData: Omit<Review, 'id' | 'date'>) => {
-    const newReview: Review = {
-      ...reviewData,
-      id: Date.now().toString(),
-      date: new Date().toISOString().split('T')[0]
-    };
-    setReviews(prev => [newReview, ...prev]);
-  };
-
   const navigateToProperty = (id: string) => {
     setSelectedPropertyId(id);
     setCurrentPage('property-details');
@@ -195,7 +185,7 @@ const AppContent = () => {
       case 'blog': return <BlogPage onNavigate={handleNavigateToBlog} />;
       case 'blog-details': 
         return selectedBlogId ? (
-          <BlogDetailsPage blogId={selectedBlogId} onNavigate={handleNavigateToBlog} />
+          <BlogDetailsPage blogId={selectedBlogId} onNavigate={handleNavigateToBlog} openAuthModal={openAuthModal} />
         ) : (
           <BlogPage onNavigate={handleNavigateToBlog} />
         );
@@ -233,14 +223,12 @@ const AppContent = () => {
         return (
           <UserProfilePage
             user={user}
-            wishlistIds={wishlistIds}
-            reviews={reviews}
             onNavigate={setCurrentPage}
             onNavigateProperty={navigateToProperty}
             onUpdateProfile={(updates) => {
               updateProfile(updates);
             }}
-            onWishlistToggle={handleWishlistToggle}
+            onUpdateAvatar={(file) => updateAvatar(file)}
           />
         );
       default: return <Home onSearch={handleSearch} wishlistIds={wishlistIds} onWishlistToggle={handleWishlistToggle} onNavigate={navigateToProperty} />;
@@ -252,14 +240,14 @@ const AppContent = () => {
       <div className="bg-slate-900 text-white py-2 text-[10px] uppercase tracking-widest font-bold">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
           <div className="flex space-x-6">
-            <span className="flex items-center"><Phone className="w-4 h-4 mr-2 text-blue-500" /> +234 904 375 2708</span>
-            <span className="flex items-center"><Mail className="w-4 h-4 mr-2 text-blue-500" /> official@houseunlimitednigeria.com</span>
+            <span className="flex items-center"><Phone className="w-4 h-4 mr-2 text-teal-500" /> +234 904 375 2708</span>
+            <span className="flex items-center"><Mail className="w-4 h-4 mr-2 text-teal-500" /> official@houseunlimitednigeria.com</span>
           </div>
           <div className="flex space-x-4">
-            <Facebook className="w-4 h-4 hover:text-blue-500 cursor-pointer transition-colors" />
-            <Twitter className="w-4 h-4 hover:text-blue-500 cursor-pointer transition-colors" />
-            <Instagram className="w-4 h-4 hover:text-blue-500 cursor-pointer transition-colors" />
-            <Linkedin className="w-4 h-4 hover:text-blue-500 cursor-pointer transition-colors" />
+            <Facebook className="w-4 h-4 hover:text-teal-500 cursor-pointer transition-colors" />
+            <Twitter className="w-4 h-4 hover:text-teal-500 cursor-pointer transition-colors" />
+            <Instagram className="w-4 h-4 hover:text-teal-500 cursor-pointer transition-colors" />
+            <Linkedin className="w-4 h-4 hover:text-teal-500 cursor-pointer transition-colors" />
           </div>
         </div>
       </div>

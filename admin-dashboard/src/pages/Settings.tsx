@@ -4,19 +4,14 @@ import {
   User, 
   Shield, 
   Bell, 
-  Globe, 
-  Database, 
-  Mail, 
   Save, 
   Edit, 
   Trash2,
   Plus,
-  Eye,
-  EyeOff,
   Loader2
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { getProfile, updateProfile, getUsers, getAdminSettings, updateAdminSettings } from '../services/api';
+import { getProfile, updateProfile, getUsers, updateUser, deleteUser, getAdminSettings, updateAdminSettings } from '../services/api';
 
 interface AdminUserRow {
   id: string;
@@ -53,6 +48,15 @@ const Settings = () => {
   const [usersLoading, setUsersLoading] = useState(true);
   const [usersError, setUsersError] = useState('');
   const [users, setUsers] = useState<AdminUserRow[]>([]);
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [editingUser, setEditingUser] = useState<AdminUserRow | null>(null);
+  const [userFormError, setUserFormError] = useState('');
+  const [userForm, setUserForm] = useState({
+    name: '',
+    email: '',
+    role: 'user',
+    isActive: true,
+  });
   const [formData, setFormData] = useState({
     companyName: 'Real Estate Platform',
     companyEmail: 'info@realestate.com',
@@ -104,18 +108,6 @@ const Settings = () => {
       icon: <Shield className="w-5 h-5" />
     },
     {
-      id: 'integrations',
-      title: 'Integrations',
-      description: 'Connect with third-party services.',
-      icon: <Globe className="w-5 h-5" />
-    },
-    {
-      id: 'database',
-      title: 'Database',
-      description: 'Manage database backups and maintenance.',
-      icon: <Database className="w-5 h-5" />
-    },
-    {
       id: 'users',
       title: 'Users & Permissions',
       description: 'Manage user accounts and permissions.',
@@ -161,6 +153,7 @@ const Settings = () => {
         currency: saved.currency,
         notifications: saved.notifications,
         security: saved.security,
+        integrations: formData.integrations,
       });
       setSettingsNotice('Settings saved.');
     } catch (error) {
@@ -220,6 +213,7 @@ const Settings = () => {
           currency: settings.currency,
           notifications: settings.notifications,
           security: settings.security,
+          integrations: formData.integrations,
         });
       } catch (error) {
         console.error('Error loading settings:', error);
@@ -255,6 +249,55 @@ const Settings = () => {
 
     loadUsers();
   }, []);
+
+  const openUserModal = (user: AdminUserRow) => {
+    setEditingUser(user);
+    setUserForm({
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      isActive: user.isActive,
+    });
+    setUserFormError('');
+    setShowUserModal(true);
+  };
+
+  const handleUserUpdate = async () => {
+    if (!editingUser) return;
+    setUserFormError('');
+    try {
+      const updated = await updateUser(editingUser.id, {
+        name: userForm.name,
+        email: userForm.email,
+        role: userForm.role as AdminUserRow['role'],
+        isActive: userForm.isActive,
+      } as any);
+      const mapped: AdminUserRow = {
+        id: (updated as any)._id || updated.id || editingUser.id,
+        name: (updated as any).name || userForm.name,
+        email: (updated as any).email || userForm.email,
+        role: (updated as any).role || userForm.role,
+        isActive: (updated as any).isActive ?? userForm.isActive,
+        joinDate: (updated as any).joinDate || (updated as any).createdAt || editingUser.joinDate,
+      };
+      setUsers((prev) => prev.map((u) => (u.id === editingUser.id ? mapped : u)));
+      setShowUserModal(false);
+      setEditingUser(null);
+    } catch (error) {
+      console.error('Error updating user:', error);
+      setUserFormError('Failed to update user.');
+    }
+  };
+
+  const handleUserDelete = async (userId: string) => {
+    try {
+      await deleteUser(userId);
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      setUsersError('Failed to delete user.');
+    }
+  };
 
   const renderGeneralSettings = () => (
     <div className="space-y-6">
@@ -660,7 +703,11 @@ const Settings = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold text-gray-900">Users & Permissions</h3>
-          <button className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors">
+          <button
+            disabled
+            title="User creation is not configured yet"
+            className="flex items-center px-4 py-2 bg-gray-200 text-gray-500 rounded-lg cursor-not-allowed"
+          >
             <Plus className="w-4 h-4 mr-2" />
             Add User
           </button>
@@ -716,10 +763,16 @@ const Settings = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex space-x-2">
-                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                        <button
+                          onClick={() => openUserModal(u)}
+                          className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                        >
                           <Edit className="w-4 h-4" />
                         </button>
-                        <button className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                        <button
+                          onClick={() => handleUserDelete(u.id)}
+                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
@@ -743,8 +796,6 @@ const Settings = () => {
       case 'general': return renderGeneralSettings();
       case 'notifications': return renderNotifications();
       case 'security': return renderSecurity();
-      case 'integrations': return renderIntegrations();
-      case 'database': return renderDatabase();
       case 'users': return renderUsers();
       default: return renderGeneralSettings();
     }
@@ -827,6 +878,79 @@ const Settings = () => {
               </div>
             </div>
           </form>
+
+          {showUserModal && editingUser && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+              <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900">Edit User</h2>
+                  <button onClick={() => setShowUserModal(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+                </div>
+                {userFormError && (
+                  <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded mb-3 text-sm">
+                    {userFormError}
+                  </div>
+                )}
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1">Name</label>
+                    <input
+                      type="text"
+                      value={userForm.name}
+                      onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1">Email</label>
+                    <input
+                      type="email"
+                      value={userForm.email}
+                      onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm text-gray-600 mb-1">Role</label>
+                      <select
+                        value={userForm.role}
+                        onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                      >
+                        <option value="user">User</option>
+                        <option value="agent">Agent</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </div>
+                    <div className="flex items-center gap-2 mt-6 sm:mt-0">
+                      <input
+                        id="user-active"
+                        type="checkbox"
+                        checked={userForm.isActive}
+                        onChange={(e) => setUserForm({ ...userForm, isActive: e.target.checked })}
+                      />
+                      <label htmlFor="user-active" className="text-sm text-gray-600">Active</label>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2 mt-6">
+                  <button
+                    onClick={() => setShowUserModal(false)}
+                    className="px-4 py-2 text-sm border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleUserUpdate}
+                    className="px-4 py-2 text-sm bg-teal-600 text-white rounded-lg hover:bg-teal-700"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -40,12 +40,21 @@ const ContactPage = () => {
     setIsSubmitting(true);
 
     try {
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        type: formData.type,
+        ...(formData.phone.trim() ? { phone: formData.phone } : {})
+      };
+
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/contact/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -59,7 +68,14 @@ const ContactPage = () => {
           type: 'general'
         });
       } else {
-        setSubmitError('Failed to send message. Please try again.');
+        const data = await response.json().catch(() => null);
+        if (data?.errors?.length) {
+          setSubmitError(data.errors.join(' '));
+        } else if (data?.message) {
+          setSubmitError(data.message);
+        } else {
+          setSubmitError('Failed to send message. Please try again.');
+        }
       }
     } catch (error) {
       console.error('Contact form submission error:', error);

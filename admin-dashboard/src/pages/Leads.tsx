@@ -14,7 +14,7 @@ import {
   Loader2,
   Tag
 } from 'lucide-react';
-import { getLeads } from '../services/api';
+import { getLeads, updateContactStatus, deleteContact, createLead } from '../services/api';
 
 interface Lead {
   id: string;
@@ -25,10 +25,12 @@ interface Lead {
   propertyTitle?: string;
   budget: string;
   requirements: string[];
-  status: 'new' | 'contacted' | 'qualified' | 'closed';
-  source: 'website' | 'referral' | 'agent' | 'other';
+  status: 'pending' | 'in_progress' | 'resolved' | 'closed';
+  source: 'general' | 'property_inquiry' | 'partnership' | 'complaint' | 'other';
   createdAt: string;
   updatedAt: string;
+  subject?: string;
+  message?: string;
 }
 
 const Leads = () => {
@@ -37,6 +39,18 @@ const Leads = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterSource, setFilterSource] = useState('all');
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState('');
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [leadForm, setLeadForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: '',
+    type: 'general',
+  });
 
   const exportLeadsCsv = () => {
     const headers = ['ID', 'Name', 'Email', 'Phone', 'Property', 'Status', 'Source', 'Created At'];
@@ -68,12 +82,6 @@ const Leads = () => {
       try {
         const data = await getLeads();
         const mapped: Lead[] = data.map((lead: any) => {
-          const statusMap: Record<string, Lead['status']> = {
-            pending: 'new',
-            in_progress: 'contacted',
-            resolved: 'closed',
-            closed: 'closed',
-          };
           return {
             id: lead._id || lead.id,
             name: lead.name,
@@ -83,10 +91,12 @@ const Leads = () => {
             propertyTitle: lead.propertyId?.title || lead.subject || '',
             budget: 'Not provided',
             requirements: [],
-            status: statusMap[lead.status] || 'new',
-            source: 'website',
+            status: lead.status || 'pending',
+            source: lead.type || 'general',
             createdAt: lead.createdAt,
             updatedAt: lead.updatedAt,
+            subject: lead.subject,
+            message: lead.message,
           };
         });
         setLeads(mapped);
@@ -111,9 +121,9 @@ const Leads = () => {
 
   const getStatusColor = (status: string) => {
     switch(status) {
-      case 'new': return 'bg-blue-100 text-blue-800';
-      case 'contacted': return 'bg-yellow-100 text-yellow-800';
-      case 'qualified': return 'bg-green-100 text-green-800';
+      case 'pending': return 'bg-blue-100 text-blue-800';
+      case 'in_progress': return 'bg-yellow-100 text-yellow-800';
+      case 'resolved': return 'bg-green-100 text-green-800';
       case 'closed': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
     }
@@ -121,11 +131,76 @@ const Leads = () => {
 
   const getSourceColor = (source: string) => {
     switch(source) {
-      case 'website': return 'bg-purple-100 text-purple-800';
-      case 'referral': return 'bg-green-100 text-green-800';
-      case 'agent': return 'bg-blue-100 text-blue-800';
+      case 'property_inquiry': return 'bg-purple-100 text-purple-800';
+      case 'partnership': return 'bg-green-100 text-green-800';
+      case 'complaint': return 'bg-red-100 text-red-800';
+      case 'general': return 'bg-blue-100 text-blue-800';
       case 'other': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const handleStatusChange = async (leadId: string, status: Lead['status']) => {
+    try {
+      await updateContactStatus(leadId, status);
+      setLeads((prev) => prev.map((lead) => (lead.id === leadId ? { ...lead, status } : lead)));
+    } catch (error) {
+      console.error('Failed to update lead status:', error);
+    }
+  };
+
+  const handleDelete = async (leadId: string) => {
+    try {
+      await deleteContact(leadId);
+      setLeads((prev) => prev.filter((lead) => lead.id !== leadId));
+      if (selectedLead?.id === leadId) {
+        setSelectedLead(null);
+      }
+    } catch (error) {
+      console.error('Failed to delete lead:', error);
+    }
+  };
+
+  const handleCreateLead = async () => {
+    setCreateError('');
+    if (!leadForm.name || !leadForm.email || !leadForm.subject || !leadForm.message) {
+      setCreateError('Please fill in all required fields.');
+      return;
+    }
+    try {
+      setCreating(true);
+      const created = await createLead({
+        name: leadForm.name,
+        email: leadForm.email,
+        phone: leadForm.phone || undefined,
+        subject: leadForm.subject,
+        message: leadForm.message,
+        type: leadForm.type,
+      });
+      const mapped: Lead = {
+        id: (created as any)._id || (created as any).id || created.id,
+        name: (created as any).name || leadForm.name,
+        email: (created as any).email || leadForm.email,
+        phone: (created as any).phone || leadForm.phone || '',
+        propertyId: (created as any).propertyId?._id || (created as any).propertyId || undefined,
+        propertyTitle: (created as any).propertyId?.title || (created as any).subject || leadForm.subject,
+        budget: 'Not provided',
+        requirements: [],
+        status: (created as any).status || 'pending',
+        source: (created as any).type || (leadForm.type as Lead['source']),
+        createdAt: (created as any).createdAt || new Date().toISOString(),
+        updatedAt: (created as any).updatedAt || new Date().toISOString(),
+        subject: (created as any).subject || leadForm.subject,
+        message: (created as any).message || leadForm.message,
+      };
+      setLeads((prev) => [mapped, ...prev]);
+      setShowCreateModal(false);
+      setLeadForm({ name: '', email: '', phone: '', subject: '', message: '', type: 'general' });
+    } catch (error) {
+      console.error('Failed to create lead:', error);
+      setCreateError('Failed to create lead.');
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -152,7 +227,10 @@ const Leads = () => {
             <Tag className="w-4 h-4 mr-2" />
             Export CSV
           </button>
-          <button className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors shadow-sm shadow-teal-200">
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors shadow-sm shadow-teal-200"
+          >
             <Plus className="w-4 h-4 mr-2" />
             Add Lead
           </button>
@@ -182,9 +260,9 @@ const Leads = () => {
               onChange={(e) => setFilterStatus(e.target.value)}
             >
               <option value="all">All Status</option>
-              <option value="new">New</option>
-              <option value="contacted">Contacted</option>
-              <option value="qualified">Qualified</option>
+              <option value="pending">Pending</option>
+              <option value="in_progress">In Progress</option>
+              <option value="resolved">Resolved</option>
               <option value="closed">Closed</option>
             </select>
           </div>
@@ -196,9 +274,10 @@ const Leads = () => {
               onChange={(e) => setFilterSource(e.target.value)}
             >
               <option value="all">All Sources</option>
-              <option value="website">Website</option>
-              <option value="referral">Referral</option>
-              <option value="agent">Agent</option>
+              <option value="general">General</option>
+              <option value="property_inquiry">Property Inquiry</option>
+              <option value="partnership">Partnership</option>
+              <option value="complaint">Complaint</option>
               <option value="other">Other</option>
             </select>
           </div>
@@ -248,9 +327,16 @@ const Leads = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(lead.status)} capitalize`}>
-                      {lead.status}
-                    </span>
+                    <select
+                      value={lead.status}
+                      onChange={(e) => handleStatusChange(lead.id, e.target.value as Lead['status'])}
+                      className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(lead.status)} capitalize bg-transparent border border-transparent`}
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="resolved">Resolved</option>
+                      <option value="closed">Closed</option>
+                    </select>
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getSourceColor(lead.source)} capitalize`}>
@@ -265,13 +351,22 @@ const Leads = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex space-x-2">
-                      <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                      <button
+                        onClick={() => setSelectedLead(lead)}
+                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
                         <Eye className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                      <button
+                        onClick={() => setSelectedLead(lead)}
+                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
                         <Edit className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                      <button
+                        onClick={() => handleDelete(lead.id)}
+                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -292,6 +387,131 @@ const Leads = () => {
           </div>
         )}
       </div>
+
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Create Lead</h2>
+              <button onClick={() => setShowCreateModal(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+
+            {createError && (
+              <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded mb-3 text-sm">
+                {createError}
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Name</label>
+                <input
+                  type="text"
+                  value={leadForm.name}
+                  onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={leadForm.email}
+                    onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Phone</label>
+                  <input
+                    type="tel"
+                    value={leadForm.phone}
+                    onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Subject</label>
+                <input
+                  type="text"
+                  value={leadForm.subject}
+                  onChange={(e) => setLeadForm({ ...leadForm, subject: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Message</label>
+                <textarea
+                  rows={4}
+                  value={leadForm.message}
+                  onChange={(e) => setLeadForm({ ...leadForm, message: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Source</label>
+                <select
+                  value={leadForm.type}
+                  onChange={(e) => setLeadForm({ ...leadForm, type: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                >
+                  <option value="general">General</option>
+                  <option value="property_inquiry">Property Inquiry</option>
+                  <option value="partnership">Partnership</option>
+                  <option value="complaint">Complaint</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="px-4 py-2 text-sm border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateLead}
+                disabled={creating}
+                className="px-4 py-2 text-sm bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {creating ? 'Creating...' : 'Create Lead'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedLead && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Lead Details</h2>
+              <button onClick={() => setSelectedLead(null)} className="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+            <div className="space-y-3 text-sm text-gray-700">
+              <div><span className="font-medium text-gray-900">Name:</span> {selectedLead.name}</div>
+              <div><span className="font-medium text-gray-900">Email:</span> {selectedLead.email}</div>
+              <div><span className="font-medium text-gray-900">Phone:</span> {selectedLead.phone || 'Not provided'}</div>
+              <div><span className="font-medium text-gray-900">Subject:</span> {selectedLead.subject || 'N/A'}</div>
+              <div><span className="font-medium text-gray-900">Message:</span> {selectedLead.message || 'N/A'}</div>
+              <div><span className="font-medium text-gray-900">Source:</span> {selectedLead.source}</div>
+              <div><span className="font-medium text-gray-900">Status:</span> {selectedLead.status}</div>
+            </div>
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                onClick={() => setSelectedLead(null)}
+                className="px-4 py-2 text-sm border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

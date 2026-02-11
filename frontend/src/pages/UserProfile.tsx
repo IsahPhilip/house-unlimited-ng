@@ -1,40 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowLeft,
   BarChart3,
   Camera,
   Heart,
   Home as HomeIcon,
-  Phone,
-  Search,
   Settings,
   Star,
-  TrendingUp,
 } from 'lucide-react';
-import { Page, User, Review } from '../types';
+import { Page, User } from '../types';
 import { getWishlist, getMyReviews } from '../services/api';
 
 interface UserProfilePageProps {
   user: User | null;
-  wishlistIds: string[];
-  reviews: Review[];
   onNavigate: (page: Page) => void;
   onNavigateProperty: (id: string) => void;
   onUpdateProfile: (updates: Partial<User>) => void;
-  onWishlistToggle: (id: string, property?: any) => void;
+  onUpdateAvatar: (file: File) => Promise<void>;
 }
 
 const UserProfilePage: React.FC<UserProfilePageProps> = ({
   user,
-  wishlistIds,
-  reviews,
   onNavigate,
   onNavigateProperty,
   onUpdateProfile,
-  onWishlistToggle
+  onUpdateAvatar,
 }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'properties' | 'reviews' | 'settings'>('overview');
   const [isEditing, setIsEditing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [editForm, setEditForm] = useState({
     name: user?.name || '',
     phone: user?.phone || '',
@@ -43,6 +37,13 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
   });
   const [wishlistProperties, setWishlistProperties] = useState<any[]>([]);
   const [userReviews, setUserReviews] = useState<any[]>([]);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [notificationPrefs, setNotificationPrefs] = useState(() => ({
+    email: user?.preferences?.emailNotifications,
+    sms: user?.preferences?.smsNotifications,
+  }));
 
   if (!user) {
     return (
@@ -79,6 +80,118 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
     }
   }, [user]);
 
+  useEffect(() => {
+    if (!user) return;
+    setEditForm({
+      name: user.name || '',
+      phone: user.phone || '',
+      bio: user.bio || '',
+      location: user.location || '',
+    });
+    setNotificationPrefs({
+      email: user.preferences?.emailNotifications,
+      sms: user.preferences?.smsNotifications,
+    });
+  }, [user]);
+
+  useEffect(() => {
+    return () => {
+      if (avatarPreview) {
+        URL.revokeObjectURL(avatarPreview);
+      }
+    };
+  }, [avatarPreview]);
+
+  const handleAvatarSelect = () => {
+    setAvatarError(null);
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setAvatarError('Please choose an image file.');
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setAvatarError('Image must be under 2MB.');
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+    setAvatarPreview(previewUrl);
+    setAvatarUploading(true);
+    setAvatarError(null);
+
+    try {
+      await onUpdateAvatar(file);
+      setAvatarPreview(null);
+    } catch (error) {
+      setAvatarError('Failed to upload avatar. Please try again.');
+    } finally {
+      setAvatarUploading(false);
+      if (event.target) {
+        event.target.value = '';
+      }
+    }
+  };
+
+  const profileCompletion = useMemo(() => {
+    if (!user) return 0;
+    const fields = [
+      user.name,
+      user.email,
+      user.phone,
+      user.location,
+      user.bio,
+      user.avatar,
+    ];
+    const filled = fields.filter(Boolean).length;
+    return Math.round((filled / fields.length) * 100);
+  }, [user]);
+
+  const memberSinceLabel = useMemo(() => {
+    if (!user?.joinDate) return 'Not set';
+    const date = new Date(user.joinDate);
+    if (Number.isNaN(date.getTime())) return 'Not set';
+    return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short' });
+  }, [user?.joinDate]);
+
+  const activityItems = useMemo(() => {
+    const items: { key: string; title: string; icon: typeof Heart; colorClass: string; date?: string }[] = [];
+    wishlistProperties.forEach((property: any) => {
+      items.push({
+        key: `wishlist-${property._id || property.id}`,
+        title: `Saved "${property.title}" to wishlist`,
+        icon: Heart,
+        colorClass: 'bg-teal-100 text-teal-600',
+        date: property.savedAt || property.createdAt || property.updatedAt,
+      });
+    });
+    userReviews.forEach((review: any) => {
+      items.push({
+        key: `review-${review._id || review.id}`,
+        title: `Left a review for "${review.property?.title || 'a property'}"`,
+        icon: Star,
+        colorClass: 'bg-green-100 text-green-600',
+        date: review.createdAt || review.date,
+      });
+    });
+
+    const withDate = items.filter((item) => item.date);
+    if (withDate.length > 0) {
+      return items.sort((a, b) => {
+        const aTime = a.date ? new Date(a.date).getTime() : 0;
+        const bTime = b.date ? new Date(b.date).getTime() : 0;
+        return bTime - aTime;
+      });
+    }
+    return items;
+  }, [wishlistProperties, userReviews]);
+
   const handleSaveProfile = () => {
     onUpdateProfile(editForm);
     setIsEditing(false);
@@ -89,12 +202,41 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
       <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
         {/* Avatar */}
         <div className="relative">
-          <div className="w-32 h-32 bg-gradient-to-br from-teal-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-4xl font-bold shadow-lg">
-            {user.name.charAt(0).toUpperCase()}
-          </div>
-          <button className="absolute bottom-0 right-0 bg-teal-600 text-white p-3 rounded-full shadow-lg hover:bg-teal-700">
+          {avatarPreview ? (
+            <img
+              src={avatarPreview}
+              alt="Selected avatar preview"
+              className="w-32 h-32 rounded-full object-cover shadow-lg"
+            />
+          ) : user.avatar ? (
+            <img
+              src={user.avatar}
+              alt={user.name}
+              className="w-32 h-32 rounded-full object-cover shadow-lg"
+            />
+          ) : (
+            <div className="w-32 h-32 bg-gradient-to-br from-teal-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-4xl font-bold shadow-lg">
+              {user.name.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={handleAvatarSelect}
+            disabled={avatarUploading}
+            className="absolute bottom-0 right-0 bg-teal-600 text-white p-3 rounded-full shadow-lg hover:bg-teal-700 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
             <Camera className="w-4 h-4" />
           </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleAvatarChange}
+          />
+          {avatarError && (
+            <p className="mt-3 text-sm text-red-600">{avatarError}</p>
+          )}
         </div>
 
         {/* Profile Info */}
@@ -112,12 +254,12 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
               <div className="text-sm text-gray-600">Reviews</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">12</div>
-              <div className="text-sm text-gray-600">Searches</div>
+              <div className="text-2xl font-bold text-purple-600">{memberSinceLabel}</div>
+              <div className="text-sm text-gray-600">Member Since</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">3</div>
-              <div className="text-sm text-gray-600">Months Active</div>
+              <div className="text-2xl font-bold text-orange-600">{profileCompletion}%</div>
+              <div className="text-sm text-gray-600">Profile Completion</div>
             </div>
           </div>
 
@@ -175,60 +317,31 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
       {/* Recent Activity */}
       <div className="bg-white rounded-2xl p-8 shadow-sm">
         <h2 className="text-2xl font-bold mb-6">Recent Activity</h2>
-        <div className="space-y-4">
-          <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-            <div className="w-10 h-10 bg-teal-100 text-teal-600 rounded-lg flex items-center justify-center">
-              <Heart className="w-5 h-5" />
-            </div>
-            <div className="flex-1">
-              <p className="font-medium">Saved "Riverview Retreat" to wishlist</p>
-              <p className="text-sm text-gray-600">2 hours ago</p>
-            </div>
+        {activityItems.length > 0 ? (
+          <div className="space-y-4">
+            {activityItems.slice(0, 6).map((activity) => {
+              const Icon = activity.icon;
+              const dateLabel = activity.date
+                ? new Date(activity.date).toLocaleDateString()
+                : null;
+              return (
+                <div key={activity.key} className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${activity.colorClass}`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium">{activity.title}</p>
+                    {dateLabel && <p className="text-sm text-gray-600">{dateLabel}</p>}
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-            <div className="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center">
-              <Star className="w-5 h-5" />
-            </div>
-            <div className="flex-1">
-              <p className="font-medium">Left a review for "Modern Downtown Loft"</p>
-              <p className="text-sm text-gray-600">1 day ago</p>
-            </div>
+        ) : (
+          <div className="text-center py-10 text-gray-600">
+            No recent activity yet.
           </div>
-          <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-            <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center">
-              <Search className="w-5 h-5" />
-            </div>
-            <div className="flex-1">
-              <p className="font-medium">Searched for apartments in downtown</p>
-              <p className="text-sm text-gray-600">3 days ago</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-2xl p-6 shadow-sm text-center">
-          <div className="text-3xl mb-2 text-teal-600 flex justify-center">
-            <HomeIcon className="w-8 h-8" />
-          </div>
-          <div className="text-2xl font-bold text-teal-600 mb-1">24</div>
-          <div className="text-sm text-gray-600">Properties Viewed</div>
-        </div>
-        <div className="bg-white rounded-2xl p-6 shadow-sm text-center">
-          <div className="text-3xl mb-2 text-green-600 flex justify-center">
-            <Phone className="w-8 h-8" />
-          </div>
-          <div className="text-2xl font-bold text-green-600 mb-1">8</div>
-          <div className="text-sm text-gray-600">Agent Inquiries</div>
-        </div>
-        <div className="bg-white rounded-2xl p-6 shadow-sm text-center">
-          <div className="text-3xl mb-2 text-purple-600 flex justify-center">
-            <TrendingUp className="w-8 h-8" />
-          </div>
-          <div className="text-2xl font-bold text-purple-600 mb-1">92%</div>
-          <div className="text-sm text-gray-600">Profile Completion</div>
-        </div>
+        )}
       </div>
     </div>
   );
@@ -440,27 +553,53 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({
             </button>
           </div>
 
-          <div className="flex justify-between items-center py-4 border-b border-gray-100">
-            <div>
-              <h3 className="font-medium">Email Notifications</h3>
-              <p className="text-sm text-gray-600">Receive updates about new properties</p>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" defaultChecked />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
-            </label>
-          </div>
+          {typeof notificationPrefs.email === 'boolean' && typeof notificationPrefs.sms === 'boolean' ? (
+            <>
+              <div className="flex justify-between items-center py-4 border-b border-gray-100">
+                <div>
+                  <h3 className="font-medium">Email Notifications</h3>
+                  <p className="text-sm text-gray-600">Receive updates about new properties</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={notificationPrefs.email}
+                    onChange={(e) => {
+                      const next = { ...notificationPrefs, email: e.target.checked };
+                      setNotificationPrefs(next);
+                      onUpdateProfile({ preferences: { ...(user.preferences || {}), emailNotifications: next.email } as User['preferences'] });
+                    }}
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
+                </label>
+              </div>
 
-          <div className="flex justify-between items-center py-4 border-b border-gray-100">
-            <div>
-              <h3 className="font-medium">SMS Notifications</h3>
-              <p className="text-sm text-gray-600">Get text alerts for inquiries</p>
+              <div className="flex justify-between items-center py-4 border-b border-gray-100">
+                <div>
+                  <h3 className="font-medium">SMS Notifications</h3>
+                  <p className="text-sm text-gray-600">Get text alerts for inquiries</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={notificationPrefs.sms}
+                    onChange={(e) => {
+                      const next = { ...notificationPrefs, sms: e.target.checked };
+                      setNotificationPrefs(next);
+                      onUpdateProfile({ preferences: { ...(user.preferences || {}), smsNotifications: next.sms } as User['preferences'] });
+                    }}
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
+                </label>
+              </div>
+            </>
+          ) : (
+            <div className="py-4 text-sm text-gray-600 border-b border-gray-100">
+              Notification preferences are not configured for this account.
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
-            </label>
-          </div>
+          )}
 
           <div className="pt-6 border-t border-gray-100">
             <button className="bg-red-50 text-red-600 px-6 py-3 rounded-xl font-medium hover:bg-red-100">

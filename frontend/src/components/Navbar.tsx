@@ -77,19 +77,18 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <div className="flex items-center space-x-4">
-                <button
-                  onClick={() => handleNavigate('profile')}
-                className={`text-sm font-medium transition-colors ${currentPage === 'profile' ? 'text-teal-600' : 'text-gray-600 hover:text-teal-600'}`}
-                >
-                  Profile
-                </button>
                 <div className="text-right">
                   <p className="text-sm font-bold text-gray-900">{user.name}</p>
                   <button onClick={logout} className="text-xs text-red-500 hover:underline">Sign Out</button>
                 </div>
-                <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center border border-teal-200 shadow-sm">
+                <button
+                  type="button"
+                  onClick={() => handleNavigate('profile')}
+                  title="View profile"
+                  className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center border border-teal-200 shadow-sm cursor-pointer hover:bg-teal-200 transition-colors"
+                >
                   <span className="text-teal-600 font-bold uppercase">{user.name.charAt(0)}</span>
-                </div>
+                </button>
               </div>
             ) : (
               <>
@@ -132,12 +131,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               {user && (
                 <>
                   <button
-                    onClick={() => handleNavigate('profile')}
-                    className={`text-left text-lg font-semibold py-2 px-4 rounded-xl transition-colors ${currentPage === 'profile' ? 'bg-teal-50 text-teal-600' : 'text-gray-600 hover:bg-gray-50'}`}
-                  >
-                    My Profile
-                  </button>
-                  <button
                     onClick={() => handleNavigate('wishlist')}
                     className={`text-left text-lg font-semibold py-2 px-4 rounded-xl flex items-center justify-between transition-colors ${currentPage === 'wishlist' ? 'bg-teal-50 text-teal-600' : 'text-gray-600 hover:bg-gray-50'}`}
                   >
@@ -155,7 +148,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="pt-6 border-t border-gray-100">
               {user ? (
                 <div className="flex items-center justify-between bg-gray-50 p-4 rounded-2xl">
-                  <div className="flex items-center space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => handleNavigate('profile')}
+                    className="flex items-center space-x-3 text-left hover:opacity-90 transition-opacity"
+                  >
                     <div className="w-10 h-10 bg-teal-600 text-white rounded-full flex items-center justify-center font-bold">
                       {user.name.charAt(0).toUpperCase()}
                     </div>
@@ -163,7 +160,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <p className="font-bold text-gray-900">{user.name}</p>
                       <p className="text-xs text-gray-500">{user.email}</p>
                     </div>
-                  </div>
+                  </button>
                   <button 
                     onClick={() => { logout(); setIsMenuOpen(false); }} 
                     className="text-red-500 font-bold text-sm hover:underline"

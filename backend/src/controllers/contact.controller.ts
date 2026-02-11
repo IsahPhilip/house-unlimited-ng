@@ -13,7 +13,7 @@ export const submitContact = async (req: Request, res: Response): Promise<void> 
       email: email.toLowerCase().trim(),
       subject: subject.trim(),
       message: message.trim(),
-      phone: phone?.trim(),
+      phone: phone?.trim() || undefined,
       type: type || 'general'
     });
 

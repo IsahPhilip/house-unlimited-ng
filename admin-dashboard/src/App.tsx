@@ -6,6 +6,12 @@ import Login from './pages/Login';
 import Properties from './pages/Properties';
 import Blog from './pages/Blog';
 import BlogForm from './components/BlogForm';
+import Leads from './pages/Leads';
+import Deals from './pages/Deals';
+import Agents from './pages/Agents';
+import Inquiries from './pages/Inquiries';
+import Reports from './pages/Reports';
+import Settings from './pages/Settings';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -28,12 +34,12 @@ function App() {
             <Route path="blog" element={<Blog />} />
             <Route path="blog/create" element={<BlogForm isEditing={false} />} />
             <Route path="blog/edit/:id" element={<BlogForm isEditing={true} />} />
-            <Route path="leads" element={<div>Leads Page</div>} />
-            <Route path="deals" element={<div>Deals Page</div>} />
-            <Route path="agents" element={<div>Agents Page</div>} />
-            <Route path="inquiries" element={<div>Inquiries Page</div>} />
-            <Route path="reports" element={<div>Reports Page</div>} />
-            <Route path="settings" element={<div>Settings Page</div>} />
+            <Route path="leads" element={<Leads />} />
+            <Route path="deals" element={<Deals />} />
+            <Route path="agents" element={<Agents />} />
+            <Route path="inquiries" element={<Inquiries />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
           
           {/* Catch all route */}

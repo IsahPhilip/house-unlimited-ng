@@ -5,6 +5,8 @@ import User from '../models/mongodb/User.mongoose.js';
 import AdminSettings from '../models/AdminSettings.js';
 import AdminNotification from '../models/AdminNotification.js';
 import Deal from '../models/mongodb/Deal.mongoose.js';
+import { BlogComment } from '../models/mongodb/BlogComment.mongoose.js';
+import { BlogPost } from '../models/mongodb/BlogPost.mongoose.js';
 import { AuthRequest } from '../middleware/auth.middleware.js';
 
 const getMonthKey = (date: Date) => {
@@ -103,7 +105,7 @@ export const getDashboardStats = async (req: Request, res: Response): Promise<vo
 
 export const getLeads = async (req: Request, res: Response): Promise<void> => {
   try {
-    const contacts = await Contact.find({ type: 'property_inquiry' })
+    const contacts = await Contact.find()
       .populate('propertyId', 'title')
       .sort({ createdAt: -1 });
 
@@ -366,6 +368,105 @@ export const getAgents = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+export const createAgent = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { name, email, password, phone, isActive } = req.body || {};
+    if (!name || !email || !password) {
+      res.status(400).json({ success: false, error: 'Name, email, and password are required' });
+      return;
+    }
+
+    const existing = await User.findOne({ email });
+    if (existing) {
+      res.status(400).json({ success: false, error: 'User already exists' });
+      return;
+    }
+
+    const agent = await User.create({
+      name,
+      email,
+      password,
+      phone,
+      role: 'agent',
+      isActive: isActive !== undefined ? !!isActive : true,
+    });
+
+    const data = {
+      id: agent._id.toString(),
+      name: agent.name,
+      email: agent.email,
+      phone: agent.phone || '',
+      licenseNumber: '',
+      propertiesCount: 0,
+      dealsCount: 0,
+      totalSales: 0,
+      rating: 0,
+      isActive: agent.isActive ?? true,
+      joinDate: agent.createdAt?.toISOString(),
+    };
+
+    res.status(201).json({ success: true, data });
+  } catch (error) {
+    console.error('Create agent error:', error);
+    res.status(500).json({ success: false, error: 'Failed to create agent' });
+  }
+};
+
+export const updateAgent = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { name, email, phone, isActive } = req.body || {};
+    const update: Record<string, any> = {};
+    if (name !== undefined) update.name = name;
+    if (email !== undefined) update.email = email;
+    if (phone !== undefined) update.phone = phone;
+    if (isActive !== undefined) update.isActive = !!isActive;
+
+    const agent = await User.findOneAndUpdate(
+      { _id: req.params.id, role: 'agent' },
+      update,
+      { new: true, runValidators: true }
+    );
+
+    if (!agent) {
+      res.status(404).json({ success: false, error: 'Agent not found' });
+      return;
+    }
+
+    const data = {
+      id: agent._id.toString(),
+      name: agent.name,
+      email: agent.email,
+      phone: agent.phone || '',
+      licenseNumber: '',
+      propertiesCount: 0,
+      dealsCount: 0,
+      totalSales: 0,
+      rating: 0,
+      isActive: agent.isActive ?? true,
+      joinDate: agent.createdAt?.toISOString(),
+    };
+
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    console.error('Update agent error:', error);
+    res.status(500).json({ success: false, error: 'Failed to update agent' });
+  }
+};
+
+export const deleteAgent = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const agent = await User.findOneAndDelete({ _id: req.params.id, role: 'agent' });
+    if (!agent) {
+      res.status(404).json({ success: false, error: 'Agent not found' });
+      return;
+    }
+    res.status(200).json({ success: true, data: {} });
+  } catch (error) {
+    console.error('Delete agent error:', error);
+    res.status(500).json({ success: false, error: 'Failed to delete agent' });
+  }
+};
+
 export const getNotifications = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user?._id;
@@ -622,5 +723,205 @@ export const updateAdminSettings = async (req: Request, res: Response): Promise<
       return;
     }
     res.status(500).json({ success: false, error: 'Failed to update settings' });
+  }
+};
+
+export const getBlogComments = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const limit = Math.min(Number(req.query.limit) || 20, 100);
+    const page = Math.max(Number(req.query.page) || 1, 1);
+    const skip = (page - 1) * limit;
+    const postId = req.query.postId ? String(req.query.postId) : null;
+    const search = req.query.q ? String(req.query.q).trim() : '';
+
+    const filter: Record<string, any> = {};
+    if (postId) filter.post = postId;
+    if (search) filter.content = { $regex: search, $options: 'i' };
+
+    const [total, comments] = await Promise.all([
+      BlogComment.countDocuments(filter),
+      BlogComment.find(filter)
+        .populate('user', 'name email avatar authorRole role isActive')
+        .populate('post', 'title slug')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        comments: comments.map((comment) => ({
+          id: comment._id.toString(),
+          content: comment.content,
+          createdAt: comment.createdAt?.toISOString(),
+          updatedAt: comment.updatedAt?.toISOString(),
+          status: comment.status,
+          hiddenAt: comment.hiddenAt?.toISOString() || null,
+          user: comment.user
+            ? {
+                id: (comment.user as any)._id?.toString(),
+                name: (comment.user as any).name,
+                email: (comment.user as any).email,
+                avatar: (comment.user as any).avatar,
+                role: (comment.user as any).authorRole || (comment.user as any).role,
+                isActive: (comment.user as any).isActive ?? true,
+              }
+            : null,
+          post: comment.post
+            ? {
+                id: (comment.post as any)._id?.toString(),
+                title: (comment.post as any).title,
+                slug: (comment.post as any).slug,
+              }
+            : null,
+        })),
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(total / limit),
+          totalItems: total,
+          limit,
+        },
+      },
+    });
+  } catch (error) {
+    console.error('Admin blog comments error:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch blog comments' });
+  }
+};
+
+export const deleteBlogComment = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const comment = await BlogComment.findById(req.params.id);
+    if (!comment) {
+      res.status(404).json({ success: false, error: 'Comment not found' });
+      return;
+    }
+
+    const postId = comment.post?.toString();
+    const wasVisible = comment.status !== 'hidden';
+    await comment.deleteOne();
+
+    if (postId && wasVisible) {
+      await BlogPost.updateOne({ _id: postId }, { $inc: { commentsCount: -1 } });
+      await BlogPost.updateOne({ _id: postId, commentsCount: { $lt: 0 } }, { $set: { commentsCount: 0 } });
+    }
+
+    res.status(200).json({ success: true, data: {} });
+  } catch (error) {
+    console.error('Admin delete blog comment error:', error);
+    res.status(500).json({ success: false, error: 'Failed to delete blog comment' });
+  }
+};
+
+export const updateBlogCommentStatus = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { status } = req.body || {};
+    if (status !== 'visible' && status !== 'hidden') {
+      res.status(400).json({ success: false, error: 'Invalid status' });
+      return;
+    }
+
+    const comment = await BlogComment.findById(req.params.id);
+    if (!comment) {
+      res.status(404).json({ success: false, error: 'Comment not found' });
+      return;
+    }
+
+    const wasVisible = comment.status !== 'hidden';
+    comment.status = status;
+    comment.hiddenAt = status === 'hidden' ? new Date() : null;
+    comment.hiddenBy = status === 'hidden' && (req as any).user ? (req as any).user._id : null;
+    await comment.save();
+
+    if (comment.post) {
+      if (wasVisible && status === 'hidden') {
+        await BlogPost.updateOne({ _id: comment.post }, { $inc: { commentsCount: -1 } });
+        await BlogPost.updateOne({ _id: comment.post, commentsCount: { $lt: 0 } }, { $set: { commentsCount: 0 } });
+      } else if (!wasVisible && status === 'visible') {
+        await BlogPost.updateOne({ _id: comment.post }, { $inc: { commentsCount: 1 } });
+      }
+    }
+
+    res.status(200).json({ success: true, data: { id: comment._id.toString(), status: comment.status } });
+  } catch (error) {
+    console.error('Admin update blog comment status error:', error);
+    res.status(500).json({ success: false, error: 'Failed to update comment status' });
+  }
+};
+
+export const bulkModerateBlogComments = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { action, ids } = req.body || {};
+    if (!Array.isArray(ids) || ids.length === 0) {
+      res.status(400).json({ success: false, error: 'No comment ids provided' });
+      return;
+    }
+
+    const comments = await BlogComment.find({ _id: { $in: ids } });
+
+    if (action === 'delete') {
+      const visibleCounts = comments.reduce<Record<string, number>>((acc, comment) => {
+        if (comment.status !== 'hidden') {
+          const key = comment.post?.toString() || '';
+          if (key) acc[key] = (acc[key] || 0) + 1;
+        }
+        return acc;
+      }, {});
+
+      await BlogComment.deleteMany({ _id: { $in: ids } });
+
+      await Promise.all(
+        Object.entries(visibleCounts).map(([postId, count]) =>
+          BlogPost.updateOne({ _id: postId }, { $inc: { commentsCount: -count } })
+        )
+      );
+      await BlogPost.updateMany({ commentsCount: { $lt: 0 } }, { $set: { commentsCount: 0 } });
+
+      res.status(200).json({ success: true, data: { action: 'delete', count: ids.length } });
+      return;
+    }
+
+    if (action === 'hide' || action === 'unhide') {
+      const toHide = action === 'hide';
+      const status = toHide ? 'hidden' : 'visible';
+
+      const byPost = comments.reduce<Record<string, { hide: number; unhide: number }>>((acc, comment) => {
+        const postId = comment.post?.toString();
+        if (!postId) return acc;
+        if (!acc[postId]) acc[postId] = { hide: 0, unhide: 0 };
+        if (comment.status !== 'hidden' && toHide) acc[postId].hide += 1;
+        if (comment.status === 'hidden' && !toHide) acc[postId].unhide += 1;
+        return acc;
+      }, {});
+
+      await BlogComment.updateMany(
+        { _id: { $in: ids } },
+        {
+          $set: {
+            status,
+            hiddenAt: toHide ? new Date() : null,
+            hiddenBy: toHide && (req as any).user ? (req as any).user._id : null,
+          },
+        }
+      );
+
+      await Promise.all(
+        Object.entries(byPost).map(([postId, counts]) => {
+          const delta = counts.unhide - counts.hide;
+          if (delta === 0) return Promise.resolve();
+          return BlogPost.updateOne({ _id: postId }, { $inc: { commentsCount: delta } });
+        })
+      );
+      await BlogPost.updateMany({ commentsCount: { $lt: 0 } }, { $set: { commentsCount: 0 } });
+
+      res.status(200).json({ success: true, data: { action, count: ids.length } });
+      return;
+    }
+
+    res.status(400).json({ success: false, error: 'Invalid action' });
+  } catch (error) {
+    console.error('Admin bulk blog comment moderation error:', error);
+    res.status(500).json({ success: false, error: 'Failed to moderate comments' });
   }
 };

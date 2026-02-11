@@ -3,6 +3,8 @@ export type AuthMode = 'signin' | 'signup';
 export type ViewMode = 'grid' | 'map';
 
 export interface User {
+  id?: string;
+  _id?: string;
   name: string;
   email: string;
   phone?: string;
@@ -86,6 +88,20 @@ export interface BlogArticle {
   readTime: string;
   views?: number;
   likes?: number;
+  commentsCount?: number;
+}
+
+export interface BlogComment {
+  id: string;
+  content: string;
+  user: {
+    id: string;
+    name: string;
+    avatar?: string;
+    role?: string;
+  } | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface TeamMember {

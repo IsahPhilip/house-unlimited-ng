@@ -20,28 +20,11 @@ const createGmailTransporter = () => {
   });
 };
 
-// Send email using SendGrid (preferred)
+// Send email using Gmail SMTP (preferred)
 export const sendEmail = async (options: EmailOptions): Promise<void> => {
   try {
-    // Use SendGrid if API key is available and valid
-    if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY.startsWith('SG.')) {
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-      const msg = {
-        to: options.email,
-        from: {
-          email: process.env.EMAIL_FROM || 'noreply@realestate.com',
-          name: process.env.EMAIL_FROM_NAME || 'Real Estate Platform',
-        },
-        subject: options.subject,
-        html: options.message,
-      };
-
-      await sgMail.send(msg);
-      console.log('Email sent successfully via SendGrid');
-    }
-    // Fallback to Gmail SMTP
-    else if (process.env.EMAIL_HOST && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    // Use Gmail SMTP if configured
+    if (process.env.EMAIL_HOST && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
       const transporter = createGmailTransporter();
 
       const mailOptions = {
@@ -56,8 +39,25 @@ export const sendEmail = async (options: EmailOptions): Promise<void> => {
 
       const info = await transporter.sendMail(mailOptions);
       console.log('Email sent successfully via Gmail SMTP:', info.messageId);
+    }
+    // Optional SendGrid fallback (only if explicitly configured)
+    else if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY.startsWith('SG.')) {
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+      const msg = {
+        to: options.email,
+        from: {
+          email: process.env.EMAIL_FROM || 'noreply@realestate.com',
+          name: process.env.EMAIL_FROM_NAME || 'Real Estate Platform',
+        },
+        subject: options.subject,
+        html: options.message,
+      };
+
+      await sgMail.send(msg);
+      console.log('Email sent successfully via SendGrid');
     } else {
-      console.warn('No email service configured. Please set up SendGrid or Gmail SMTP.');
+      console.warn('No email service configured. Please set up Gmail SMTP.');
       // In development, you might want to log the email content instead
       if (process.env.NODE_ENV === 'development') {
         console.log('Email would be sent:', {

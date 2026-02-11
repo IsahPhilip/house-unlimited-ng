@@ -1,4 +1,4 @@
-import { User, Property, Review, Lead, Deal, Agent, DashboardStats, ApiResponse, BlogPost, Notification, AdminSettings, RevenueReport, LeadSourceReportItem, PropertyTypeReportItem } from '../types/admin';
+import { User, Property, Review, Lead, Deal, Agent, DashboardStats, ApiResponse, BlogPost, BlogComment, Notification, AdminSettings, RevenueReport, LeadSourceReportItem, PropertyTypeReportItem } from '../types/admin';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -299,7 +299,7 @@ export const getLeads = async (): Promise<Lead[]> => {
   }
 };
 
-export const createLead = async (leadData: Omit<Lead, 'id' | 'createdAt' | 'updatedAt'>): Promise<Lead> => {
+export const createLead = async (leadData: { name: string; email: string; phone?: string; subject: string; message: string; type?: string }): Promise<any> => {
   try {
     const response = await fetch(`${API_BASE_URL}/contact/submit`, {
       method: 'POST',
@@ -355,6 +355,134 @@ export const getAgents = async (): Promise<Agent[]> => {
     return extractData<Agent[]>(data);
   } catch (error) {
     console.error('Agents error:', error);
+    throw error;
+  }
+};
+
+export const createAgent = async (agent: { name: string; email: string; password: string; phone?: string; isActive?: boolean }): Promise<Agent> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/admin/agents`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(agent),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create agent');
+    }
+
+    const data = await response.json();
+    return extractData<Agent>(data);
+  } catch (error) {
+    console.error('Create agent error:', error);
+    throw error;
+  }
+};
+
+export const updateAgent = async (id: string, updates: Partial<Agent> & { isActive?: boolean }): Promise<Agent> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/admin/agents/${id}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(updates),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update agent');
+    }
+
+    const data = await response.json();
+    return extractData<Agent>(data);
+  } catch (error) {
+    console.error('Update agent error:', error);
+    throw error;
+  }
+};
+
+export const deleteAgent = async (id: string): Promise<void> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/admin/agents/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete agent');
+    }
+  } catch (error) {
+    console.error('Delete agent error:', error);
+    throw error;
+  }
+};
+
+export const updateContactStatus = async (id: string, status: string): Promise<any> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/contact/${id}/status`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ status }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update contact status');
+    }
+
+    const data = await response.json();
+    return extractData<any>(data);
+  } catch (error) {
+    console.error('Update contact status error:', error);
+    throw error;
+  }
+};
+
+export const deleteContact = async (id: string): Promise<void> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/contact/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete contact');
+    }
+  } catch (error) {
+    console.error('Delete contact error:', error);
+    throw error;
+  }
+};
+
+export const updateUser = async (id: string, updates: Partial<User>): Promise<User> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(updates),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update user');
+    }
+
+    const data = await response.json();
+    return extractData<User>(data);
+  } catch (error) {
+    console.error('Update user error:', error);
+    throw error;
+  }
+};
+
+export const deleteUser = async (id: string): Promise<void> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete user');
+    }
+  } catch (error) {
+    console.error('Delete user error:', error);
     throw error;
   }
 };
@@ -788,6 +916,115 @@ export const unarchiveBlogPost = async (id: string): Promise<BlogPost> => {
     return extractData<BlogPost>(data);
   } catch (error) {
     console.error('Unarchive blog post error:', error);
+    throw error;
+  }
+};
+
+export const getBlogComments = async (params?: { page?: number; limit?: number; q?: string; postId?: string }): Promise<{ comments: BlogComment[]; pagination: { currentPage: number; totalPages: number; totalItems: number; limit: number } }> => {
+  try {
+    const query = new URLSearchParams();
+    if (params?.page) query.set('page', String(params.page));
+    if (params?.limit) query.set('limit', String(params.limit));
+    if (params?.q) query.set('q', params.q);
+    if (params?.postId) query.set('postId', params.postId);
+    const suffix = query.toString() ? `?${query}` : '';
+
+    const response = await fetch(`${API_BASE_URL}/admin/blog/comments${suffix}`, {
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch blog comments');
+    }
+
+    const data = await response.json();
+    return extractData<{ comments: BlogComment[]; pagination: { currentPage: number; totalPages: number; totalItems: number; limit: number } }>(data);
+  } catch (error) {
+    console.error('Blog comments error:', error);
+    throw error;
+  }
+};
+
+export const deleteBlogComment = async (id: string): Promise<void> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/admin/blog/comments/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete blog comment');
+    }
+  } catch (error) {
+    console.error('Delete blog comment error:', error);
+    throw error;
+  }
+};
+
+export const updateBlogCommentStatus = async (id: string, status: 'visible' | 'hidden'): Promise<{ id: string; status: 'visible' | 'hidden' }> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/admin/blog/comments/${id}/status`, {
+      method: 'PATCH',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ status }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update comment status');
+    }
+
+    const data = await response.json();
+    return extractData<{ id: string; status: 'visible' | 'hidden' }>(data);
+  } catch (error) {
+    console.error('Update comment status error:', error);
+    throw error;
+  }
+};
+
+export const bulkModerateBlogComments = async (action: 'delete' | 'hide' | 'unhide', ids: string[]): Promise<{ action: string; count: number }> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/admin/blog/comments/bulk`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ action, ids }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to moderate comments');
+    }
+
+    const data = await response.json();
+    return extractData<{ action: string; count: number }>(data);
+  } catch (error) {
+    console.error('Bulk moderation error:', error);
+    throw error;
+  }
+};
+
+// Uploads API
+export const uploadFile = async (file: File): Promise<{ url: string }> => {
+  try {
+    const token = localStorage.getItem('authToken');
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${API_BASE_URL}/uploads`, {
+      method: 'POST',
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to upload file');
+    }
+
+    const data = await response.json();
+    const payload = extractData<any>(data);
+    return { url: payload.url || payload.path };
+  } catch (error) {
+    console.error('Upload file error:', error);
     throw error;
   }
 };

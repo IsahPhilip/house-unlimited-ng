@@ -63,8 +63,8 @@ export interface Lead {
   propertyTitle?: string;
   budget: string;
   requirements: string[];
-  status: 'new' | 'contacted' | 'qualified' | 'closed';
-  source: 'website' | 'referral' | 'agent' | 'other';
+  status: 'pending' | 'in_progress' | 'resolved' | 'closed';
+  source: 'general' | 'property_inquiry' | 'partnership' | 'complaint' | 'other';
   createdAt: string;
   updatedAt: string;
 }
@@ -176,6 +176,8 @@ export interface BlogPost {
   featuredImage?: string;
   category: string;
   tags: string[];
+  metaTitle?: string;
+  metaDescription?: string;
   author: {
     id: string;
     name: string;
@@ -189,4 +191,26 @@ export interface BlogPost {
   createdAt: string;
   updatedAt: string;
   publishedAt?: string;
+}
+
+export interface BlogComment {
+  id: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  status: 'visible' | 'hidden';
+  hiddenAt?: string | null;
+  user: {
+    id: string;
+    name: string;
+    email?: string;
+    avatar?: string;
+    role?: string;
+    isActive?: boolean;
+  } | null;
+  post: {
+    id: string;
+    title: string;
+    slug?: string;
+  } | null;
 }

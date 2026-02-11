@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Users, 
   Search, 
   Filter, 
   Plus, 
   Eye, 
   Edit, 
-  Trash2, 
   Calendar,
   DollarSign,
   TrendingUp,
   User,
-  Home,
   Loader2
 } from 'lucide-react';
 import { getDeals, approveDeal, closeDeal, createDeal, updateDeal, getProperties, getUsers } from '../services/api';
@@ -410,9 +407,6 @@ const Deals = () => {
                         onClick={() => openEditModal(deal)}
                       >
                         <Edit className="w-4 h-4" />
-                      </button>
-                      <button className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </td>

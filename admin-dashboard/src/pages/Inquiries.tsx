@@ -9,13 +9,9 @@ import {
   Calendar,
   Mail,
   Phone,
-  Home,
-  Clock,
-  Loader2,
-  CheckCircle,
-  XCircle
+  Loader2
 } from 'lucide-react';
-import { getInquiries } from '../services/api';
+import { getInquiries, updateContactStatus, deleteContact } from '../services/api';
 
 interface Inquiry {
   id: string;
@@ -25,9 +21,11 @@ interface Inquiry {
   propertyId?: string;
   propertyTitle?: string;
   message: string;
-  status: 'new' | 'in_progress' | 'resolved' | 'closed';
+  status: 'pending' | 'in_progress' | 'resolved' | 'closed';
   createdAt: string;
   updatedAt: string;
+  subject?: string;
+  type?: string;
 }
 
 const Inquiries = () => {
@@ -35,6 +33,7 @@ const Inquiries = () => {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
 
   useEffect(() => {
     const fetchInquiries = async () => {
@@ -48,9 +47,11 @@ const Inquiries = () => {
           propertyId: inquiry.propertyId?._id || inquiry.propertyId || undefined,
           propertyTitle: inquiry.propertyId?.title || inquiry.subject || '',
           message: inquiry.message,
-          status: inquiry.status === 'pending' ? 'new' : inquiry.status || 'new',
+          status: inquiry.status || 'pending',
           createdAt: inquiry.createdAt,
           updatedAt: inquiry.updatedAt,
+          subject: inquiry.subject,
+          type: inquiry.type,
         }));
         setInquiries(mapped);
       } catch (error) {
@@ -74,7 +75,7 @@ const Inquiries = () => {
 
   const getStatusColor = (status: string) => {
     switch(status) {
-      case 'new': return 'bg-blue-100 text-blue-800';
+      case 'pending': return 'bg-blue-100 text-blue-800';
       case 'in_progress': return 'bg-yellow-100 text-yellow-800';
       case 'resolved': return 'bg-green-100 text-green-800';
       case 'closed': return 'bg-gray-100 text-gray-800';
@@ -82,13 +83,24 @@ const Inquiries = () => {
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch(status) {
-      case 'new': return <Clock className="w-4 h-4" />;
-      case 'in_progress': return <Clock className="w-4 h-4" />;
-      case 'resolved': return <CheckCircle className="w-4 h-4" />;
-      case 'closed': return <XCircle className="w-4 h-4" />;
-      default: return <Clock className="w-4 h-4" />;
+  const handleStatusChange = async (inquiryId: string, status: Inquiry['status']) => {
+    try {
+      await updateContactStatus(inquiryId, status);
+      setInquiries((prev) => prev.map((inq) => (inq.id === inquiryId ? { ...inq, status } : inq)));
+    } catch (error) {
+      console.error('Failed to update inquiry status:', error);
+    }
+  };
+
+  const handleDelete = async (inquiryId: string) => {
+    try {
+      await deleteContact(inquiryId);
+      setInquiries((prev) => prev.filter((inq) => inq.id !== inquiryId));
+      if (selectedInquiry?.id === inquiryId) {
+        setSelectedInquiry(null);
+      }
+    } catch (error) {
+      console.error('Failed to delete inquiry:', error);
     }
   };
 
@@ -131,7 +143,7 @@ const Inquiries = () => {
             onChange={(e) => setFilterStatus(e.target.value)}
           >
             <option value="all">All Status</option>
-            <option value="new">New</option>
+            <option value="pending">Pending</option>
             <option value="in_progress">In Progress</option>
             <option value="resolved">Resolved</option>
             <option value="closed">Closed</option>
@@ -180,10 +192,16 @@ const Inquiries = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(inquiry.status)} capitalize flex items-center`}>
-                      {getStatusIcon(inquiry.status)}
-                      <span className="ml-1">{inquiry.status}</span>
-                    </span>
+                    <select
+                      value={inquiry.status}
+                      onChange={(e) => handleStatusChange(inquiry.id, e.target.value as Inquiry['status'])}
+                      className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(inquiry.status)} capitalize bg-transparent border border-transparent`}
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="resolved">Resolved</option>
+                      <option value="closed">Closed</option>
+                    </select>
                   </td>
                   <td className="px-6 py-4 text-gray-500">
                     <div className="flex items-center">
@@ -193,13 +211,22 @@ const Inquiries = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex space-x-2">
-                      <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                      <button
+                        onClick={() => setSelectedInquiry(inquiry)}
+                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
                         <Eye className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                      <button
+                        onClick={() => setSelectedInquiry(inquiry)}
+                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
                         <Edit className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                      <button
+                        onClick={() => handleDelete(inquiry.id)}
+                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -220,6 +247,34 @@ const Inquiries = () => {
           </div>
         )}
       </div>
+
+      {selectedInquiry && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Inquiry Details</h2>
+              <button onClick={() => setSelectedInquiry(null)} className="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+            <div className="space-y-3 text-sm text-gray-700">
+              <div><span className="font-medium text-gray-900">Name:</span> {selectedInquiry.name}</div>
+              <div><span className="font-medium text-gray-900">Email:</span> {selectedInquiry.email}</div>
+              <div><span className="font-medium text-gray-900">Phone:</span> {selectedInquiry.phone || 'Not provided'}</div>
+              <div><span className="font-medium text-gray-900">Subject:</span> {selectedInquiry.subject || selectedInquiry.propertyTitle || 'N/A'}</div>
+              <div><span className="font-medium text-gray-900">Message:</span> {selectedInquiry.message || 'N/A'}</div>
+              <div><span className="font-medium text-gray-900">Type:</span> {selectedInquiry.type || 'general'}</div>
+              <div><span className="font-medium text-gray-900">Status:</span> {selectedInquiry.status}</div>
+            </div>
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                onClick={() => setSelectedInquiry(null)}
+                className="px-4 py-2 text-sm border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

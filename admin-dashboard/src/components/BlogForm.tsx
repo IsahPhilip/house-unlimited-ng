@@ -1,11 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { getBlogPostById, createBlogPost, updateBlogPost } from '../services/api';
+import { getBlogPostById, createBlogPost, updateBlogPost, uploadFile } from '../services/api';
 import { BlogPost } from '../types/admin';
-import { Loader2, Save, ArrowLeft, Eye, Edit3 } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { Loader2, Save, ArrowLeft, Eye, Edit3, Bold, Italic, Underline, Strikethrough, List, ListOrdered, Quote, Heading1, Heading2, Heading3, AlignLeft, AlignCenter, AlignRight, Link as LinkIcon, Image as ImageIcon, Undo2, Redo2, Code, Table as TableIcon, Plus, Minus, Trash2 } from 'lucide-react';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import UnderlineExtension from '@tiptap/extension-underline';
+import Link from '@tiptap/extension-link';
+import Image from '@tiptap/extension-image';
+import TextAlign from '@tiptap/extension-text-align';
+import Placeholder from '@tiptap/extension-placeholder';
+import { Table } from '@tiptap/extension-table';
+import { TableRow } from '@tiptap/extension-table-row';
+import { TableCell } from '@tiptap/extension-table-cell';
+import { TableHeader } from '@tiptap/extension-table-header';
 
 interface BlogFormProps {
   isEditing?: boolean;
@@ -48,11 +57,93 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
   const [draftAvailable, setDraftAvailable] = useState(false);
   const [slugLocked, setSlugLocked] = useState(false);
   const [checklistOpen, setChecklistOpen] = useState(true);
+  const [imageUploading, setImageUploading] = useState(false);
+  const [imageError, setImageError] = useState('');
 
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const draftKey = `blog-draft-${id || 'new'}`;
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleImageUpload = async (file: File) => {
+    try {
+      setImageUploading(true);
+      setImageError('');
+      const result = await uploadFile(file);
+      if (result?.url) {
+        editor?.chain().focus().setImage({ src: result.url }).run();
+      }
+    } catch (error) {
+      console.error('Image upload failed:', error);
+      setImageError('Failed to upload image.');
+    } finally {
+      setImageUploading(false);
+    }
+  };
+
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      UnderlineExtension,
+      Link.configure({
+        openOnClick: false,
+        autolink: true,
+        linkOnPaste: true,
+      }),
+      Image.configure({
+        allowBase64: true,
+      }),
+      Table.configure({
+        resizable: true,
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
+      Placeholder.configure({
+        placeholder: 'Start writing your post...',
+      }),
+    ],
+    content: formData.content || '',
+    onUpdate: ({ editor }) => {
+      const html = editor.getHTML();
+      const text = editor.getText();
+      const readTime = calculateReadTime(text);
+      setFormData(prev => ({
+        ...prev,
+        content: html,
+        readTime,
+      }));
+    },
+    editorProps: {
+      attributes: {
+        class: 'tiptap-editor',
+      },
+      handleDrop: (view, event) => {
+        const files = event.dataTransfer?.files;
+        if (!files || files.length === 0) return false;
+        const file = Array.from(files).find((f) => f.type.startsWith('image/'));
+        if (!file) return false;
+        event.preventDefault();
+        handleImageUpload(file);
+        return true;
+      },
+      handlePaste: (view, event) => {
+        const items = event.clipboardData?.items;
+        if (!items) return false;
+        const imageItem = Array.from(items).find((item) => item.type.startsWith('image/'));
+        if (!imageItem) return false;
+        const file = imageItem.getAsFile();
+        if (!file) return false;
+        event.preventDefault();
+        handleImageUpload(file);
+        return true;
+      },
+    },
+  });
 
   useEffect(() => {
     if (isEditing && id) {
@@ -112,6 +203,10 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
         metaTitle: blogPost.metaTitle || '',
         metaDescription: blogPost.metaDescription || ''
       });
+
+      if (editor) {
+        editor.commands.setContent(blogPost.content || '');
+      }
     } catch (err: any) {
       if (err.message && err.message.includes('not found')) {
         setError('Blog post not found. Please check the URL or create a new post.');
@@ -163,16 +258,13 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
     return Math.max(1, Math.ceil(count / wordsPerMinute));
   };
 
-  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const { value } = e.target;
-    const readTime = calculateReadTime(value);
-
-    setFormData(prev => ({
-      ...prev,
-      content: value,
-      readTime
-    }));
-  };
+  useEffect(() => {
+    if (!editor) return;
+    const currentHtml = editor.getHTML();
+    if (formData.content && formData.content !== currentHtml) {
+      editor.commands.setContent(formData.content);
+    }
+  }, [formData.content, editor]);
 
   const handleFeaturedImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -189,7 +281,8 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title || !formData.content || !formData.excerpt) {
+    const contentText = editor?.getText().trim() || formData.content.trim();
+    if (!formData.title || !contentText || !formData.excerpt) {
       setError('Please fill in all required fields');
       return;
     }
@@ -211,10 +304,11 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
     setError('');
 
     try {
+      const textForReadTime = editor?.getText() || formData.content;
       const blogData = {
         ...formData,
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0),
-        readTime: calculateReadTime(formData.content)
+        readTime: calculateReadTime(textForReadTime)
       };
 
       if (isEditing && id) {
@@ -394,25 +488,126 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
                 </span>
               </div>
               {editorTab === 'write' ? (
-                <textarea
-                  id="content"
-                  name="content"
-                  value={formData.content}
-                  onChange={handleContentChange}
-                  rows={12}
-                  className="form-input resize-none font-mono text-sm"
-                  placeholder="Write your blog post content here..."
-                  required
-                />
-              ) : (
-                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 prose prose-sm max-w-none">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {formData.content || 'Nothing to preview yet.'}
-                  </ReactMarkdown>
+                <div className="border border-gray-200 rounded-lg">
+                  <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 px-3 py-2 bg-gray-50">
+                    <button type="button" onClick={() => editor?.chain().focus().toggleBold().run()} className={`editor-btn ${editor?.isActive('bold') ? 'active' : ''}`}><Bold className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => editor?.chain().focus().toggleItalic().run()} className={`editor-btn ${editor?.isActive('italic') ? 'active' : ''}`}><Italic className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => editor?.chain().focus().toggleUnderline().run()} className={`editor-btn ${editor?.isActive('underline') ? 'active' : ''}`}><Underline className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => editor?.chain().focus().toggleStrike().run()} className={`editor-btn ${editor?.isActive('strike') ? 'active' : ''}`}><Strikethrough className="h-4 w-4" /></button>
+                    <span className="h-5 w-px bg-gray-200 mx-1" />
+                    <button type="button" onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()} className={`editor-btn ${editor?.isActive('heading', { level: 1 }) ? 'active' : ''}`}><Heading1 className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()} className={`editor-btn ${editor?.isActive('heading', { level: 2 }) ? 'active' : ''}`}><Heading2 className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()} className={`editor-btn ${editor?.isActive('heading', { level: 3 }) ? 'active' : ''}`}><Heading3 className="h-4 w-4" /></button>
+                    <span className="h-5 w-px bg-gray-200 mx-1" />
+                    <button type="button" onClick={() => editor?.chain().focus().toggleBulletList().run()} className={`editor-btn ${editor?.isActive('bulletList') ? 'active' : ''}`}><List className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => editor?.chain().focus().toggleOrderedList().run()} className={`editor-btn ${editor?.isActive('orderedList') ? 'active' : ''}`}><ListOrdered className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => editor?.chain().focus().toggleBlockquote().run()} className={`editor-btn ${editor?.isActive('blockquote') ? 'active' : ''}`}><Quote className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => editor?.chain().focus().toggleCodeBlock().run()} className={`editor-btn ${editor?.isActive('codeBlock') ? 'active' : ''}`}><Code className="h-4 w-4" /></button>
+                    <span className="h-5 w-px bg-gray-200 mx-1" />
+                    <button type="button" onClick={() => editor?.chain().focus().setTextAlign('left').run()} className={`editor-btn ${editor?.isActive({ textAlign: 'left' }) ? 'active' : ''}`}><AlignLeft className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => editor?.chain().focus().setTextAlign('center').run()} className={`editor-btn ${editor?.isActive({ textAlign: 'center' }) ? 'active' : ''}`}><AlignCenter className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => editor?.chain().focus().setTextAlign('right').run()} className={`editor-btn ${editor?.isActive({ textAlign: 'right' }) ? 'active' : ''}`}><AlignRight className="h-4 w-4" /></button>
+                    <span className="h-5 w-px bg-gray-200 mx-1" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const url = window.prompt('Enter a URL');
+                        if (url) {
+                          editor?.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+                        }
+                      }}
+                      className={`editor-btn ${editor?.isActive('link') ? 'active' : ''}`}
+                    >
+                      <LinkIcon className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => imageInputRef.current?.click()}
+                      className={`editor-btn ${imageUploading ? 'opacity-50' : ''}`}
+                    >
+                      <ImageIcon className="h-4 w-4" />
+                    </button>
+                    <input
+                      ref={imageInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          handleImageUpload(file);
+                        }
+                        e.currentTarget.value = '';
+                      }}
+                    />
+                    <span className="h-5 w-px bg-gray-200 mx-1" />
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
+                      className="editor-btn"
+                      title="Insert table"
+                    >
+                      <TableIcon className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().addRowAfter().run()}
+                      className="editor-btn"
+                      title="Add row"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().addColumnAfter().run()}
+                      className="editor-btn"
+                      title="Add column"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().deleteRow().run()}
+                      className="editor-btn"
+                      title="Delete row"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().deleteColumn().run()}
+                      className="editor-btn"
+                      title="Delete column"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().deleteTable().run()}
+                      className="editor-btn"
+                      title="Delete table"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                    <span className="h-5 w-px bg-gray-200 mx-1" />
+                    <button type="button" onClick={() => editor?.chain().focus().undo().run()} className="editor-btn"><Undo2 className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => editor?.chain().focus().redo().run()} className="editor-btn"><Redo2 className="h-4 w-4" /></button>
+                  </div>
+                  {imageError && (
+                    <div className="px-4 py-2 text-sm text-red-600 bg-red-50 border-b border-red-100">
+                      {imageError}
+                    </div>
+                  )}
+                  <EditorContent editor={editor} />
                 </div>
+              ) : (
+                <div
+                  className="border border-gray-200 rounded-lg p-4 bg-gray-50 prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: formData.content || '<p>Nothing to preview yet.</p>' }}
+                />
               )}
               <div className="mt-2 flex items-center justify-between text-sm text-gray-500">
-                <span>Tip: Use markdown for formatting</span>
+                <span>Tip: Use the toolbar for formatting, links, and images</span>
               </div>
             </div>
 

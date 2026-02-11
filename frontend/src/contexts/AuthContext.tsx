@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types';
-import { login as apiLogin, register as apiRegister, getCurrentUser, updateProfile as apiUpdateProfile } from '../services/api';
+import { login as apiLogin, register as apiRegister, getCurrentUser, updateProfile as apiUpdateProfile, uploadAvatar as apiUploadAvatar } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -9,6 +9,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (userData: Omit<User, 'id'> & { password: string }) => Promise<void>;
   updateProfile: (updates: Partial<User>) => Promise<void>;
+  updateAvatar: (file: File) => Promise<void>;
   logout: () => void;
   checkAuth: () => Promise<void>;
 }
@@ -84,6 +85,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const updateAvatar = async (file: File): Promise<void> => {
+    try {
+      setIsLoading(true);
+      const updated = await apiUploadAvatar(file);
+      setUser(updated);
+      localStorage.setItem('user', JSON.stringify(updated));
+    } catch (error) {
+      console.error('Update avatar error:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
@@ -119,6 +134,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     register,
     updateProfile,
+    updateAvatar,
     logout,
     checkAuth,
   };

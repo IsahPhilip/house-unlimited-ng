@@ -27,4 +27,94 @@
   .card {
     @apply bg-white rounded-lg shadow-md p-6;
   }
+
+  .editor-btn {
+    @apply inline-flex items-center justify-center h-8 w-8 rounded-md text-gray-600 hover:bg-white border border-transparent transition-colors;
+  }
+
+  .editor-btn.active {
+    @apply bg-white text-teal-600 border border-teal-200 shadow-sm;
+  }
+}
+
+/* Tiptap editor */
+.tiptap-editor {
+  min-height: 320px;
+  padding: 1rem;
+  outline: none;
+  line-height: 1.7;
+}
+
+.tiptap-editor h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 1.25rem 0 0.75rem;
+}
+
+.tiptap-editor h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 1rem 0 0.5rem;
+}
+
+.tiptap-editor h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0.75rem 0 0.5rem;
+}
+
+.tiptap-editor p {
+  margin: 0.5rem 0;
+}
+
+.tiptap-editor ul,
+.tiptap-editor ol {
+  padding-left: 1.5rem;
+}
+
+.tiptap-editor blockquote {
+  border-left: 3px solid #14b8a6;
+  padding-left: 1rem;
+  color: #4b5563;
+  margin: 1rem 0;
+}
+
+.tiptap-editor pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+}
+
+.tiptap-editor code {
+  background: #f1f5f9;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.25rem;
+}
+
+.tiptap-editor table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.tiptap-editor th,
+.tiptap-editor td {
+  border: 1px solid #e2e8f0;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.tiptap-editor th {
+  background: #f8fafc;
+  font-weight: 600;
+}
+
+.tiptap-editor img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  margin: 0.75rem 0;
 }

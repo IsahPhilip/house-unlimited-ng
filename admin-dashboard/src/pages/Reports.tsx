@@ -30,6 +30,60 @@ const Reports = () => {
     return `${year}-${month}-${day}`;
   };
   const [reportType, setReportType] = useState('overview');
+  const exportCsv = () => {
+    const rows: string[][] = [];
+    rows.push(['Metric', 'Value']);
+    rows.push(['Total Properties', String(stats?.totalProperties ?? 0)]);
+    rows.push(['Active Properties', String(stats?.activeProperties ?? 0)]);
+    rows.push(['Total Leads', String(stats?.totalLeads ?? 0)]);
+    rows.push(['Pending Leads', String(stats?.pendingLeads ?? 0)]);
+    rows.push(['Total Deals', String(stats?.totalDeals ?? 0)]);
+    rows.push(['Closed Deals', String(stats?.closedDeals ?? 0)]);
+    rows.push(['Total Revenue', String(stats?.totalRevenue ?? 0)]);
+
+    rows.push([]);
+    rows.push(['Monthly Revenue', 'Amount']);
+    (revenueReport?.monthlyRevenue || []).forEach((item: any) => {
+      rows.push([item.month, String(item.revenue)]);
+    });
+
+    rows.push([]);
+    rows.push(['Lead Source', 'Count']);
+    leadSources.forEach((item) => rows.push([item.source, String(item.count)]));
+
+    rows.push([]);
+    rows.push(['Property Type', 'Count']);
+    propertyTypes.forEach((item) => rows.push([item.type, String(item.count)]));
+
+    const csv = rows
+      .map((row) => row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `reports-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportJson = () => {
+    const payload = {
+      stats,
+      revenueReport,
+      leadSources,
+      propertyTypes,
+      dateRange,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `reports-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -84,13 +138,19 @@ const Reports = () => {
           <p className="text-gray-500 text-sm mt-1">Generate and view comprehensive business reports.</p>
         </div>
         <div className="flex space-x-3">
-          <button className="flex items-center px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors shadow-sm">
+          <button
+            onClick={exportCsv}
+            className="flex items-center px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+          >
             <Download className="w-4 h-4 mr-2" />
-            Export PDF
+            Export CSV
           </button>
-          <button className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors shadow-sm shadow-teal-200">
+          <button
+            onClick={exportJson}
+            className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors shadow-sm shadow-teal-200"
+          >
             <Download className="w-4 h-4 mr-2" />
-            Export Excel
+            Export JSON
           </button>
         </div>
       </div>

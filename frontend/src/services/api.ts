@@ -222,6 +222,31 @@ export const getMyReviews = async (): Promise<Review[]> => {
   }
 };
 
+// Avatar upload
+export const uploadAvatar = async (file: File): Promise<User> => {
+  try {
+    const token = localStorage.getItem('authToken');
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    const response = await fetch(`${API_BASE_URL}/users/avatar`, {
+      method: 'POST',
+      headers: {
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      },
+      body: formData,
+    });
+    if (!response.ok) {
+      throw new Error('Failed to upload avatar');
+    }
+    const result = await response.json();
+    return result.data;
+  } catch (error) {
+    console.error('Upload avatar error:', error);
+    throw error;
+  }
+};
+
 // Health check
 export const checkBackendHealth = async (): Promise<boolean> => {
   try {

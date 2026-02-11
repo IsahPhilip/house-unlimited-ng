@@ -8,14 +8,13 @@ import {
   Edit, 
   Trash2, 
   Calendar,
-  DollarSign,
-  Home,
   Star,
   Mail,
   Phone,
-  Loader2
+  Loader2,
+  Shield
 } from 'lucide-react';
-import { getAgents } from '../services/api';
+import { getAgents, createAgent, updateAgent, deleteAgent } from '../services/api';
 
 interface Agent {
   id: string;
@@ -36,6 +35,23 @@ const Agents = () => {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingAgent, setEditingAgent] = useState<Agent | null>(null);
+  const [formError, setFormError] = useState('');
+  const [agentForm, setAgentForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+    isActive: true,
+  });
+  const [editForm, setEditForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    isActive: true,
+  });
 
   useEffect(() => {
     const fetchAgents = async () => {
@@ -70,6 +86,78 @@ const Agents = () => {
     }).format(amount);
   };
 
+  const openEditModal = (agent: Agent) => {
+    setEditingAgent(agent);
+    setEditForm({
+      name: agent.name,
+      email: agent.email,
+      phone: agent.phone,
+      isActive: agent.isActive,
+    });
+    setFormError('');
+    setShowEditModal(true);
+  };
+
+  const handleCreateAgent = async () => {
+    setFormError('');
+    if (!agentForm.name || !agentForm.email || !agentForm.password) {
+      setFormError('Name, email, and password are required.');
+      return;
+    }
+    try {
+      const created = await createAgent({
+        name: agentForm.name,
+        email: agentForm.email,
+        password: agentForm.password,
+        phone: agentForm.phone || undefined,
+        isActive: agentForm.isActive,
+      });
+      setAgents((prev) => [created, ...prev]);
+      setShowCreateModal(false);
+      setAgentForm({ name: '', email: '', phone: '', password: '', isActive: true });
+    } catch (error) {
+      console.error('Failed to create agent:', error);
+      setFormError('Failed to create agent.');
+    }
+  };
+
+  const handleUpdateAgent = async () => {
+    if (!editingAgent) return;
+    setFormError('');
+    try {
+      const updated = await updateAgent(editingAgent.id, {
+        name: editForm.name,
+        email: editForm.email,
+        phone: editForm.phone,
+        isActive: editForm.isActive,
+      });
+      setAgents((prev) => prev.map((agent) => (agent.id === editingAgent.id ? updated : agent)));
+      setShowEditModal(false);
+      setEditingAgent(null);
+    } catch (error) {
+      console.error('Failed to update agent:', error);
+      setFormError('Failed to update agent.');
+    }
+  };
+
+  const handleToggleActive = async (agent: Agent) => {
+    try {
+      const updated = await updateAgent(agent.id, { isActive: !agent.isActive });
+      setAgents((prev) => prev.map((a) => (a.id === agent.id ? updated : a)));
+    } catch (error) {
+      console.error('Failed to update agent status:', error);
+    }
+  };
+
+  const handleDeleteAgent = async (agentId: string) => {
+    try {
+      await deleteAgent(agentId);
+      setAgents((prev) => prev.filter((agent) => agent.id !== agentId));
+    } catch (error) {
+      console.error('Failed to delete agent:', error);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[60vh]">
@@ -85,7 +173,10 @@ const Agents = () => {
           <h1 className="text-2xl font-bold text-gray-900">Agents & Team</h1>
           <p className="text-gray-500 text-sm mt-1">Manage your real estate agents and team members.</p>
         </div>
-        <button className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors shadow-sm shadow-teal-200">
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors shadow-sm shadow-teal-200"
+        >
           <Plus className="w-4 h-4 mr-2" />
           Add Agent
         </button>
@@ -181,11 +272,24 @@ const Agents = () => {
                   <Eye className="w-3 h-3 mr-2" />
                   View Profile
                 </button>
-                <button className="flex-1 flex items-center justify-center py-2 px-3 bg-gray-50 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
+                <button
+                  onClick={() => openEditModal(agent)}
+                  className="flex-1 flex items-center justify-center py-2 px-3 bg-gray-50 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
+                >
                   <Edit className="w-3 h-3 mr-2" />
                   Edit
                 </button>
-                <button className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                <button
+                  onClick={() => handleToggleActive(agent)}
+                  className="p-2 text-gray-500 hover:bg-gray-50 rounded-lg transition-colors"
+                  title={agent.isActive ? 'Deactivate' : 'Activate'}
+                >
+                  <Shield className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => handleDeleteAgent(agent.id)}
+                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
@@ -201,6 +305,155 @@ const Agents = () => {
           </div>
           <h3 className="text-lg font-medium text-gray-900">No agents found</h3>
           <p className="text-gray-500 mt-1">Try adjusting your search or filter to find what you're looking for.</p>
+        </div>
+      )}
+
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Add Agent</h2>
+              <button onClick={() => setShowCreateModal(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+            {formError && (
+              <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded mb-3 text-sm">
+                {formError}
+              </div>
+            )}
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Name</label>
+                <input
+                  type="text"
+                  value={agentForm.name}
+                  onChange={(e) => setAgentForm({ ...agentForm, name: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={agentForm.email}
+                    onChange={(e) => setAgentForm({ ...agentForm, email: e.target.value })}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Phone</label>
+                  <input
+                    type="tel"
+                    value={agentForm.phone}
+                    onChange={(e) => setAgentForm({ ...agentForm, phone: e.target.value })}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Password</label>
+                <input
+                  type="password"
+                  value={agentForm.password}
+                  onChange={(e) => setAgentForm({ ...agentForm, password: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  id="agent-active"
+                  type="checkbox"
+                  checked={agentForm.isActive}
+                  onChange={(e) => setAgentForm({ ...agentForm, isActive: e.target.checked })}
+                />
+                <label htmlFor="agent-active" className="text-sm text-gray-600">Active</label>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="px-4 py-2 text-sm border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateAgent}
+                className="px-4 py-2 text-sm bg-teal-600 text-white rounded-lg hover:bg-teal-700"
+              >
+                Create Agent
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showEditModal && editingAgent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Edit Agent</h2>
+              <button onClick={() => setShowEditModal(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+            {formError && (
+              <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded mb-3 text-sm">
+                {formError}
+              </div>
+            )}
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Name</label>
+                <input
+                  type="text"
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={editForm.email}
+                    onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Phone</label>
+                  <input
+                    type="tel"
+                    value={editForm.phone}
+                    onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  id="agent-active-edit"
+                  type="checkbox"
+                  checked={editForm.isActive}
+                  onChange={(e) => setEditForm({ ...editForm, isActive: e.target.checked })}
+                />
+                <label htmlFor="agent-active-edit" className="text-sm text-gray-600">Active</label>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="px-4 py-2 text-sm border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdateAgent}
+                className="px-4 py-2 text-sm bg-teal-600 text-white rounded-lg hover:bg-teal-700"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

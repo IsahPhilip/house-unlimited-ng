@@ -7,6 +7,7 @@ import {
   Building2,
   DollarSign,
   Home as HomeIcon,
+  MapPin,
   Phone,
   Search,
   Smartphone,
@@ -118,7 +119,7 @@ export const Home: React.FC<HomeProps> = ({
                     type="text"
                     value={criteria.location}
                     onChange={(e) => setCriteria({...criteria, location: e.target.value})}
-                    placeholder="e.g. Los Angeles"
+                    placeholder="e.g. Maitama 2, Abuja"
                     className="text-gray-900 font-bold text-sm bg-transparent border-none p-0 focus:ring-0 outline-none w-full placeholder:text-gray-300"
                   />
                 </div>
@@ -142,9 +143,9 @@ export const Home: React.FC<HomeProps> = ({
                     onChange={(e) => setCriteria({...criteria, priceRange: e.target.value})}
                     className="text-gray-900 font-bold text-sm bg-transparent border-none p-0 focus:ring-0 outline-none w-full cursor-pointer"
                   >
-                    <option>$30,000 - $80,000</option>
-                    <option>$80,000 - $200,000</option>
-                    <option>$200,000+</option>
+                    <option>N50,000,000 - 100,000,000</option>
+                    <option>N150,000,000 - 300,000,000</option>
+                    <option>N300,000,000+</option>
                   </select>
                 </div>
                 <button
@@ -160,163 +161,88 @@ export const Home: React.FC<HomeProps> = ({
         </div>
       </section>
 
-      {/* Property Types */}
-      <section className="py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 text-center mb-16">
-          <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Property Types</p>
-          <h2 className="text-4xl font-bold text-gray-900">Explore Property <span className="text-gray-400 italic font-light">Types</span></h2>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-5 gap-6">
-          {propertyTypes.map((type, idx) => {
-            const Icon = type.icon;
-            return (
-            <div
-              key={idx}
-              onClick={() => onSearch({ location: '', type: type.label, priceRange: 'all', category: 'all' })}
-              className={`p-8 rounded-3xl transition-all cursor-pointer group bg-white border border-gray-100 hover:border-teal-500 hover:shadow-xl hover:-translate-y-1`}
-            >
-              <div className="text-teal-600 mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Icon className="w-10 h-10 mx-auto" />
-              </div>
-              <h4 className="font-bold mb-1 text-gray-900 group-hover:text-teal-600 transition-colors">{type.label}</h4>
-              <p className={`text-[10px] font-bold uppercase tracking-wider text-gray-400`}>{type.count}</p>
-            </div>
-          )})}
-        </div>
-      </section>
-
       {/* Verified Listings Highlight */}
-      <section className="py-16 bg-white">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-            <div className="max-w-xl">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-stretch">
+            <div className="lg:col-span-2">
               <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Trust & Transparency</p>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 Verified Listings, Clearer Decisions
               </h2>
-              <p className="text-gray-600">
-                Every listing goes through a verification process so you can focus on the right properties faster.
+              <p className="text-gray-600 mb-6">
+                We verify identity, ownership, and on-site details before a listing goes live. That means less noise,
+                faster shortlists, and more confident decisions.
               </p>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full md:w-auto">
-              {[
-                { label: 'Verified Owners', detail: 'ID & title check' },
-                { label: 'On‑Site Inspection', detail: 'Property condition' },
-                { label: 'Price Validation', detail: 'Market benchmarking' },
-                { label: 'Secure Inquiry', detail: 'Protected messaging' },
-              ].map((item) => (
-                <div key={item.label} className="border border-gray-100 rounded-2xl p-4 bg-gray-50">
-                  <div className="text-teal-600 font-bold text-sm mb-1">{item.label}</div>
-                  <div className="text-xs text-gray-500">{item.detail}</div>
+              <div className="bg-gray-50 border border-gray-100 rounded-2xl p-5">
+                <div className="flex items-center justify-between text-sm text-gray-600 mb-3">
+                  <span>Verification Coverage</span>
+                  <span className="font-bold text-teal-600">98%+</span>
                 </div>
-              ))}
+                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-full w-[92%] bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full"></div>
+                </div>
+                <p className="text-xs text-gray-500 mt-3">Listings are verified within 48 hours in most cases.</p>
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Why Choose Us / Features & Benefits */}
-      <section className="py-24">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Why Choose Us</p>
-            <h2 className="text-4xl font-bold text-gray-900">Discover Our <span className="text-gray-400 italic font-light">Features & Benefits</span></h2>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Features List */}
-            <div className="space-y-8">
+            <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
-                {
-                  icon: Search,
-                  title: 'Advanced Search',
-                  description: 'Powerful search with AI-driven recommendations to find your perfect property match.'
-                },
-                {
-                  icon: Smartphone,
-                  title: 'Mobile Friendly',
-                  description: 'Responsive design that works seamlessly on all devices for property browsing on-the-go.'
-                },
-                {
-                  icon: Star,
-                  title: 'Expert Agents',
-                  description: 'Connect with our network of experienced real estate professionals ready to assist you.'
-                },
-                {
-                  icon: DollarSign,
-                  title: 'Best Deals',
-                  description: 'Access exclusive listings and competitive pricing you won\'t find elsewhere.'
-                }
-              ].map((feature, idx) => {
-                const Icon = feature.icon;
+                { icon: HomeIcon, label: 'Verified Owners', detail: 'ID, title & ownership checks' },
+                { icon: Building2, label: 'On‑Site Inspection', detail: 'Condition & amenities validated' },
+                { icon: DollarSign, label: 'Price Validation', detail: 'Benchmarking vs. market comps' },
+                { icon: Smartphone, label: 'Secure Inquiry', detail: 'Protected messaging and logs' },
+              ].map((item) => {
+                const Icon = item.icon;
                 return (
-                <div key={idx} className="flex items-start space-x-4 group cursor-pointer hover:translate-x-2 transition-transform">
-                  <div className="flex-shrink-0 w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center text-2xl group-hover:bg-teal-600 group-hover:text-white transition-colors">
-                    <Icon className="w-6 h-6" />
+                  <div key={item.label} className="border border-gray-100 rounded-2xl p-5 bg-white shadow-sm hover:shadow-md transition-all">
+                    <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center mb-3">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <div className="text-gray-900 font-bold text-sm mb-1">{item.label}</div>
+                    <div className="text-xs text-gray-500">{item.detail}</div>
                   </div>
-                  <div>
-                    <h4 className="font-bold text-lg text-gray-900 mb-1 group-hover:text-teal-600 transition-colors">{feature.title}</h4>
-                    <p className="text-gray-600 text-sm">{feature.description}</p>
-                  </div>
-                </div>
-              )})}
+                );
+              })}
             </div>
-
-            {/* Benefits Image/Content */}
-            <div className="relative bg-teal-600 rounded-3xl p-8 md:p-12 text-white overflow-hidden">
-              <div className="absolute inset-0 opacity-20">
-                <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&q=80&w=800" alt="Happy family" className="w-full h-full object-cover" />
-              </div>
-              <div className="relative z-10">
-                <h3 className="text-3xl font-bold mb-4">Your Dream Home Awaits</h3>
-                <p className="text-teal-100 mb-6">Join thousands of satisfied customers who have found their perfect home through our platform.</p>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <span className="bg-white/20 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">✓</span>
-                    <span className="text-sm">Verified listings only</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <span className="bg-white/20 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">✓</span>
-                    <span className="text-sm">24/7 customer support</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <span className="bg-white/20 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">✓</span>
-                    <span className="text-sm">Secure transactions</span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => onSearch({ location: '', type: 'all', priceRange: 'all', category: 'all' })}
-                  className="mt-8 bg-white text-teal-600 px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition-all shadow-lg"
-                >
-                  Start Your Search
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Statistics */}
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {[
-              { number: '10K+', label: 'Properties Listed' },
-              { number: '5K+', label: 'Happy Customers' },
-              { number: '100+', label: 'Expert Agents' },
-              { number: '24/7', label: 'Customer Support' }
-            ].map((stat, idx) => (
-              <div key={idx} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all">
-                <h4 className="text-3xl font-bold text-teal-600 mb-2">{stat.number}</h4>
-                <p className="text-gray-600 text-sm font-semibold">{stat.label}</p>
-              </div>
-            ))}
           </div>
         </div>
       </section>
 
-      {/* Popular Properties Grid */}
+      {/* Services / What We Do */}
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 text-center mb-16">
+          <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Services</p>
+          <h2 className="text-4xl font-bold text-gray-900">Who We <span className="text-gray-400 italic font-light">Serve</span></h2>
+          <p className="text-gray-600 mt-3">Tailored support for every stage of your property journey.</p>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[
+            { icon: HomeIcon, title: 'Buy a Home', desc: 'Find the right home faster with verified listings and guided tours.' },
+            { icon: DollarSign, title: 'Sell a Home', desc: 'Price it right, market it well, and close with confidence.' },
+            { icon: Building2, title: 'Luxury Properties', desc: 'Discreet, curated access to premium homes and estates.' },
+            { icon: Building, title: 'Investment / Rentals', desc: 'Identify high‑yield opportunities and stable rental income.' },
+            { icon: Briefcase, title: 'Relocation Services', desc: 'Move smoothly with local insights, logistics, and housing support.' },
+          ].map((service) => {
+            const Icon = service.icon;
+            return (
+              <div key={service.title} className="p-6 rounded-3xl transition-all bg-white border border-gray-100 hover:border-teal-500 hover:shadow-xl">
+                <div className="w-12 h-12 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center mb-4">
+                  <Icon className="w-6 h-6" />
+                </div>
+                <h4 className="font-bold text-gray-900 mb-2">{service.title}</h4>
+                <p className="text-sm text-gray-600">{service.desc}</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Featured Listings */}
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-end mb-12">
           <div>
-            <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Popular Properties</p>
-            <h2 className="text-4xl font-bold text-gray-900">Discover <span className="text-gray-400 italic font-light">Popular Properties</span></h2>
+            <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Featured Listings</p>
+            <h2 className="text-4xl font-bold text-gray-900">Discover <span className="text-gray-400 italic font-light">Featured Properties</span></h2>
           </div>
           <button onClick={() => onSearch({ location: '', type: 'all', priceRange: 'all', category: 'all' })} className="bg-teal-600 text-white px-8 py-3 rounded-full flex items-center group font-bold text-sm shadow-lg shadow-teal-100">
             Visit All Properties <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -341,6 +267,92 @@ export const Home: React.FC<HomeProps> = ({
         </div>
       </section>
 
+      {/* Why Choose Us / Features & Benefits */}
+      <section className="py-24">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Why Choose Us</p>
+            <h2 className="text-4xl font-bold text-gray-900">Built to <span className="text-gray-400 italic font-light">Outperform</span></h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {[
+                { icon: MapPin, title: 'Local Market Expertise', desc: 'Neighborhood‑level insight that protects your investment.' },
+                { icon: Search, title: 'Data‑Driven Pricing', desc: 'Pricing strategies backed by real comps and demand data.' },
+                { icon: Smartphone, title: 'Pro Photography & Marketing', desc: 'High‑impact visuals and targeted campaigns that convert.' },
+                { icon: Briefcase, title: 'Strong Negotiation', desc: 'We secure favorable terms without slowing the deal.' },
+                { icon: Star, title: 'Concierge Service', desc: 'Personalized guidance from shortlist to closing.' },
+              ].map((feature) => {
+                const Icon = feature.icon;
+                return (
+                  <div key={feature.title} className="p-6 rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-all">
+                    <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center mb-3">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <h4 className="font-bold text-gray-900 mb-1 text-sm">{feature.title}</h4>
+                    <p className="text-xs text-gray-600">{feature.desc}</p>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="relative bg-teal-600 rounded-3xl p-8 md:p-12 text-white overflow-hidden">
+              <div className="absolute inset-0 opacity-20">
+                <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&q=80&w=800" alt="Happy family" className="w-full h-full object-cover" />
+              </div>
+              <div className="relative z-10">
+                <h3 className="text-3xl font-bold mb-4">A Partner, Not Just a Platform</h3>
+                <p className="text-teal-100 mb-6">We combine market intelligence with hands‑on support to help you move faster and smarter.</p>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <span className="bg-white/20 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">✓</span>
+                    <span className="text-sm">Verified listings only</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <span className="bg-white/20 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">✓</span>
+                    <span className="text-sm">Expert agent support</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <span className="bg-white/20 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">✓</span>
+                    <span className="text-sm">Secure transactions</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => onSearch({ location: '', type: 'all', priceRange: 'all', category: 'all' })}
+                  className="mt-8 bg-white text-teal-600 px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition-all shadow-lg"
+                >
+                  Start Your Search
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Process / How It Works */}
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">How It Works</p>
+            <h2 className="text-4xl font-bold text-gray-900">Simple Steps to <span className="text-gray-400 italic font-light">Your Home</span></h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {[
+              { step: '01', title: 'Book a consultation', text: 'Tell us your goals and preferred locations.' },
+              { step: '02', title: 'Get a custom plan', text: 'We shortlist options tailored to your budget and needs.' },
+              { step: '03', title: 'Tour or market homes', text: 'View verified listings or list with pro marketing.' },
+              { step: '04', title: 'Close with confidence', text: 'Negotiation, paperwork, and secure closing handled.' },
+            ].map((item) => (
+              <div key={item.step} className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                <div className="text-teal-600 text-sm font-bold mb-3">Step {item.step}</div>
+                <h4 className="font-bold text-gray-900 mb-2">{item.title}</h4>
+                <p className="text-sm text-gray-600">{item.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
       {/* Testimonials */}
       <section className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 text-center mb-16">
@@ -381,7 +393,7 @@ export const Home: React.FC<HomeProps> = ({
         </div>
       </section>
 
-      {/* Call to Action Banner (before footer) */}
+      {/* Lead Magnet / CTA Section */}
       <section className="py-16 bg-teal-600 text-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="bg-teal-700 rounded-3xl p-8 md:p-12 relative overflow-hidden">
@@ -415,7 +427,7 @@ export const Home: React.FC<HomeProps> = ({
                     </div>
                     <div>
                       <p className="text-white/80 text-sm">Contact our team</p>
-                      <p className="font-bold text-lg">+1 (555) 123-4567</p>
+                      <p className="font-bold text-lg">+234 904 375 2708</p>
                     </div>
                   </div>
                   <button className="w-full bg-white text-teal-700 py-3 rounded-xl font-bold hover:bg-gray-100 transition-all">
