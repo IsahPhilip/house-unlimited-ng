@@ -38,7 +38,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     // Send verification email
     const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
     const message = `
-      <h1>Welcome to Real Estate Platform!</h1>
+      <h1>Welcome to House Unlimited Nigeria!</h1>
       <p>Please verify your email by clicking the link below:</p>
       <a href="${verificationUrl}" clicktracking=off>Verify Email</a>
       <p>This link will expire in 24 hours.</p>

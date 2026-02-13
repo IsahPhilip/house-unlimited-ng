@@ -110,6 +110,12 @@ export interface Notification {
   relatedId?: string;
 }
 
+export interface MediaItem {
+  type: 'image' | 'video';
+  title: string;
+  url: string;
+}
+
 export interface AdminSettings {
   companyName: string;
   companyEmail: string;
@@ -117,6 +123,7 @@ export interface AdminSettings {
   timezone: string;
   dateFormat: string;
   currency: string;
+  mediaGallery?: MediaItem[];
   notifications: {
     email: boolean;
     push: boolean;

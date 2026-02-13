@@ -92,7 +92,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               type="email" 
               value={email}
               onChange={e => setEmail(e.target.value)}
-              placeholder="example@email.com" 
+              placeholder="you@houseunlimitednigeria.com" 
               className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none" 
             />
           </div>
@@ -147,7 +147,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               type="email" 
               value={email}
               onChange={e => setEmail(e.target.value)}
-              placeholder="example@email.com" 
+              placeholder="you@houseunlimitednigeria.com" 
               className="w-full bg-gray-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none" 
             />
           </div>

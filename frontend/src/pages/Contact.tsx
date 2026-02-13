@@ -195,7 +195,7 @@ const ContactPage = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        placeholder="your.email@example.com"
+                        placeholder="you@houseunlimitednigeria.com"
                         className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none"
                         disabled={isSubmitting}
                       />

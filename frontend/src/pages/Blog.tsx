@@ -35,7 +35,19 @@ const BlogPage = ({ onNavigate }: { onNavigate: (p: Page, id?: string) => void }
     fetchBlogs();
   }, [selectedCategory, currentPage]);
 
-  const categories = ['all', 'Real Estate', 'Market Trends', 'Home Buying', 'Home Selling', 'Investment', 'Property Management', 'Architecture', 'Interior Design', 'Finance', 'Lifestyle'];
+  const categories = [
+    'all',
+    'Abuja Markets',
+    'Off-Plan Development',
+    'Land Acquisition',
+    'Investment Guide',
+    'Property Management',
+    'Architecture & Design',
+    'Finance & Mortgages',
+    'Lifestyle',
+    'Market Trends',
+    'Diaspora Investment',
+  ];
 
   if (isLoading) {
     return (

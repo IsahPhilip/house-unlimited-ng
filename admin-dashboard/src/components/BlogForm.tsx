@@ -21,16 +21,16 @@ interface BlogFormProps {
 }
 
 const categories = [
-  'Real Estate',
-  'Market Trends',
-  'Home Buying',
-  'Home Selling',
-  'Investment',
+  'Abuja Markets',
+  'Off-Plan Development',
+  'Land Acquisition',
+  'Investment Guide',
   'Property Management',
-  'Architecture',
-  'Interior Design',
-  'Finance',
-  'Lifestyle'
+  'Architecture & Design',
+  'Finance & Mortgages',
+  'Lifestyle',
+  'Market Trends',
+  'Diaspora Investment'
 ];
 
 export default function BlogForm({ isEditing = false }: BlogFormProps) {
@@ -40,7 +40,7 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
     excerpt: '',
     content: '',
     featuredImage: '',
-    category: 'Real Estate',
+    category: 'Abuja Markets',
     tags: '',
     status: 'draft' as 'draft' | 'published' | 'archived',
     readTime: 5,
@@ -639,7 +639,7 @@ export default function BlogForm({ isEditing = false }: BlogFormProps) {
                 value={formData.featuredImage}
                 onChange={handleInputChange}
                 className="form-input"
-                placeholder="https://example.com/image.jpg"
+                placeholder="https://houseunlimitednigeria.com/images/featured.jpg"
               />
               <p className="mt-1 text-sm text-gray-500">
                 URL of the featured image for this blog post.

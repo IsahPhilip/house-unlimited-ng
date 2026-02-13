@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 5000;
 
 const server = app.listen(PORT, () => {
   console.log(`
-🚀 House Unlimited Nigeria - Real Estate Platform API Server Started!
+🚀 House Unlimited Nigeria - API Server Started!
 📍 Running on: http://localhost:${PORT}
 🌍 Environment: ${process.env.NODE_ENV || 'development'}
 📊 Health Check: http://localhost:${PORT}/api/health

@@ -5,10 +5,10 @@ import { Property, BlogArticle } from '../types';
 export const handleShare = async (property: Property | BlogArticle) => {
   const isBlog = 'category' in property && !('beds' in property);
   const title = isBlog ? (property as BlogArticle).title : (property as Property).title;
-  const text = isBlog ? `Check out this interesting article: ${title}` : `I found this amazing property at ${(property as Property).address} for ${(property as Property).price}. Check it out!`;
+  const text = isBlog ? `Check out this article from House Unlimited Nigeria: ${title}` : `I found this property in ${(property as Property).address}. Check it out!`;
   
   const shareData = {
-    title: `${title} on Real Estate.`,
+    title: `${title} on House Unlimited Nigeria`,
     text: text,
     url: `${window.location.origin}${isBlog ? '/blog' : '/property'}?${isBlog ? 'blogId' : 'id'}=${property.id}`
   };

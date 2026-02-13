@@ -23,6 +23,7 @@ import newsletterRoutes from './routes/newsletter.routes.js';
 import contactRoutes from './routes/contact.routes.js';
 import blogRoutes from './routes/blog.routes.js';
 import adminRoutes from './routes/admin.routes.js';
+import publicRoutes from './routes/public.routes.js';
 
 const app = express();
 
@@ -126,11 +127,12 @@ app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/public', publicRoutes);
 
 // Welcome route
 app.get('/api', (req, res) => {
   res.json({
-    message: 'Real Estate Platform API',
+    message: 'House Unlimited Nigeria API',
     version: '1.0.0',
     documentation: '/api/docs',
     endpoints: {

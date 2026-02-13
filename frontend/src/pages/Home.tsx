@@ -15,7 +15,7 @@ import {
   Stethoscope
 } from 'lucide-react';
 import { SearchCriteria, Property } from '../types';
-import { getFeaturedProperties } from '../services/api';
+import { getFeaturedProperties, getPublicMedia } from '../services/api';
 import { PropertyCard } from '../components/PropertyCard';
 
 interface HomeProps {
@@ -33,6 +33,8 @@ export const Home: React.FC<HomeProps> = ({
 }) => {
   const [featured, setFeatured] = useState<Property[]>([]);
   const [loadingFeatured, setLoadingFeatured] = useState(true);
+  const [mediaItems, setMediaItems] = useState<Array<{ type: 'image' | 'video'; title: string; src: string }>>([]);
+  const [mediaLoading, setMediaLoading] = useState(true);
   const [criteria, setCriteria] = useState<SearchCriteria>({
     location: '',
     type: 'Apartment',
@@ -78,6 +80,28 @@ export const Home: React.FC<HomeProps> = ({
     };
 
     loadFeatured();
+  }, []);
+
+  useEffect(() => {
+    const loadMedia = async () => {
+      try {
+        setMediaLoading(true);
+        const data = await getPublicMedia();
+        const mapped = (data || []).map((item: any) => ({
+          type: item.type,
+          title: item.title || 'Uploaded media',
+          src: item.url,
+        }));
+        setMediaItems(mapped);
+      } catch (error) {
+        console.error('Failed to load media:', error);
+        setMediaItems([]);
+      } finally {
+        setMediaLoading(false);
+      }
+    };
+
+    loadMedia();
   }, []);
 
   return (
@@ -204,6 +228,46 @@ export const Home: React.FC<HomeProps> = ({
                 );
               })}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Media Showcase */}
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-wrap items-end justify-between gap-6 mb-8">
+            <div>
+              <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Media</p>
+              <h2 className="text-4xl font-bold text-gray-900">Uploaded <span className="text-gray-400 italic font-light">Images & Videos</span></h2>
+              <p className="text-gray-600 mt-3 max-w-2xl">Preview recent uploads from agents and homeowners. Showcasing interiors, walkthroughs, and neighborhood highlights.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {mediaLoading ? (
+              <div className="col-span-full text-center text-gray-500">Loading media...</div>
+            ) : mediaItems.length > 0 ? (
+              mediaItems.map((media) => (
+                <div key={`${media.title}-${media.src}`} className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all">
+                  <div className="relative aspect-[4/3] bg-gray-100">
+                    {media.type === 'image' ? (
+                      <img src={media.src} alt={media.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <video src={media.src} className="w-full h-full object-cover" controls preload="metadata" />
+                    )}
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-gray-700">
+                      {media.type === 'image' ? 'Image' : 'Video'}
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <h4 className="font-bold text-gray-900 mb-1">{media.title}</h4>
+                    <p className="text-sm text-gray-500">Uploaded recently</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center text-gray-500">No media uploaded yet.</div>
+            )}
           </div>
         </div>
       </section>

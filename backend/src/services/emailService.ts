@@ -29,7 +29,7 @@ export const sendEmail = async (options: EmailOptions): Promise<void> => {
 
       const mailOptions = {
         from: {
-          name: process.env.EMAIL_FROM_NAME || 'Real Estate Platform',
+          name: process.env.EMAIL_FROM_NAME || 'House Unlimited Nigeria',
           address: process.env.EMAIL_FROM || process.env.EMAIL_USER!,
         },
         to: options.email,
@@ -47,8 +47,8 @@ export const sendEmail = async (options: EmailOptions): Promise<void> => {
       const msg = {
         to: options.email,
         from: {
-          email: process.env.EMAIL_FROM || 'noreply@realestate.com',
-          name: process.env.EMAIL_FROM_NAME || 'Real Estate Platform',
+          email: process.env.EMAIL_FROM || 'noreply@houseunlimitednigeria.com',
+          name: process.env.EMAIL_FROM_NAME || 'House Unlimited Nigeria',
         },
         subject: options.subject,
         html: options.message,
@@ -80,7 +80,7 @@ export const sendWelcomeEmail = async (email: string, name: string): Promise<voi
     <html>
     <head>
       <meta charset="utf-8">
-      <title>Welcome to Real Estate Platform</title>
+      <title>Welcome to House Unlimited Nigeria</title>
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -116,7 +116,7 @@ export const sendWelcomeEmail = async (email: string, name: string): Promise<voi
           <p>Happy house hunting! 🏠</p>
         </div>
         <div class="footer">
-          <p>© 2024 Real Estate Platform. All rights reserved.</p>
+          <p>© 2024 House Unlimited Nigeria. All rights reserved.</p>
           <p>If you didn't create this account, please ignore this email.</p>
         </div>
       </div>
@@ -156,7 +156,7 @@ export const sendPasswordResetEmail = async (email: string, resetUrl: string): P
         </div>
         <div class="content">
           <h2>You requested a password reset</h2>
-          <p>We received a request to reset your password for your Real Estate Platform account. Click the button below to create a new password:</p>
+          <p>We received a request to reset your password for your House Unlimited Nigeria account. Click the button below to create a new password:</p>
 
           <a href="${resetUrl}" class="button">Reset Password</a>
 
@@ -172,7 +172,7 @@ export const sendPasswordResetEmail = async (email: string, resetUrl: string): P
           <p>For your security, this link will expire in 10 minutes.</p>
         </div>
         <div class="footer">
-          <p>© 2024 Real Estate Platform. All rights reserved.</p>
+          <p>© 2024 House Unlimited Nigeria. All rights reserved.</p>
           <p>If you have any questions, contact our support team.</p>
         </div>
       </div>
@@ -210,7 +210,7 @@ export const sendVerificationEmail = async (email: string, verificationUrl: stri
           <h1>✅ Verify Your Email</h1>
         </div>
         <div class="content">
-          <h2>Welcome to Real Estate Platform!</h2>
+          <h2>Welcome to House Unlimited Nigeria!</h2>
           <p>Thank you for creating an account. To get started, please verify your email address by clicking the button below:</p>
 
           <a href="${verificationUrl}" class="button">Verify Email Address</a>
@@ -229,7 +229,7 @@ export const sendVerificationEmail = async (email: string, verificationUrl: stri
           <p style="word-break: break-all; background: #f8f9fa; padding: 10px; border-radius: 5px;">${verificationUrl}</p>
         </div>
         <div class="footer">
-          <p>© 2024 Real Estate Platform. All rights reserved.</p>
+          <p>© 2024 House Unlimited Nigeria. All rights reserved.</p>
           <p>If you didn't create this account, you can safely ignore this email.</p>
         </div>
       </div>
@@ -239,7 +239,7 @@ export const sendVerificationEmail = async (email: string, verificationUrl: stri
 
   await sendEmail({
     email,
-    subject: 'Verify Your Email - Real Estate Platform',
+    subject: 'Verify Your Email - House Unlimited Nigeria',
     message,
   });
 };
@@ -297,7 +297,7 @@ export const sendNewsletterWelcomeEmail = async (email: string, subscriberId: st
           <p>Happy house hunting! 🏠</p>
         </div>
         <div class="footer">
-          <p>© 2024 Real Estate Platform. All rights reserved.</p>
+          <p>© 2024 House Unlimited Nigeria. All rights reserved.</p>
           <p>You're receiving this email because you subscribed to our newsletter.</p>
           <p><a href="${process.env.FRONTEND_URL}/unsubscribe">Unsubscribe</a> | <a href="${process.env.FRONTEND_URL}/privacy">Privacy Policy</a></p>
         </div>
@@ -374,10 +374,10 @@ export const sendContactNotification = async (
             <li>Mark as resolved once the issue is addressed</li>
           </ul>
 
-          <p><em>This is an automated notification from your Real Estate Platform.</em></p>
+          <p><em>This is an automated notification from House Unlimited Nigeria.</em></p>
         </div>
         <div class="footer">
-          <p>© 2024 Real Estate Platform. All rights reserved.</p>
+          <p>© 2024 House Unlimited Nigeria. All rights reserved.</p>
           <p>This notification was sent to your admin email address.</p>
         </div>
       </div>
@@ -437,12 +437,12 @@ export const sendContactConfirmation = async (
             We've received your inquiry and will get back to you soon. Thank you for choosing our real estate services!
           </p>
 
-          <p>If you have any urgent questions, please don't hesitate to call us at <strong>+1 (408) 555-0120</strong>.</p>
+          <p>If you have any urgent questions, please don't hesitate to call us at <strong>+234 904 375 2708</strong>.</p>
 
           <p>Thank you for choosing our real estate services!</p>
         </div>
         <div class="footer">
-          <p>© 2024 Real Estate Platform. All rights reserved.</p>
+          <p>© 2024 House Unlimited Nigeria. All rights reserved.</p>
           <p>You're receiving this email because you submitted a contact form on our website.</p>
         </div>
       </div>

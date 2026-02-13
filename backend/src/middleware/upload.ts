@@ -9,18 +9,19 @@ const storage = cloudinaryStorage({
   params: async (req: Request, file: Express.Multer.File) => {
     return {
       folder: 'house-unlimited-ng',
-      allowed_formats: ['jpg', 'jpeg', 'png', 'heic'],
+      resource_type: file.mimetype.startsWith('video/') ? 'video' : 'image',
+      allowed_formats: ['jpg', 'jpeg', 'png', 'heic', 'mp4', 'mov', 'webm'],
     };
   },
 });
 
 // File filter function (optional with Cloudinary, but good practice)
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  // Accept images only
-  if (file.mimetype.startsWith('image/')) {
+  // Accept images and videos only
+  if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) {
     cb(null, true);
   } else {
-    cb(null, false);
+    cb(new Error('Invalid file type. Only images and videos are allowed.'));
   }
 };
 
@@ -29,7 +30,7 @@ export const uploadFileMiddleware = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
+    fileSize: 50 * 1024 * 1024, // 50MB limit
   },
 }).single('file');
 
@@ -38,7 +39,7 @@ export const uploadPropertyImages = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB per file
+    fileSize: 10 * 1024 * 1024, // 10MB per file
     files: 10, // Maximum 10 files
   },
 }).array('images', 10);

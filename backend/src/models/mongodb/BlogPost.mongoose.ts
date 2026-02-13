@@ -57,7 +57,18 @@ const blogPostSchema = new Schema<IBlogPost>({
   category: {
     type: String,
     required: [true, 'Category is required'],
-    enum: ['Real Estate', 'Market Trends', 'Home Buying', 'Home Selling', 'Investment', 'Property Management', 'Architecture', 'Interior Design', 'Finance', 'Lifestyle'],
+    enum: [
+      'Abuja Markets',
+      'Off-Plan Development',
+      'Land Acquisition',
+      'Investment Guide',
+      'Property Management',
+      'Architecture & Design',
+      'Finance & Mortgages',
+      'Lifestyle',
+      'Market Trends',
+      'Diaspora Investment',
+    ],
     trim: true
   },
   tags: [{

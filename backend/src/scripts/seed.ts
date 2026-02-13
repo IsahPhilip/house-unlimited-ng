@@ -43,11 +43,11 @@ const run = async (): Promise<void> => {
     ]);
   }
 
-  const adminUser = await User.findOne({ email: 'admin@houseunlimited.com' }).select('+password');
+  const adminUser = await User.findOne({ email: 'admin@houseunlimitednigeria.com' }).select('+password');
   const admin = adminUser ?? new User();
   Object.assign(admin, {
     name: 'House Unlimited Admin',
-    email: 'admin@houseunlimited.com',
+    email: 'admin@houseunlimitednigeria.com',
     password: 'AdminPass123!',
     role: 'admin',
     isEmailVerified: true,
@@ -60,11 +60,11 @@ const run = async (): Promise<void> => {
   });
   await admin.save();
 
-  const agentUser = await User.findOne({ email: 'agent@houseunlimited.com' }).select('+password');
+  const agentUser = await User.findOne({ email: 'agent@houseunlimitednigeria.com' }).select('+password');
   const agent = agentUser ?? new User();
   Object.assign(agent, {
     name: 'Olivia Grant',
-    email: 'agent@houseunlimited.com',
+    email: 'agent@houseunlimitednigeria.com',
     password: 'AgentPass123!',
     role: 'agent',
     isEmailVerified: true,
@@ -79,11 +79,11 @@ const run = async (): Promise<void> => {
   });
   await agent.save();
 
-  const secondAgentUser = await User.findOne({ email: 'agent2@houseunlimited.com' }).select('+password');
+  const secondAgentUser = await User.findOne({ email: 'agent2@houseunlimitednigeria.com' }).select('+password');
   const secondAgent = secondAgentUser ?? new User();
   Object.assign(secondAgent, {
     name: 'Tosin Adeyemi',
-    email: 'agent2@houseunlimited.com',
+    email: 'agent2@houseunlimitednigeria.com',
     password: 'AgentPass123!',
     role: 'agent',
     isEmailVerified: true,
@@ -98,11 +98,11 @@ const run = async (): Promise<void> => {
   });
   await secondAgent.save();
 
-  const userUser = await User.findOne({ email: 'user@houseunlimited.com' }).select('+password');
+  const userUser = await User.findOne({ email: 'user@houseunlimitednigeria.com' }).select('+password');
   const endUser = userUser ?? new User();
   Object.assign(endUser, {
     name: 'Samuel Okoro',
-    email: 'user@houseunlimited.com',
+    email: 'user@houseunlimitednigeria.com',
     password: 'UserPass123!',
     role: 'user',
     isEmailVerified: true,
@@ -250,7 +250,7 @@ const run = async (): Promise<void> => {
           'Buying can be a wealth-building strategy if you plan to stay for several years and can handle upfront costs. Renting offers flexibility and a lower initial cash outlay. Consider your income stability, plans, and access to financing before deciding.',
         featuredImage:
           'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1200',
-        category: 'Home Buying',
+        category: 'Investment Guide',
         tags: ['buying', 'renting', 'finance'],
         status: 'published',
         readTime: readTimeFor(
@@ -310,8 +310,8 @@ const run = async (): Promise<void> => {
   }
 
   const newsletterSeed = [
-    { email: 'updates@houseunlimited.com' },
-    { email: 'investor@houseunlimited.com' },
+    { email: 'updates@houseunlimitednigeria.com' },
+    { email: 'investor@houseunlimitednigeria.com' },
   ];
 
   for (const subscriber of newsletterSeed) {
@@ -323,7 +323,7 @@ const run = async (): Promise<void> => {
 
   const contactSeed = {
     name: 'Adaeze Nwosu',
-    email: 'adaeze.nwosu@example.com',
+    email: 'adaeze.nwosu@houseunlimitednigeria.com',
     subject: 'Interested in Wuse Garden Terrace',
     message: 'Please share more details about payment plans and inspection schedule.',
     phone: '+2348065550123',
@@ -344,7 +344,7 @@ const run = async (): Promise<void> => {
 
   const contactSeed2 = {
     name: 'Chinedu Okafor',
-    email: 'chinedu.okafor@example.com',
+    email: 'chinedu.okafor@houseunlimitednigeria.com',
     subject: 'Schedule inspection for Lekki Phase One Apartment',
     message: 'Looking to inspect this week. Please share available time slots.',
     phone: '+2348091102233',

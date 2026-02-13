@@ -58,12 +58,12 @@ const Settings = () => {
     isActive: true,
   });
   const [formData, setFormData] = useState({
-    companyName: 'Real Estate Platform',
-    companyEmail: 'info@realestate.com',
-    companyPhone: '+1 (555) 123-4567',
-    timezone: 'UTC',
-    dateFormat: 'MM/DD/YYYY',
-    currency: 'USD',
+    companyName: 'House Unlimited Nigeria',
+    companyEmail: 'official@houseunlimitednigeria.com',
+    companyPhone: '+234 904 375 2708',
+    timezone: 'Africa/Lagos',
+    dateFormat: 'DD/MM/YYYY',
+    currency: 'NGN',
     notifications: {
       email: true,
       push: true,
@@ -342,6 +342,7 @@ const Settings = () => {
               className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             >
               <option value="UTC">UTC</option>
+              <option value="Africa/Lagos">Africa/Lagos</option>
               <option value="EST">EST</option>
               <option value="PST">PST</option>
               <option value="GMT">GMT</option>
@@ -438,7 +439,7 @@ const Settings = () => {
               value={authorProfile.avatar}
               onChange={(e) => setAuthorProfile({ ...authorProfile, avatar: e.target.value })}
               className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-              placeholder="https://example.com/avatar.jpg"
+              placeholder="https://houseunlimitednigeria.com/images/avatar.jpg"
             />
           </div>
           <div className="md:col-span-2">

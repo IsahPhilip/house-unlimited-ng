@@ -10,6 +10,7 @@ import {
   MessageSquare,
   BarChart2,
   Settings,
+  Image as ImageIcon,
   LogOut,
   Menu,
   X,
@@ -64,6 +65,11 @@ const sidebarItems = [
     name: 'Reports',
     path: '/reports',
     icon: <BarChart2 className="h-5 w-5" />
+  },
+  {
+    name: 'Media',
+    path: '/media',
+    icon: <ImageIcon className="h-5 w-5" />
   },
   {
     name: 'Settings',
@@ -148,7 +154,7 @@ export default function MainLayout() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Building2 className="h-6 w-6 text-primary-600" />
-                    <span className="font-semibold text-lg">Real Estate CRM</span>
+                    <span className="font-semibold text-lg">House Unlimited Nigeria Admin</span>
                   </div>
                   <button onClick={toggleSidebar}>
                     <X className="h-5 w-5" />
@@ -186,7 +192,7 @@ export default function MainLayout() {
           <div className="p-4 border-b">
             <div className="flex items-center space-x-2">
               <Building2 className="h-6 w-6 text-primary-600" />
-              <span className="font-semibold text-lg">Real Estate CRM</span>
+              <span className="font-semibold text-lg">House Unlimited Nigeria Admin</span>
             </div>
           </div>
           <nav className="flex-1 p-4 space-y-2">

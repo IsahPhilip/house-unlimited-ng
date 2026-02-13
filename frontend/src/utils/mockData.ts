@@ -115,22 +115,22 @@ export const PROPERTIES: Property[] = [
 
 
 export const TEAM: TeamMember[] = [
-  { name: 'Sarah Montgomery', role: 'CEO & Founder', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400' },
-  { name: 'David Chen', role: 'Head of Real Estate', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400' },
-  { name: 'Elena Rodriguez', role: 'Chief Technology Officer', image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400' },
-  { name: 'Michael Smith', role: 'Senior Interior Designer', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=400' },
+  { name: 'Julia Abege', role: 'Chief Executive Officer', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400' },
+  { name: 'ARC Terzungwe Abege', role: 'Chairman & Lead Architect', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400' },
+  { name: 'House Unlimited Nigeria Team', role: 'Client Advisory', image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=400' },
+  { name: 'House Unlimited Nigeria Team', role: 'Investment & Strategy', image: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&q=80&w=400' },
 ];
 
 export const PRINCIPLES: Principle[] = [
-  { title: 'Radical Transparency', desc: 'We provide honest data and clear pricing, ensuring you have all the facts before making a decision.', icon: '👁️' },
-  { title: 'AI-Driven Innovation', desc: 'We leverage Gemini AI to visualize possibilities and find matches that traditional search engines miss.', icon: '🤖' },
-  { title: 'People First', desc: 'Beyond the tech, our primary focus is the human experience of finding a place to call home.', icon: '🤝' },
-  { title: 'Uncompromising Integrity', desc: 'We hold ourselves and our agents to the highest ethical standards in every transaction.', icon: '💎' },
+  { title: 'Integrity First', desc: 'We provide clear guidance and trusted counsel so clients can make confident decisions.', icon: '👁️' },
+  { title: 'Quality Craftsmanship', desc: 'Every development is built to endure and deliver lasting value in Abuja.', icon: '🏗️' },
+  { title: 'Client Care', desc: 'We stay focused on the full customer experience from inquiry to handover.', icon: '🤝' },
+  { title: 'Investment Focus', desc: 'We prioritize locations and designs that protect and grow client investments.', icon: '💼' },
 ];
 
 export const FAQS: FAQ[] = [
-  { question: 'How do I start the buying process?', answer: 'The first step is to get pre-approved for a mortgage to understand your budget. Then, use our search tools to browse properties and schedule tours with our agents.' },
-  { question: 'What are the closing costs?', answer: 'Closing costs typically range from 2% to 5% of the purchase price and include things like title insurance, appraisal fees, and taxes.' },
-  { question: 'Can I sell my property on this platform?', answer: 'Yes! Contact one of our senior realtors via the Contact Us page to list your property and leverage our AI marketing tools.' },
-  { question: 'How does the AI Dream Home Visualizer work?', answer: 'We use Google Gemini AI to process your text description and generate a high-fidelity image of a potential exterior design for your dream home.' },
+  { question: 'How do I start the buying process?', answer: 'Share your location, budget, and timeline. Our team will guide you through inspections, documentation, and closing steps.' },
+  { question: 'Do you offer off-plan developments?', answer: 'Yes. We provide off-plan luxury developments and estate plots with clear milestones and documentation.' },
+  { question: 'Can I invest from outside Nigeria?', answer: 'Yes. We support diaspora investors with virtual viewings, documentation guidance, and remote updates.' },
+  { question: 'How do I list a property with House Unlimited Nigeria?', answer: 'Use the Contact page to reach our advisory team. We will review your property and outline next steps.' },
 ];

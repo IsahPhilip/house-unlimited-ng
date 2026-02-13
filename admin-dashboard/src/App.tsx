@@ -12,6 +12,7 @@ import Agents from './pages/Agents';
 import Inquiries from './pages/Inquiries';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
+import MediaGallery from './pages/MediaGallery';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
             <Route path="agents" element={<Agents />} />
             <Route path="inquiries" element={<Inquiries />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="media" element={<MediaGallery />} />
             <Route path="settings" element={<Settings />} />
           </Route>
           

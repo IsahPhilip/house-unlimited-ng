@@ -222,6 +222,21 @@ export const getMyReviews = async (): Promise<Review[]> => {
   }
 };
 
+// Public media API
+export const getPublicMedia = async (): Promise<Array<{ type: 'image' | 'video'; title: string; url: string }>> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/public/media`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch media');
+    }
+    const result = await response.json();
+    return result.data || result || [];
+  } catch (error) {
+    console.error('Error fetching media:', error);
+    return [];
+  }
+};
+
 // Avatar upload
 export const uploadAvatar = async (file: File): Promise<User> => {
   try {

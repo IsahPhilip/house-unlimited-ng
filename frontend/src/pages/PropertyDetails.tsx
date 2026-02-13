@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   ArrowLeft,
+  ArrowRight,
   Bath,
   Bed,
   Calendar,
@@ -131,6 +132,8 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
   const [inquirySent, setInquirySent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isVirtualTourModalOpen, setIsVirtualTourModalOpen] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   
   // Review form
   const [newRating, setNewRating] = useState(5);
@@ -193,6 +196,23 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
   const avgRating = propertyReviews.length > 0 
     ? (propertyReviews.reduce((sum, r) => sum + r.rating, 0) / propertyReviews.length).toFixed(1)
     : "0.0";
+  const galleryImages = [property.image, ...(property.images || [])].filter(Boolean);
+  const primaryImage = activeImage || galleryImages[0] || property.image;
+
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index);
+    setIsLightboxOpen(true);
+  };
+
+  const goNextLightbox = () => {
+    if (!galleryImages.length) return;
+    setLightboxIndex((prev) => (prev + 1) % galleryImages.length);
+  };
+
+  const goPrevLightbox = () => {
+    if (!galleryImages.length) return;
+    setLightboxIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+  };
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -290,9 +310,9 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
   };
 
   return (
-    <div className="bg-gray-50/40 min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-slate-50">
       {/* Breadcrumbs */}
-      <div className="bg-white border-b">
+      <div className="bg-white/80 backdrop-blur border-b border-white">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 text-sm text-gray-600">
           <div className="flex items-center space-x-2">
             <button 
@@ -311,143 +331,182 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-          {/* Left + Center - Main Content */}
-          <div className="lg:col-span-2 space-y-10">
-            {/* Gallery */}
-            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-              <div className="aspect-[16/10] md:aspect-[16/9] relative">
-                <img
-                  src={activeImage}
-                  alt={property.title}
-                  className="w-full h-full object-cover"
-                />
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-14 space-y-10">
+        {/* Gallery (Top) */}
+        <section className="bg-white rounded-[28px] border border-white/80 shadow-[0_25px_80px_-55px_rgba(15,23,42,0.8)] overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-2 p-2">
+            <button
+              onClick={() => openLightbox(galleryImages.findIndex((img) => img === primaryImage) || 0)}
+              className="relative aspect-[16/11] md:aspect-[16/10] rounded-2xl overflow-hidden"
+            >
+              <img src={primaryImage} alt={property.title} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/50 via-transparent to-transparent"></div>
+            </button>
+            <div className="grid grid-cols-2 gap-2">
+              {galleryImages.slice(1, 5).map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => openLightbox(i + 1)}
+                  className={`relative aspect-[1/1] rounded-2xl overflow-hidden border-2 transition-all ${
+                    activeImage === img
+                      ? 'border-teal-600'
+                      : 'border-transparent hover:border-slate-200'
+                  }`}
+                >
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          </div>
+          {galleryImages.length > 1 && (
+            <div className="flex gap-3 overflow-x-auto px-4 pb-4 pt-2">
+              {galleryImages.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => openLightbox(i)}
+                  className={`flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
+                    activeImage === img
+                      ? 'border-teal-600 shadow-sm'
+                      : 'border-transparent hover:border-slate-200'
+                  }`}
+                >
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Hero Summary */}
+        <section className="bg-white rounded-[32px] border border-white/80 shadow-[0_25px_80px_-55px_rgba(15,23,42,0.8)] p-6 md:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-6">
+            <div className="min-w-[260px]">
+              <div className="flex flex-wrap gap-3 mb-4">
+                <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide ${
+                  property.category === 'rent'
+                    ? 'bg-teal-600 text-white'
+                    : 'bg-teal-100 text-teal-800'
+                }`}>
+                  For {property.category === 'rent' ? 'Rent' : 'Sale'}
+                </span>
+                <span className="px-4 py-1.5 bg-white text-slate-700 rounded-full text-xs font-semibold border border-slate-200">
+                  {property.type}
+                </span>
+                {property.status && (
+                  <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold ${
+                    property.status === 'available'
+                      ? 'bg-lime-100 text-lime-800'
+                      : property.status === 'pending'
+                      ? 'bg-amber-100 text-amber-800'
+                      : 'bg-rose-100 text-rose-800'
+                  }`}>
+                    {property.status.toUpperCase()}
+                  </span>
+                )}
               </div>
-                {property.images && property.images.length > 0 && (
-                  <div className="p-4 flex gap-3 overflow-x-auto pb-2">
-                  {[property.image, ...property.images].filter(Boolean).map((img, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setActiveImage(img)}
-                      className={`flex-shrink-0 w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden border-2 transition-all ${
-                        activeImage === img 
-                          ? 'border-teal-600 shadow-md' 
-                          : 'border-transparent hover:border-gray-300'
-                      }`}
-                    >
-                      <img src={img} alt="" className="w-full h-full object-cover" />
-                    </button>
-                  ))}
-                </div>
+              <h1 className="text-3xl md:text-5xl font-bold text-slate-950 tracking-tight mb-3">
+                {property.title}
+              </h1>
+              <p className="text-slate-700 flex items-center text-lg">
+                <MapPin className="w-4 h-4 mr-2 text-teal-600" />
+                {property.address}
+              </p>
+              {property.daysOnMarket && (
+                <p className="text-sm text-slate-500 mt-2">
+                  {property.daysOnMarket} days on market
+                </p>
               )}
             </div>
-
-            {/* Main Info */}
-            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm">
-              <div className="flex flex-wrap justify-between items-start gap-4 mb-6">
-                <div>
-                  <div className="flex flex-wrap gap-3 mb-3">
-                    <span className={`inline-block px-4 py-1.5 rounded-full text-sm font-semibold ${
-                      property.category === 'rent' 
-                        ? 'bg-teal-600 text-white' 
-                        : 'bg-emerald-600 text-white'
-                    }`}>
-                      For {property.category === 'rent' ? 'Rent' : 'Sale'}
-                    </span>
-                    <span className="px-4 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
-                      {property.type}
-                    </span>
-                    {/* Property Status Badge */}
-                    {property.status && (
-                      <span className={`inline-block px-4 py-1.5 rounded-full text-sm font-semibold ${
-                        property.status === 'available' 
-                          ? 'bg-green-100 text-green-800' 
-                          : property.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {property.status.toUpperCase()}
-                      </span>
-                    )}
-                  </div>
-                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                    {property.title}
-                  </h1>
-                  <p className="text-gray-600 flex items-center text-lg">
-                    <MapPin className="w-4 h-4 mr-2 text-teal-600" />
-                    {property.address}
-                  </p>
-                  {/* Property History Info */}
-                  {property.daysOnMarket && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      {property.daysOnMarket} days on market
-                    </p>
-                  )}
-                </div>
-                <div className="text-right">
-                  <p className="text-4xl md:text-5xl font-bold text-teal-600 mb-1">
-                    {property.price}
-                  </p>
-                  <div className="flex items-center gap-2 justify-end">
-                    <StarRating rating={parseFloat(avgRating)} size="md" />
-                    <span className="font-bold text-lg">{avgRating}</span>
-                    <span className="text-gray-500 text-sm">
-                      ({propertyReviews.length} reviews)
-                    </span>
-                  </div>
-                </div>
+            <div className="ml-auto text-right">
+              <div className="mt-4 flex items-center justify-end gap-2">
+                <StarRating rating={parseFloat(avgRating)} size="md" />
+                <span className="font-bold text-lg">{avgRating}</span>
+                <span className="text-slate-500 text-sm">({propertyReviews.length})</span>
               </div>
-
-              {/* Key Features Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 py-8 border-y border-gray-100">
-                <div className="text-center">
-                  <div className="text-3xl mb-2 text-teal-600">
-                    <Bed className="w-8 h-8 mx-auto" />
-                  </div>
-                  <div className="text-2xl font-bold">{property.beds}</div>
-                  <div className="text-sm text-gray-600 mt-1">Bedrooms</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl mb-2 text-teal-600">
-                    <Bath className="w-8 h-8 mx-auto" />
-                  </div>
-                  <div className="text-2xl font-bold">{property.baths}</div>
-                  <div className="text-sm text-gray-600 mt-1">Bathrooms</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl mb-2 text-teal-600">
-                    <Ruler className="w-8 h-8 mx-auto" />
-                  </div>
-                  <div className="text-2xl font-bold">{property.sqft}</div>
-                  <div className="text-sm text-gray-600 mt-1">Sqft</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl mb-2 text-teal-600">
-                    <HomeIcon className="w-8 h-8 mx-auto" />
-                  </div>
-                  <div className="text-2xl font-bold">{property.type}</div>
-                  <div className="text-sm text-gray-600 mt-1">Type</div>
-                </div>
+              <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
+                <button onClick={handleShare} className="inline-flex items-center gap-2 px-3 py-2 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-colors">
+                  <Share2 className="w-4 h-4" />
+                  Share
+                </button>
+                <button onClick={handleWhatsApp} className="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-xl text-sm font-semibold hover:bg-green-700 transition-colors">
+                  <MessageCircle className="w-4 h-4" />
+                  WhatsApp
+                </button>
+                <button onClick={handleEmail} className="inline-flex items-center gap-2 px-3 py-2 bg-slate-100 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-200 transition-colors">
+                  <Mail className="w-4 h-4" />
+                  Email
+                </button>
+                {onWishlistToggle && (
+                  <button
+                    onClick={() => onWishlistToggle(property.id, property)}
+                    className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold transition-colors ${
+                      isWishlisted
+                        ? 'bg-rose-100 text-rose-700'
+                        : 'bg-slate-100 text-slate-700 hover:text-rose-600'
+                    }`}
+                  >
+                    <Heart className="w-4 h-4" fill={isWishlisted ? 'currentColor' : 'none'} />
+                    Wish
+                  </button>
+                )}
               </div>
             </div>
+          </div>
 
-            {/* Description */}
-            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm">
-              <h2 className="text-2xl font-bold mb-5">Description</h2>
-              <p className="text-gray-700 leading-relaxed text-lg whitespace-pre-line">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
+            {[
+              { icon: Bed, label: 'Bedrooms', value: property.beds },
+              { icon: Bath, label: 'Bathrooms', value: property.baths },
+              { icon: Ruler, label: 'Sqft', value: property.sqft },
+              { icon: HomeIcon, label: 'Type', value: property.type },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <div key={item.label} className="bg-slate-50 rounded-2xl p-4 flex items-center gap-4">
+                  <div className="w-11 h-11 rounded-xl bg-white text-teal-600 flex items-center justify-center shadow-sm">
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="text-xl font-bold text-slate-950">{item.value}</div>
+                    <div className="text-xs text-slate-500">{item.label}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-10">
+
+            {/* Overview */}
+            <section className="bg-white p-6 md:p-8 rounded-[28px] shadow-[0_25px_80px_-55px_rgba(15,23,42,0.8)] border border-white/80">
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-2xl font-bold">Overview</h2>
+                {property.virtualTourUrl && (
+                  <button
+                    onClick={() => setIsVirtualTourModalOpen(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 text-slate-700 text-sm font-semibold hover:bg-teal-50 hover:text-teal-700 transition-colors"
+                  >
+                    <Video className="w-4 h-4" />
+                    Virtual Tour
+                  </button>
+                )}
+              </div>
+              <p className="text-slate-700 leading-relaxed text-lg whitespace-pre-line">
                 {property.description}
               </p>
-            </div>
+            </section>
 
             {/* Amenities */}
-            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm">
+            <section className="bg-white p-6 md:p-8 rounded-[28px] shadow-[0_25px_80px_-55px_rgba(15,23,42,0.8)] border border-white/80">
               <h2 className="text-2xl font-bold mb-6">Amenities</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
                 {property.amenities.map((amenity, i) => (
                   <div 
                     key={i} 
-                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl"
+                    className="flex items-center gap-3 p-3 bg-gradient-to-r from-teal-50 to-slate-50 rounded-xl"
                   >
                     <div className="text-teal-600">
                       <Check className="w-5 h-5" />
@@ -456,14 +515,14 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   </div>
                 ))}
               </div>
-            </div>
+            </section>
 
             {/* Property Specifications */}
-            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm">
+            <section className="bg-white p-6 md:p-8 rounded-[28px] shadow-[0_25px_80px_-55px_rgba(15,23,42,0.8)] border border-white/80">
               <h2 className="text-2xl font-bold mb-6">Property Specifications</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {property.yearBuilt && (
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-teal-50 to-slate-50 rounded-xl">
                     <div>
                       <span className="text-sm text-gray-500">Year Built</span>
                       <p className="font-bold text-lg">{property.yearBuilt}</p>
@@ -474,7 +533,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   </div>
                 )}
                 {property.lotSize && (
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-teal-50 to-slate-50 rounded-xl">
                     <div>
                       <span className="text-sm text-gray-500">Lot Size</span>
                       <p className="font-bold text-lg">{property.lotSize}</p>
@@ -485,7 +544,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   </div>
                 )}
                 {property.parkingSpaces && (
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-teal-50 to-slate-50 rounded-xl">
                     <div>
                       <span className="text-sm text-gray-500">Parking Spaces</span>
                       <p className="font-bold text-lg">{property.parkingSpaces}</p>
@@ -496,7 +555,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   </div>
                 )}
                 {property.utilities && property.utilities.length > 0 && (
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-teal-50 to-slate-50 rounded-xl">
                     <div>
                       <span className="text-sm text-gray-500">Utilities</span>
                       <p className="font-bold text-lg">{property.utilities.join(', ')}</p>
@@ -507,11 +566,11 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   </div>
                 )}
               </div>
-            </div>
+            </section>
 
             {/* Neighborhood Information */}
             {property.neighborhood && (
-              <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm">
+              <section className="bg-white p-6 md:p-8 rounded-[28px] shadow-[0_25px_80px_-55px_rgba(15,23,42,0.8)] border border-white/80">
                 <h2 className="text-2xl font-bold mb-6">Neighborhood</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -522,17 +581,13 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                         <span className="text-green-600">•</span>
                         <span className="text-sm">Crime Rate: {property.neighborhood.crimeRate}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-teal-600">•</span>
-                        <span className="text-sm">Average Price: {property.neighborhood.averagePrice}</span>
-                      </div>
                     </div>
                   </div>
                   <div>
                     <h4 className="font-bold mb-3">Nearby Schools</h4>
                     <ul className="space-y-2">
                       {property.neighborhood.schools?.map((school, i) => (
-                        <li key={i} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+                        <li key={i} className="flex items-center gap-2 p-2 bg-gradient-to-r from-teal-50 to-slate-50 rounded">
                           <School className="w-4 h-4 text-teal-600" />
                           <span>{school}</span>
                         </li>
@@ -540,11 +595,26 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                     </ul>
                   </div>
                 </div>
-              </div>
+              </section>
+            )}
+
+            {/* Price History */}
+            {property.priceHistory && property.priceHistory.length > 0 && (
+              <section className="bg-white p-6 md:p-8 rounded-[28px] shadow-[0_25px_80px_-55px_rgba(15,23,42,0.8)] border border-white/80">
+                <h2 className="text-2xl font-bold mb-6">Price History</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {property.priceHistory.map((item, i) => (
+                    <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-slate-50">
+                      <div className="text-sm text-slate-500">{item.date}</div>
+                      <div className="font-semibold text-slate-900">{item.price}</div>
+                    </div>
+                  ))}
+                </div>
+              </section>
             )}
 
             {/* Reviews */}
-            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm">
+            <section className="bg-white p-6 md:p-8 rounded-[28px] shadow-[0_25px_80px_-55px_rgba(15,23,42,0.8)] border border-white/80">
               <div className="flex justify-between items-center mb-8">
                 <h2 className="text-2xl font-bold">Reviews</h2>
                 <div className="flex items-center gap-3">
@@ -585,7 +655,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                 <h3 className="text-xl font-bold mb-6">Write a Review</h3>
                 
                 {!user ? (
-                  <div className="bg-teal-50 p-8 rounded-2xl text-center">
+                  <div className="bg-gradient-to-r from-teal-50 to-slate-50 p-8 rounded-2xl text-center">
                     <p className="text-lg mb-4">Please sign in to write a review</p>
                     <button
                       onClick={() => openAuthModal?.('signin')}
@@ -627,15 +697,15 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   </form>
                 )}
               </div>
-            </div>
+            </section>
 
             {/* Similar Properties */}
             {property.similarProperties && property.similarProperties.length > 0 && (
-              <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm">
+              <section className="bg-white p-6 md:p-8 rounded-[28px] shadow-[0_25px_80px_-55px_rgba(15,23,42,0.8)] border border-white/80">
                 <h2 className="text-2xl font-bold mb-6">Similar Properties</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {property.similarProperties.map((similarProp) => (
-                    <div key={similarProp.id} className="border border-gray-100 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+                    <div key={similarProp.id} className="border border-white rounded-2xl overflow-hidden shadow-[0_20px_60px_-45px_rgba(15,23,42,0.7)] hover:-translate-y-1 transition-all bg-white">
                       <div className="aspect-[16/10] relative">
                         <img
                           src={similarProp.image}
@@ -646,7 +716,7 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                           <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
                             similarProp.category === 'rent' 
                               ? 'bg-teal-600 text-white' 
-                              : 'bg-emerald-600 text-white'
+                              : 'bg-teal-100 text-teal-800'
                           }`}>
                             For {similarProp.category === 'rent' ? 'Rent' : 'Sale'}
                           </span>
@@ -669,7 +739,6 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                         <h3 className="font-bold text-lg mb-2">{similarProp.title}</h3>
                         <p className="text-gray-600 text-sm mb-3">{similarProp.address}</p>
                         <div className="flex justify-between items-center">
-                          <div className="text-teal-600 font-bold text-lg">{similarProp.price}</div>
                           <div className="flex gap-2">
                             <span className="text-sm text-gray-500">{similarProp.beds} bd</span>
                             <span className="text-sm text-gray-500">{similarProp.baths} ba</span>
@@ -680,64 +749,27 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                     </div>
                   ))}
                 </div>
-              </div>
+              </section>
             )}
-
-            {/* Share & Print Options */}
-            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm">
-              <h2 className="text-2xl font-bold mb-6">Share This Property</h2>
-              <div className="flex flex-wrap gap-4">
-                <button onClick={handleShare} className="flex items-center gap-3 px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors">
-                  <Share2 className="w-5 h-5" />
-                  <span>Share</span>
-                </button>
-                <button onClick={handlePrint} className="flex items-center gap-3 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                  <Printer className="w-5 h-5" />
-                  <span>Print</span>
-                </button>
-                <button onClick={handleWhatsApp} className="flex items-center gap-3 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                  <MessageCircle className="w-5 h-5" />
-                  <span>WhatsApp</span>
-                </button>
-                <button onClick={handleEmail} className="flex items-center gap-3 px-6 py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors">
-                  <Mail className="w-5 h-5" />
-                  <span>Email</span>
-                </button>
-              </div>
-            </div>
           </div>
 
           {/* Sidebar */}
           <aside className="lg:col-span-1">
             <div className="sticky top-6 space-y-8">
               {/* Contact / Inquiry Card */}
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+              <div className="bg-white rounded-[28px] shadow-[0_25px_80px_-55px_rgba(15,23,42,0.8)] overflow-hidden border border-white/80">
                 <div className="p-6 md:p-8">
                   <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl md:text-2xl font-bold">Contact Agent</h3>
-                    <div className="flex space-x-2">
-                      {onWishlistToggle && (
-                        <button
-                          onClick={() => onWishlistToggle(property.id, property)}
-                          className={`p-3 rounded-full transition-colors ${
-                            isWishlisted 
-                              ? 'bg-red-50 text-red-600' 
-                              : 'bg-gray-100 text-gray-500 hover:text-red-600'
-                          }`}
-                        >
-                          <Heart className="w-5 h-5" fill={isWishlisted ? 'currentColor' : 'none'} />
-                        </button>
-                      )}
-                      {property.virtualTourUrl && (
-                        <button
-                          onClick={() => setIsVirtualTourModalOpen(true)}
-                          className="p-3 rounded-full bg-gray-100 text-gray-500 hover:text-teal-600 hover:bg-teal-50 transition-colors"
-                          title="View Virtual Tour"
-                        >
-                          <Video className="w-6 h-6" />
-                        </button>
-                      )}
-                    </div>
+                    {property.virtualTourUrl && (
+                      <button
+                        onClick={() => setIsVirtualTourModalOpen(true)}
+                        className="p-3 rounded-full bg-slate-100 text-slate-500 hover:text-teal-600 hover:bg-teal-50 transition-colors"
+                        title="View Virtual Tour"
+                      >
+                        <Video className="w-6 h-6" />
+                      </button>
+                    )}
                   </div>
 
                   {!inquirySent ? (
@@ -745,21 +777,21 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                       <input
                         name="name"
                         placeholder="Full Name"
-                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+                        className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
                         required
                       />
                       <input
                         name="email"
                         type="email"
                         placeholder="Email Address"
-                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+                        className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
                         required
                       />
                       <textarea
                         name="message"
                         rows={4}
                         placeholder="I'm interested in this property..."
-                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none resize-none"
+                        className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none resize-none"
                       />
                       <button
                         type="submit"
@@ -795,10 +827,10 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               </div>
 
               {/* Simple Agent Info */}
-              <div className="bg-gradient-to-br from-teal-600 to-indigo-700 text-white rounded-2xl p-8 shadow-xl">
+              <div className="bg-gradient-to-br from-teal-600 via-teal-500 to-slate-700 text-white rounded-[28px] p-8 shadow-[0_30px_90px_-50px_rgba(15,23,42,0.9)]">
                 <h4 className="text-lg font-semibold mb-5 opacity-90">Listed by</h4>
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-2xl font-bold">
+                  <div className="w-16 h-16 rounded-full bg-white/25 flex items-center justify-center text-2xl font-bold">
                     LA
                   </div>
                   <div>
@@ -807,14 +839,12 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   </div>
                 </div>
                 <div className="space-y-3 text-sm">
-                  <button onClick={handleCall} className="w-full py-3 bg-white/15 hover:bg-white/25 rounded-xl transition-colors inline-flex items-center justify-center gap-2">
-                    <PhoneCall className="w-4 h-4" /> Call Now
-                  </button>
-                  <button onClick={handleScheduleViewing} className="w-full py-3 bg-white/15 hover:bg-white/25 rounded-xl transition-colors inline-flex items-center justify-center gap-2">
+                  <button onClick={handleScheduleViewing} className="w-full py-3 bg-white/20 hover:bg-white/30 rounded-xl transition-colors inline-flex items-center justify-center gap-2">
                     <Calendar className="w-4 h-4" /> Schedule Viewing
                   </button>
                 </div>
               </div>
+
             </div>
           </aside>
         </div>
@@ -859,6 +889,37 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               ></iframe>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Image Lightbox */}
+      {isLightboxOpen && galleryImages.length > 0 && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
+          <button
+            onClick={() => setIsLightboxOpen(false)}
+            className="absolute top-6 right-6 text-white/80 hover:text-white p-2 rounded-full bg-white/10"
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <button
+            onClick={goPrevLightbox}
+            className="absolute left-4 md:left-8 text-white/80 hover:text-white p-3 rounded-full bg-white/10"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </button>
+          <div className="max-w-5xl w-[92vw] h-[80vh] flex items-center justify-center">
+            <img
+              src={galleryImages[lightboxIndex]}
+              alt={property.title}
+              className="max-w-full max-h-full object-contain rounded-lg"
+            />
+          </div>
+          <button
+            onClick={goNextLightbox}
+            className="absolute right-4 md:right-8 text-white/80 hover:text-white p-3 rounded-full bg-white/10"
+          >
+            <ArrowRight className="w-6 h-6" />
+          </button>
         </div>
       )}
     </div>
