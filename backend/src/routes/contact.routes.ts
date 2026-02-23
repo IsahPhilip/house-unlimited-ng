@@ -1,5 +1,5 @@
 import express from 'express';
-import { submitContact, getAllContacts, getContactById, updateContactStatus, deleteContact, getContactStats } from '../controllers/contact.controller.js';
+import { submitContact, getAllContacts, getContactById, updateContactStatus, updateContact, addContactNote, deleteContact, getContactStats } from '../controllers/contact.controller.js';
 import { protect, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -12,6 +12,8 @@ router.get('/', protect, authorize('admin'), getAllContacts);
 router.get('/stats', protect, authorize('admin'), getContactStats);
 router.get('/:id', protect, authorize('admin'), getContactById);
 router.put('/:id/status', protect, authorize('admin'), updateContactStatus);
+router.put('/:id', protect, authorize('admin'), updateContact);
+router.post('/:id/notes', protect, authorize('admin'), addContactNote);
 router.delete('/:id', protect, authorize('admin'), deleteContact);
 
 export default router;

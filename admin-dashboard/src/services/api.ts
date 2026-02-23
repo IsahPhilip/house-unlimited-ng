@@ -415,12 +415,12 @@ export const deleteAgent = async (id: string): Promise<void> => {
   }
 };
 
-export const updateContactStatus = async (id: string, status: string): Promise<any> => {
+export const updateContactStatus = async (id: string, status: string, assignedTo?: string, priority?: string): Promise<any> => {
   try {
     const response = await fetch(`${API_BASE_URL}/contact/${id}/status`, {
       method: 'PUT',
       headers: getAuthHeaders(),
-      body: JSON.stringify({ status }),
+      body: JSON.stringify({ status, assignedTo, priority }),
     });
 
     if (!response.ok) {
@@ -431,6 +431,46 @@ export const updateContactStatus = async (id: string, status: string): Promise<a
     return extractData<any>(data);
   } catch (error) {
     console.error('Update contact status error:', error);
+    throw error;
+  }
+};
+
+export const updateContact = async (id: string, updates: { status?: string; assignedTo?: string | null; priority?: string }): Promise<any> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/contact/${id}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(updates),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update contact');
+    }
+
+    const data = await response.json();
+    return extractData<any>(data);
+  } catch (error) {
+    console.error('Update contact error:', error);
+    throw error;
+  }
+};
+
+export const addContactNote = async (id: string, text: string): Promise<any> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/contact/${id}/notes`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ text }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to add contact note');
+    }
+
+    const data = await response.json();
+    return extractData<any>(data);
+  } catch (error) {
+    console.error('Add contact note error:', error);
     throw error;
   }
 };

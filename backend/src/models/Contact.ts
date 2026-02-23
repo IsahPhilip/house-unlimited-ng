@@ -60,6 +60,13 @@ const contactSchema = new mongoose.Schema({
     type: Date,
     default: null
   },
+  internalNotes: [
+    {
+      text: { type: String, trim: true },
+      author: { type: String, trim: true },
+      createdAt: { type: Date, default: Date.now }
+    }
+  ],
   createdAt: {
     type: Date,
     default: Date.now

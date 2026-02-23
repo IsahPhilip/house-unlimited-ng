@@ -136,7 +136,7 @@ export const getContactById = async (req: Request, res: Response): Promise<void>
 // Update contact status (admin only)
 export const updateContactStatus = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { status, assignedTo } = req.body;
+    const { status, assignedTo, priority } = req.body;
     const contact = await Contact.findById(req.params.id);
 
     if (!contact) {
@@ -149,6 +149,7 @@ export const updateContactStatus = async (req: Request, res: Response): Promise<
 
     contact.status = status || contact.status;
     contact.assignedTo = assignedTo || contact.assignedTo;
+    contact.priority = priority || contact.priority;
     contact.respondedAt = status === 'resolved' ? new Date() : contact.respondedAt;
 
     await contact.save();
@@ -160,6 +161,83 @@ export const updateContactStatus = async (req: Request, res: Response): Promise<
     });
   } catch (error) {
     console.error('Update contact status error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error. Please try again later.'
+    });
+  }
+};
+
+// Update contact (admin only)
+export const updateContact = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { status, assignedTo, priority } = req.body;
+    const contact = await Contact.findById(req.params.id);
+
+    if (!contact) {
+      res.status(404).json({
+        success: false,
+        message: 'Contact not found'
+      });
+      return;
+    }
+
+    if (status) contact.status = status;
+    if (assignedTo !== undefined) contact.assignedTo = assignedTo || null;
+    if (priority) contact.priority = priority;
+    if (status === 'resolved') contact.respondedAt = new Date();
+
+    await contact.save();
+
+    res.json({
+      success: true,
+      message: 'Contact updated successfully',
+      data: contact
+    });
+  } catch (error) {
+    console.error('Update contact error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error. Please try again later.'
+    });
+  }
+};
+
+// Add internal note (admin only)
+export const addContactNote = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { text } = req.body;
+    const contact = await Contact.findById(req.params.id);
+
+    if (!contact) {
+      res.status(404).json({
+        success: false,
+        message: 'Contact not found'
+      });
+      return;
+    }
+
+    if (!text || typeof text !== 'string') {
+      res.status(400).json({
+        success: false,
+        message: 'Note text is required'
+      });
+      return;
+    }
+
+    const author = (req as any).user?.name || (req as any).user?.email || 'Admin';
+    contact.internalNotes = contact.internalNotes || [];
+    contact.internalNotes.push({ text, author, createdAt: new Date() });
+
+    await contact.save();
+
+    res.json({
+      success: true,
+      message: 'Note added successfully',
+      data: contact
+    });
+  } catch (error) {
+    console.error('Add contact note error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error. Please try again later.'
