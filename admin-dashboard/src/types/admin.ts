@@ -19,7 +19,7 @@ export interface Property {
   description: string;
   price: number;
   type: 'sale' | 'rent';
-  propertyType: 'house' | 'apartment' | 'commercial' | 'land';
+  propertyType: 'house' | 'land';
   bedrooms: number;
   bathrooms: number;
   squareFeet: number;
@@ -134,6 +134,7 @@ export interface AdminSettings {
     sessionTimeout: number;
     passwordExpiry: number;
   };
+  siteContent?: Record<string, unknown>;
 }
 
 export interface RevenueReport {

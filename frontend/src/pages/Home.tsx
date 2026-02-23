@@ -3,7 +3,6 @@ import maitamaHero from '../img/maitama-ii.jpeg';
 import {
   ArrowRight,
   Briefcase,
-  Building,
   Building2,
   DollarSign,
   Home as HomeIcon,
@@ -12,7 +11,7 @@ import {
   Search,
   Smartphone,
   Star,
-  Stethoscope
+  Trees
 } from 'lucide-react';
 import { SearchCriteria, Property } from '../types';
 import { getFeaturedProperties, getPublicMedia } from '../services/api';
@@ -23,13 +22,15 @@ interface HomeProps {
   wishlistIds: string[];
   onWishlistToggle: (id: string, property?: Property) => void;
   onNavigate: (id: string) => void;
+  siteContent?: any;
 }
 
 export const Home: React.FC<HomeProps> = ({
   onSearch,
   wishlistIds,
   onWishlistToggle,
-  onNavigate
+  onNavigate,
+  siteContent
 }) => {
   const [featured, setFeatured] = useState<Property[]>([]);
   const [loadingFeatured, setLoadingFeatured] = useState(true);
@@ -37,40 +38,45 @@ export const Home: React.FC<HomeProps> = ({
   const [mediaLoading, setMediaLoading] = useState(true);
   const [criteria, setCriteria] = useState<SearchCriteria>({
     location: '',
-    type: 'Apartment',
+    type: 'House',
     priceRange: '$30,000 - $80,000',
     category: 'buy'
   });
-
-  const propertyTypes = [
-    { icon: Building2, label: 'Apartment', count: '3,452 Properties' },
-    { icon: Briefcase, label: 'Office', count: '1,252 Properties' },
-    { icon: HomeIcon, label: 'House', count: '5,485 Properties' },
-    { icon: Building, label: 'Villa', count: '2,841 Properties' },
-    { icon: Stethoscope, label: 'Medical', count: '1,052 Properties' },
+  const services = siteContent?.home?.services || [
+    { title: 'Buy a Home', desc: 'Find the right home faster with verified listings and guided tours.' },
+    { title: 'Buy Land', desc: 'Discover verified land parcels with clear documentation and strong value.' },
+    { title: 'Sell a Home', desc: 'Price it right, market it well, and close with confidence.' },
+    { title: 'Luxury Properties', desc: 'Discreet, curated access to premium homes and estates.' },
+    { title: 'Investment Sales', desc: 'Identify high‑value house and land opportunities with strong upside.' },
+  ];
+  const testimonials = siteContent?.home?.testimonials || [
+    { name: 'Jenny Wilson', text: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa.', img: 'https://i.pravatar.cc/150?u=jenny' },
+    { name: 'Esther Howard', text: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa.', img: 'https://i.pravatar.cc/150?u=esther' },
   ];
 
   useEffect(() => {
     const loadFeatured = async () => {
       try {
         const data = await getFeaturedProperties();
-        const mapped = (data || []).map((p: any) => ({
-          id: p._id || p.id,
-          title: p.title,
-          price: p.price || p.priceValue,
-          priceValue: p.priceValue || 0,
-          type: p.type,
-          category: p.category,
-          address: p.address,
-          beds: p.beds,
-          baths: p.baths,
-          sqft: p.sqft,
-          image: p.featuredImage || p.image || p.images?.[0] || '',
-          images: p.images,
-          description: p.description || '',
-          amenities: p.amenities || [],
-          coordinates: p.coordinates || [0, 0],
-        }));
+        const mapped = (data || [])
+          .filter((p: any) => ['house', 'land'].includes((p.type || '').toLowerCase()))
+          .map((p: any) => ({
+            id: p._id || p.id,
+            title: p.title,
+            price: p.price || p.priceValue,
+            priceValue: p.priceValue || 0,
+            type: p.type,
+            category: p.category,
+            address: p.address,
+            beds: p.beds,
+            baths: p.baths,
+            sqft: p.sqft,
+            image: p.featuredImage || p.image || p.images?.[0] || '',
+            images: p.images,
+            description: p.description || '',
+            amenities: p.amenities || [],
+            coordinates: p.coordinates || [0, 0],
+          }));
         setFeatured(mapped);
       } catch (error) {
         console.error('Failed to load featured properties:', error);
@@ -114,26 +120,20 @@ export const Home: React.FC<HomeProps> = ({
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 w-full">
           <div className="max-w-2xl">
-            <p className="text-teal-600 font-semibold mb-4 tracking-wide uppercase tracking-[0.2em] text-xs font-bold">Find Your Dream Property Easily</p>
+            <p className="text-teal-600 font-semibold mb-4 tracking-wide uppercase tracking-[0.2em] text-xs font-bold">{siteContent?.home?.heroBadge || 'Find Your Dream Property Easily'}</p>
             <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
-              Instant Property Deals:<br />
-              <span className="text-teal-600">Buy, Sell, and Rent</span>
+              {(siteContent?.home?.heroTitleLine1 || 'Instant Property Deals:')}<br />
+              <span className="text-teal-600">{siteContent?.home?.heroTitleAccent || 'Buy and Sell'}</span>
             </h1>
-            <p className="text-gray-600 text-lg mb-10 max-w-lg">Experience the next generation of real estate discovery. We use cutting-edge AI to match you with your perfect home.</p>
+            <p className="text-gray-600 text-lg mb-10 max-w-lg">{siteContent?.home?.heroDescription || 'Experience the next generation of real estate discovery. We use cutting-edge AI to match you with your perfect home.'}</p>
 
             <div className="bg-white p-2 rounded-2xl shadow-2xl inline-flex flex-col w-full md:w-auto transition-all">
               <div className="flex p-1">
                 <button
                   onClick={() => setCriteria({...criteria, category: 'buy'})}
-                  className={`px-8 py-2.5 rounded-xl font-bold transition-all ${criteria.category === 'buy' ? 'bg-teal-600 text-white' : 'text-gray-500 hover:text-teal-600'}`}
+                  className="px-8 py-2.5 rounded-xl font-bold transition-all bg-teal-600 text-white"
                 >
-                  Buy
-                </button>
-                <button
-                  onClick={() => setCriteria({...criteria, category: 'rent'})}
-                  className={`px-8 py-2.5 rounded-xl font-bold transition-all ${criteria.category === 'rent' ? 'bg-teal-600 text-white' : 'text-gray-500 hover:text-teal-600'}`}
-                >
-                  Rent
+                  Buy & Sell
                 </button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 items-center">
@@ -154,10 +154,8 @@ export const Home: React.FC<HomeProps> = ({
                     onChange={(e) => setCriteria({...criteria, type: e.target.value})}
                     className="text-gray-900 font-bold text-sm bg-transparent border-none p-0 focus:ring-0 outline-none w-full cursor-pointer"
                   >
-                    <option>Apartment</option>
-                    <option>Villa</option>
-                    <option>Office</option>
                     <option>House</option>
+                    <option>Land</option>
                   </select>
                 </div>
                 <div className="border-l border-gray-100 pl-4">
@@ -277,17 +275,12 @@ export const Home: React.FC<HomeProps> = ({
         <div className="max-w-7xl mx-auto px-4 text-center mb-16">
           <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Services</p>
           <h2 className="text-4xl font-bold text-gray-900">Who We <span className="text-gray-400 italic font-light">Serve</span></h2>
-          <p className="text-gray-600 mt-3">Tailored support for every stage of your property journey.</p>
+          <p className="text-gray-600 mt-3">Expert support for buying and selling properties.</p>
         </div>
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[
-            { icon: HomeIcon, title: 'Buy a Home', desc: 'Find the right home faster with verified listings and guided tours.' },
-            { icon: DollarSign, title: 'Sell a Home', desc: 'Price it right, market it well, and close with confidence.' },
-            { icon: Building2, title: 'Luxury Properties', desc: 'Discreet, curated access to premium homes and estates.' },
-            { icon: Building, title: 'Investment / Rentals', desc: 'Identify high‑yield opportunities and stable rental income.' },
-            { icon: Briefcase, title: 'Relocation Services', desc: 'Move smoothly with local insights, logistics, and housing support.' },
-          ].map((service) => {
-            const Icon = service.icon;
+          {services.map((service: any, index: number) => {
+            const icons = [HomeIcon, Trees, DollarSign, Building2, Briefcase];
+            const Icon = icons[index % icons.length];
             return (
               <div key={service.title} className="p-6 rounded-3xl transition-all bg-white border border-gray-100 hover:border-teal-500 hover:shadow-xl">
                 <div className="w-12 h-12 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center mb-4">
@@ -421,21 +414,10 @@ export const Home: React.FC<HomeProps> = ({
       <section className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 text-center mb-16">
           <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Our Testimonials</p>
-          <h2 className="text-4xl font-bold text-gray-900">What Our <span className="text-gray-400 italic font-light font-normal">Client Say About Us</span></h2>
+          <h2 className="text-4xl font-bold text-gray-900">{siteContent?.home?.testimonialsTitle || <>What Our <span className="text-gray-400 italic font-light font-normal">Client Say About Us</span></>}</h2>
         </div>
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-8">
-          {[
-            {
-              name: 'Jenny Wilson', 
-              img: 'https://i.pravatar.cc/150?u=jenny', 
-              text: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa.'
-            }, 
-            {
-              name: 'Esther Howard', 
-              img: 'https://i.pravatar.cc/150?u=esther', 
-              text: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa.'
-            }
-          ].map((t, i) => (
+          {testimonials.map((t: any, i: number) => (
             <div key={i} className="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 flex items-start space-x-6">
               <img src={t.img} alt={t.name} className="w-20 h-20 rounded-full border-4 border-teal-50 object-cover" />
               <div className="flex-1">
@@ -467,19 +449,13 @@ export const Home: React.FC<HomeProps> = ({
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
               <div>
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Find Your Perfect Property?</h2>
-                <p className="text-teal-100 mb-6 max-w-lg">Start your real estate journey today with our comprehensive platform. Whether you're buying, selling, or renting, we have the perfect solution for you.</p>
+                <p className="text-teal-100 mb-6 max-w-lg">{siteContent?.home?.ctaDescription || "Start your real estate journey today. Whether you're buying or selling, we have the right solution for you."}</p>
                 <div className="flex flex-wrap gap-4">
                   <button
                     onClick={() => onSearch({ location: '', type: 'all', priceRange: 'all', category: 'buy' })}
                     className="bg-white text-teal-700 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-all shadow-lg"
                   >
-                    Browse Properties for Sale
-                  </button>
-                  <button
-                    onClick={() => onSearch({ location: '', type: 'all', priceRange: 'all', category: 'rent' })}
-                    className="border-2 border-white text-white px-6 py-3 rounded-full font-bold hover:bg-white hover:text-teal-700 transition-all"
-                  >
-                    Explore Rentals
+                    {siteContent?.home?.ctaPrimaryLabel || 'Browse Properties for Sale'}
                   </button>
                 </div>
               </div>

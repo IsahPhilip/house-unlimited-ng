@@ -382,12 +382,8 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
           <div className="flex flex-wrap items-start justify-between gap-6">
             <div className="min-w-[260px]">
               <div className="flex flex-wrap gap-3 mb-4">
-                <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide ${
-                  property.category === 'rent'
-                    ? 'bg-teal-600 text-white'
-                    : 'bg-teal-100 text-teal-800'
-                }`}>
-                  For {property.category === 'rent' ? 'Rent' : 'Sale'}
+                <span className="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide bg-teal-100 text-teal-800">
+                  For Sale
                 </span>
                 <span className="px-4 py-1.5 bg-white text-slate-700 rounded-full text-xs font-semibold border border-slate-200">
                   {property.type}
@@ -713,12 +709,8 @@ const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                           className="w-full h-full object-cover"
                         />
                         <div className="absolute top-3 left-3">
-                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                            similarProp.category === 'rent' 
-                              ? 'bg-teal-600 text-white' 
-                              : 'bg-teal-100 text-teal-800'
-                          }`}>
-                            For {similarProp.category === 'rent' ? 'Rent' : 'Sale'}
+                          <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-800">
+                            For Sale
                           </span>
                         </div>
                         {similarProp.status && (

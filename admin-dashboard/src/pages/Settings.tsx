@@ -38,6 +38,7 @@ const Settings = () => {
   const [settingsNotice, setSettingsNotice] = useState<string>('');
   const [settingsError, setSettingsError] = useState<string>('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [siteContentJson, setSiteContentJson] = useState('{}');
   const [authorProfile, setAuthorProfile] = useState({
     name: '',
     email: '',
@@ -143,7 +144,16 @@ const Settings = () => {
     setSettingsNotice('');
     setFieldErrors({});
     try {
-      const saved = await updateAdminSettings(formData as any);
+      let parsedSiteContent: Record<string, unknown> = {};
+      try {
+        parsedSiteContent = JSON.parse(siteContentJson || '{}');
+      } catch (error) {
+        setSettingsError('Site Content JSON is invalid.');
+        setIsLoading(false);
+        return;
+      }
+
+      const saved = await updateAdminSettings({ ...(formData as any), siteContent: parsedSiteContent } as any);
       setFormData({
         companyName: saved.companyName,
         companyEmail: saved.companyEmail,
@@ -155,6 +165,7 @@ const Settings = () => {
         security: saved.security,
         integrations: formData.integrations,
       });
+      setSiteContentJson(JSON.stringify((saved as any).siteContent || {}, null, 2));
       setSettingsNotice('Settings saved.');
     } catch (error) {
       console.error('Error saving settings:', error);
@@ -215,6 +226,7 @@ const Settings = () => {
           security: settings.security,
           integrations: formData.integrations,
         });
+        setSiteContentJson(JSON.stringify((settings as any).siteContent || {}, null, 2));
       } catch (error) {
         console.error('Error loading settings:', error);
         setSettingsError('Failed to load settings.');
@@ -953,6 +965,20 @@ const Settings = () => {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Frontend Content (JSON)</h3>
+        <p className="text-sm text-gray-500 mb-4">
+          Manage homepage/about/faq/policies/contact copy shown on the public frontend.
+        </p>
+        <textarea
+          value={siteContentJson}
+          onChange={(e) => setSiteContentJson(e.target.value)}
+          rows={18}
+          className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent font-mono text-xs"
+          spellCheck={false}
+        />
       </div>
     </div>
   );

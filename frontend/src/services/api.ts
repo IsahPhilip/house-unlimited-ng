@@ -237,6 +237,20 @@ export const getPublicMedia = async (): Promise<Array<{ type: 'image' | 'video';
   }
 };
 
+export const getPublicSiteContent = async (): Promise<any> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/public/site-content`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch site content');
+    }
+    const result = await response.json();
+    return result.data || {};
+  } catch (error) {
+    console.error('Error fetching site content:', error);
+    return {};
+  }
+};
+
 // Avatar upload
 export const uploadAvatar = async (file: File): Promise<User> => {
   try {

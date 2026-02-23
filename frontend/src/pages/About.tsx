@@ -2,18 +2,18 @@ import React from 'react';
 import { ArrowRight, Eye, Linkedin, Target, Trophy, Twitter } from 'lucide-react';
 import maitamaExtension from '../img/maitama extension.jpeg';
 
-const AboutPage = () => (
+const AboutPage = ({ siteContent }: { siteContent?: any }) => (
   <div className="animate-in fade-in duration-500">
     {/* Hero / Story Section */}
     <section className="py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         <div>
-           <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Our Story</p>
-           <h1 className="text-5xl font-bold text-gray-900 mb-8 leading-tight">We help you find your <span className="text-teal-600">Perfect Home</span> since 1995.</h1>
-           <p className="text-gray-600 mb-8 leading-relaxed text-sm">House Unlimited & Land Services Nigeria Ltd with RC 1600988 (brand name House Unlimited Nigeria) is a premier real estate development company committed to delivering high-quality, value-driven properties in Abuja. Founded on the principles of integrity, reliability, and excellence, we specialize in off-plan luxury developments, estate plots, and investment properties tailored for discerning clients.</p>
-           <p className="text-gray-600 mb-8 leading-relaxed text-sm">At the helm of House Unlimited Nigeria is Julia Abege, our CEO—an ex-banker with over 11 years of experience in the financial sector. A passionate real estate enthusiast, she brings a wealth of knowledge in investment strategies, ensuring that every client enjoys exceptional returns on their property investments.</p>
-           <p className="text-gray-600 mb-8 leading-relaxed text-sm">Our Chairman, ARC Terzungwe Abege, is a seasoned architect with a keen eye for construction and development. With a deep understanding of design, functionality, and sustainable building practices, he ensures that every House Unlimited project meets the highest standards of quality and craftsmanship.</p>
-           <p className="text-gray-600 mb-8 leading-relaxed text-sm">Together, we lead a dedicated team focused on redefining real estate in Abuja. Whether you are an investor, a first-time homeowner, or looking for a luxurious residence, House Unlimited Nigeria guarantees properties that combine security, comfort, and long-term value.</p>
+           <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">{siteContent?.about?.storyBadge || 'Our Story'}</p>
+           <h1 className="text-5xl font-bold text-gray-900 mb-8 leading-tight">{siteContent?.about?.storyTitle || <>We help you find your <span className="text-teal-600">Perfect Home</span> since 1995.</>}</h1>
+           <p className="text-gray-600 mb-8 leading-relaxed text-sm">{siteContent?.about?.paragraph1 || 'House Unlimited & Land Services Nigeria Ltd with RC 1600988 (brand name House Unlimited Nigeria) is a premier real estate development company committed to delivering high-quality, value-driven properties in Abuja. Founded on the principles of integrity, reliability, and excellence, we specialize in off-plan luxury developments, estate plots, and investment properties tailored for discerning clients.'}</p>
+           <p className="text-gray-600 mb-8 leading-relaxed text-sm">{siteContent?.about?.paragraph2 || 'At the helm of House Unlimited Nigeria is Julia Abege, our CEO—an ex-banker with over 11 years of experience in the financial sector. A passionate real estate enthusiast, she brings a wealth of knowledge in investment strategies, ensuring that every client enjoys exceptional returns on their property investments.'}</p>
+           <p className="text-gray-600 mb-8 leading-relaxed text-sm">{siteContent?.about?.paragraph3 || 'Our Chairman, ARC Terzungwe Abege, is a seasoned architect with a keen eye for construction and development. With a deep understanding of design, functionality, and sustainable building practices, he ensures that every House Unlimited project meets the highest standards of quality and craftsmanship.'}</p>
+           <p className="text-gray-600 mb-8 leading-relaxed text-sm">{siteContent?.about?.paragraph4 || 'Together, we lead a dedicated team focused on redefining real estate in Abuja. Whether you are an investor, a first-time homeowner, or looking for a luxurious residence, House Unlimited Nigeria guarantees properties that combine security, comfort, and long-term value.'}</p>
            <div className="grid grid-cols-3 gap-8 mb-10">
               <div className="text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
                 <p className="text-3xl font-bold text-teal-600 mb-1">25+</p>

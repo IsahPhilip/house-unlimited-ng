@@ -65,23 +65,25 @@ export const PropertyPage: React.FC<PropertyPageProps> = ({
     const loadProperties = async () => {
       try {
         const result = await getProperties(currentPage, pageSize);
-        const mapped = (result.data || []).map((p: any) => ({
-          id: p._id || p.id,
-          title: p.title,
-          price: p.price || p.priceValue,
-          priceValue: p.priceValue || 0,
-          type: p.type,
-          category: p.category,
-          address: p.address,
-          beds: p.beds,
-          baths: p.baths,
-          sqft: p.sqft,
-          image: p.featuredImage || p.image || p.images?.[0] || '',
-          images: p.images,
-          description: p.description || '',
-          amenities: p.amenities || [],
-          coordinates: p.coordinates || [0, 0],
-        }));
+        const mapped = (result.data || [])
+          .filter((p: any) => ['house', 'land'].includes((p.type || '').toLowerCase()))
+          .map((p: any) => ({
+            id: p._id || p.id,
+            title: p.title,
+            price: p.price || p.priceValue,
+            priceValue: p.priceValue || 0,
+            type: p.type,
+            category: p.category,
+            address: p.address,
+            beds: p.beds,
+            baths: p.baths,
+            sqft: p.sqft,
+            image: p.featuredImage || p.image || p.images?.[0] || '',
+            images: p.images,
+            description: p.description || '',
+            amenities: p.amenities || [],
+            coordinates: p.coordinates || [0, 0],
+          }));
         setProperties(mapped);
         setPagination(result.pagination || null);
       } catch (error) {
@@ -128,13 +130,13 @@ export const PropertyPage: React.FC<PropertyPageProps> = ({
         {/* Filters & Results Summary */}
         <div className="flex flex-col md:flex-row justify-between mb-8 gap-4 items-center">
           <div className="flex bg-white p-1 rounded-xl shadow-sm border border-gray-100">
-            {(['all', 'rent', 'sale'] as const).map(f => (
+            {(['all', 'sale'] as const).map(f => (
               <button 
                 key={f}
                 onClick={() => setFilter(f)}
                 className={`px-8 py-2.5 rounded-lg capitalize font-bold transition-all ${filter === f ? 'bg-teal-600 text-white shadow-md' : 'text-gray-500 hover:text-teal-600'}`}
               >
-                {f}
+                {f === 'sale' ? 'buy/sell' : f}
               </button>
             ))}
           </div>

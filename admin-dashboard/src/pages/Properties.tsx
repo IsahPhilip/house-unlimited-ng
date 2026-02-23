@@ -62,7 +62,7 @@ const Properties = () => {
     description: '',
     priceValue: '',
     price: '',
-    type: 'apartment',
+    type: 'house',
     category: 'sale',
     address: '',
     city: '',
@@ -227,7 +227,7 @@ const Properties = () => {
         description: property.description || '',
         priceValue: String(property.priceValue || ''),
         price: property.price || '',
-        type: property.type || 'apartment',
+        type: property.type || 'house',
         category: property.category || 'sale',
         address: property.address || '',
         city: property.city || '',
@@ -588,13 +588,8 @@ const Properties = () => {
                   onChange={(e) => setFormState({ ...formState, type: e.target.value })}
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
                 >
-                  <option value="apartment">Apartment</option>
                   <option value="house">House</option>
-                  <option value="condo">Condo</option>
-                  <option value="townhouse">Townhouse</option>
                   <option value="land">Land</option>
-                  <option value="commercial">Commercial</option>
-                  <option value="other">Other</option>
                 </select>
               </div>
               <div className="md:col-span-2">

@@ -2,6 +2,12 @@ import { Request, Response, NextFunction } from 'express';
 import Property from '../models/mongodb/Property.mongoose.js';
 import { AuthRequest } from '../middleware/auth.js';
 
+const ALLOWED_FRONTEND_TYPES = ['house', 'land'] as const;
+
+const normalizeType = (value: unknown): string => String(value || '').trim().toLowerCase();
+const isAllowedPropertyType = (value: unknown): value is (typeof ALLOWED_FRONTEND_TYPES)[number] =>
+  ALLOWED_FRONTEND_TYPES.includes(normalizeType(value) as (typeof ALLOWED_FRONTEND_TYPES)[number]);
+
 // @desc    Get all properties
 // @route   GET /api/properties
 // @access  Public
@@ -12,7 +18,9 @@ export const getProperties = async (req: Request, res: Response, next: NextFunct
     const startIndex = (page - 1) * limit;
 
     // Build query
-    let query: any = {};
+    let query: any = {
+      type: { $in: ALLOWED_FRONTEND_TYPES },
+    };
 
     // Filter by category
     if (req.query.category) {
@@ -21,7 +29,10 @@ export const getProperties = async (req: Request, res: Response, next: NextFunct
 
     // Filter by type
     if (req.query.type) {
-      query.type = req.query.type;
+      const requestedType = normalizeType(req.query.type);
+      query.type = ALLOWED_FRONTEND_TYPES.includes(requestedType as (typeof ALLOWED_FRONTEND_TYPES)[number])
+        ? requestedType
+        : { $in: [] };
     }
 
     // Filter by status
@@ -98,7 +109,7 @@ export const getProperties = async (req: Request, res: Response, next: NextFunct
 // @access  Public
 export const getProperty = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const property = await Property.findById(req.params.id)
+    const property = await Property.findOne({ _id: req.params.id, type: { $in: ALLOWED_FRONTEND_TYPES } })
       .populate('agent', 'name email phone avatar')
       .populate('reviews');
 
@@ -124,6 +135,16 @@ export const getProperty = async (req: Request, res: Response, next: NextFunctio
 // @access  Private (Agent/Admin only)
 export const createProperty = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const normalizedType = normalizeType(req.body.type);
+    if (!isAllowedPropertyType(normalizedType)) {
+      res.status(400).json({
+        success: false,
+        error: 'Invalid property type. Only "house" and "land" are allowed.',
+      });
+      return;
+    }
+
+    req.body.type = normalizedType;
     // Add agent to req.body
     req.body.agent = req.user._id;
 
@@ -143,6 +164,18 @@ export const createProperty = async (req: AuthRequest, res: Response, next: Next
 // @access  Private (Agent/Admin only)
 export const updateProperty = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
+    if (typeof req.body.type !== 'undefined') {
+      const normalizedType = normalizeType(req.body.type);
+      if (!isAllowedPropertyType(normalizedType)) {
+        res.status(400).json({
+          success: false,
+          error: 'Invalid property type. Only "house" and "land" are allowed.',
+        });
+        return;
+      }
+      req.body.type = normalizedType;
+    }
+
     let property = await Property.findById(req.params.id);
 
     if (!property) {
@@ -216,7 +249,7 @@ export const deleteProperty = async (req: AuthRequest, res: Response, next: Next
 // @access  Public
 export const getFeaturedProperties = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const properties = await Property.find({ featured: true, status: 'available' })
+    const properties = await Property.find({ featured: true, status: 'available', type: { $in: ALLOWED_FRONTEND_TYPES } })
       .populate('agent', 'name email avatar')
       .sort([['createdAt', -1]])
       .limit(6);
@@ -238,7 +271,7 @@ export const searchProperties = async (req: Request, res: Response, next: NextFu
   try {
     const { q, location, type, category, minPrice, maxPrice } = req.query;
 
-    let query: any = { status: 'available' };
+    let query: any = { status: 'available', type: { $in: ALLOWED_FRONTEND_TYPES } };
 
     // Text search
     if (q) {
@@ -256,7 +289,10 @@ export const searchProperties = async (req: Request, res: Response, next: NextFu
 
     // Type filter
     if (type) {
-      query.type = type;
+      const requestedType = normalizeType(type);
+      query.type = ALLOWED_FRONTEND_TYPES.includes(requestedType as (typeof ALLOWED_FRONTEND_TYPES)[number])
+        ? requestedType
+        : { $in: [] };
     }
 
     // Category filter
@@ -298,6 +334,7 @@ export const getPropertiesByLocation = async (req: Request, res: Response, next:
 
     const properties = await Property.find({
       status: 'available',
+      type: { $in: ALLOWED_FRONTEND_TYPES },
       $or: [
         { city: { $regex: location || '', $options: 'i' } },
         { state: { $regex: location || '', $options: 'i' } },

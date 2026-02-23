@@ -3,6 +3,8 @@ import User from '../models/mongodb/User.mongoose.js';
 import { AuthRequest } from '../middleware/auth.js';
 import Property from '../models/mongodb/Property.mongoose.js';
 
+const ALLOWED_FRONTEND_TYPES = ['house', 'land'] as const;
+
 // @desc    Get all users
 // @route   GET /api/users
 // @access  Private (Admin only)
@@ -282,7 +284,11 @@ export const uploadAvatar = async (req: AuthRequest, res: Response, next: NextFu
 export const getWishlist = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const user = await User.findById(req.user._id)
-      .populate('wishlist', 'title price priceValue type category address beds baths sqft featuredImage images');
+      .populate({
+        path: 'wishlist',
+        select: 'title price priceValue type category address beds baths sqft featuredImage images',
+        match: { type: { $in: ALLOWED_FRONTEND_TYPES } },
+      });
 
     res.status(200).json({
       success: true,
@@ -302,6 +308,10 @@ export const addToWishlist = async (req: AuthRequest, res: Response, next: NextF
     const property = await Property.findById(propertyId);
     if (!property) {
       res.status(404).json({ success: false, error: 'Property not found' });
+      return;
+    }
+    if (!ALLOWED_FRONTEND_TYPES.includes(String(property.type).toLowerCase() as (typeof ALLOWED_FRONTEND_TYPES)[number])) {
+      res.status(400).json({ success: false, error: 'Only house and land properties are supported' });
       return;
     }
 

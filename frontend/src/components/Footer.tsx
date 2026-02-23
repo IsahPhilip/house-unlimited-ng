@@ -5,9 +5,10 @@ import { Page } from '../types';
 
 interface FooterProps {
   onNavigate: (p: Page) => void;
+  siteContent?: any;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
+export const Footer: React.FC<FooterProps> = ({ onNavigate, siteContent }) => {
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -59,7 +60,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               className="h-8 w-auto mr-2"
             />
           </div>
-        <p className="text-gray-400 text-sm">Empowering home seekers with expert human guidance since 1995.</p>
+        <p className="text-gray-400 text-sm">{siteContent?.footer?.description || 'Empowering home seekers with expert human guidance since 1995.'}</p>
         <div className="flex space-x-4">
           <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-teal-600 transition-colors">
             <Facebook className="w-4 h-4" />
@@ -85,9 +86,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
       <div>
         <h4 className="font-bold mb-6">Contact</h4>
         <ul className="space-y-3 text-gray-400 text-sm">
-          <li className="flex items-center"><Phone className="w-4 h-4 mr-2 text-teal-500" /> +234 904 375 2708</li>
-          <li className="flex items-center"><Mail className="w-4 h-4 mr-2 text-teal-500" /> official@houseunlimitednigeria.com</li>
-          <li className="flex items-center"><MapPin className="w-4 h-4 mr-2 text-teal-500" /> Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria</li>
+          <li className="flex items-center"><Phone className="w-4 h-4 mr-2 text-teal-500" /> {siteContent?.footer?.phone || '+234 904 375 2708'}</li>
+          <li className="flex items-center"><Mail className="w-4 h-4 mr-2 text-teal-500" /> {siteContent?.footer?.email || 'official@houseunlimitednigeria.com'}</li>
+          <li className="flex items-center"><MapPin className="w-4 h-4 mr-2 text-teal-500" /> {siteContent?.footer?.address || 'Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria'}</li>
         </ul>
       </div>
       <div>
@@ -130,7 +131,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           alt="House Unlimited Nigeria"
           className="h-5 w-auto opacity-70"
         />
-        <span>© 2024 All Rights Reserved.</span>
+        <span>{siteContent?.footer?.copyrightText || '© 2024 All Rights Reserved.'}</span>
       </div>
       <div className="space-x-6 mt-4 md:mt-0">
         <span className="hover:text-white cursor-pointer" onClick={() => onNavigate('terms')}>User Terms & Conditions</span>

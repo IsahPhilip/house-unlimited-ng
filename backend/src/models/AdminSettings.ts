@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { defaultSiteContent } from '../constants/siteContent.js';
 
 const adminSettingsSchema = new mongoose.Schema(
   {
@@ -66,6 +67,10 @@ const adminSettingsSchema = new mongoose.Schema(
       twoFactorAuth: { type: Boolean, default: false },
       sessionTimeout: { type: Number, default: 60 },
       passwordExpiry: { type: Number, default: 90 },
+    },
+    siteContent: {
+      type: mongoose.Schema.Types.Mixed,
+      default: defaultSiteContent,
     },
   },
   {

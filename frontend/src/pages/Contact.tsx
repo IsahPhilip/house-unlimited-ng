@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Check, Mail, MapPin, Phone } from 'lucide-react';
 
-const ContactPage = () => {
+const ContactPage = ({ siteContent }: { siteContent?: any }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -89,9 +89,9 @@ const ContactPage = () => {
     <div className="py-24 bg-gray-50 min-h-screen animate-in fade-in duration-500">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
-          <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Get In Touch</p>
-          <h1 className="text-4xl font-bold text-gray-900">Contact <span className="text-gray-400 font-light italic">Us</span></h1>
-          <p className="text-gray-500 mt-4 max-w-2xl mx-auto">Have questions about a property or want to list your own? Our team is here to help you every step of the way.</p>
+          <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">{siteContent?.contact?.badge || 'Get In Touch'}</p>
+          <h1 className="text-4xl font-bold text-gray-900">{siteContent?.contact?.title || <>Contact <span className="text-gray-400 font-light italic">Us</span></>}</h1>
+          <p className="text-gray-500 mt-4 max-w-2xl mx-auto">{siteContent?.contact?.subtitle || 'Have questions about a property or want to list your own? Our team is here to help you every step of the way.'}</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
@@ -103,7 +103,7 @@ const ContactPage = () => {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Phone Number</p>
-                  <p className="font-bold text-gray-900">+234 904 375 2708</p>
+                  <p className="font-bold text-gray-900">{siteContent?.contact?.phone || '+234 904 375 2708'}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4 mb-6">
@@ -112,7 +112,7 @@ const ContactPage = () => {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Email Address</p>
-                  <p className="font-bold text-gray-900">official@houseunlimitednigeria.com</p>
+                  <p className="font-bold text-gray-900">{siteContent?.contact?.email || 'official@houseunlimitednigeria.com'}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
@@ -121,7 +121,7 @@ const ContactPage = () => {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Office Location</p>
-                  <p className="font-bold text-gray-900 text-sm">Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria</p>
+                  <p className="font-bold text-gray-900 text-sm">{siteContent?.contact?.address || 'Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria'}</p>
                 </div>
               </div>
             </div>
@@ -131,15 +131,15 @@ const ContactPage = () => {
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between border-b border-white/10 pb-2">
                   <span className="text-gray-400">Monday - Friday</span>
-                  <span className="font-bold">08 AM - 05 PM</span>
+                  <span className="font-bold">{siteContent?.contact?.workingHours?.weekdays || '08 AM - 05 PM'}</span>
                 </div>
                 <div className="flex justify-between border-b border-white/10 pb-2">
                   <span className="text-gray-400">Saturday</span>
-                  <span className="font-bold text-teal-400">Closed</span>
+                  <span className="font-bold text-teal-400">{siteContent?.contact?.workingHours?.saturday || 'Closed'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Sunday</span>
-                  <span className="font-bold text-teal-400">Closed</span>
+                  <span className="font-bold text-teal-400">{siteContent?.contact?.workingHours?.sunday || 'Closed'}</span>
                 </div>
               </div>
             </div>

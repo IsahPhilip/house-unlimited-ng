@@ -54,7 +54,7 @@ const run = async (): Promise<void> => {
     preferences: {
       emailNotifications: true,
       smsNotifications: false,
-      favoritePropertyTypes: ['apartment', 'house'],
+      favoritePropertyTypes: ['house', 'land'],
       priceRange: { min: 50000, max: 1500000 },
     },
   });
@@ -73,7 +73,7 @@ const run = async (): Promise<void> => {
     preferences: {
       emailNotifications: true,
       smsNotifications: true,
-      favoritePropertyTypes: ['apartment', 'condo', 'house'],
+      favoritePropertyTypes: ['house', 'land'],
       priceRange: { min: 100000, max: 5000000 },
     },
   });
@@ -92,7 +92,7 @@ const run = async (): Promise<void> => {
     preferences: {
       emailNotifications: true,
       smsNotifications: true,
-      favoritePropertyTypes: ['apartment', 'condo'],
+      favoritePropertyTypes: ['land', 'house'],
       priceRange: { min: 75000, max: 3500000 },
     },
   });
@@ -109,7 +109,7 @@ const run = async (): Promise<void> => {
     preferences: {
       emailNotifications: true,
       smsNotifications: false,
-      favoritePropertyTypes: ['apartment', 'townhouse'],
+      favoritePropertyTypes: ['house', 'land'],
       priceRange: { min: 80000, max: 800000 },
     },
   });
@@ -156,32 +156,32 @@ const run = async (): Promise<void> => {
       },
     },
     {
-      title: 'Lekki Phase One Apartment',
+      title: 'Lekki Phase One Land Plot',
       description:
-        'Upscale 2-bedroom apartment in Lekki Phase One with lagoon views, gym, and 24/7 security.',
+        'Prime serviced land parcel in Lekki Phase One suitable for luxury residential development.',
       price: '₦180,000,000',
       priceValue: 180000000,
-      type: 'apartment',
+      type: 'land',
       category: 'sale',
       address: 'Block B, Admiralty Way',
       city: 'Lagos',
       state: 'Lagos',
       zipCode: '101233',
       country: 'Nigeria',
-      beds: 2,
-      baths: 2,
-      sqft: 1400,
+      beds: 0,
+      baths: 0,
+      sqft: 6200,
       yearBuilt: 2021,
       parking: 1,
-      lotSize: 180,
+      lotSize: 6200,
       images: [
         'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&q=80&w=1200',
         'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=1200',
       ],
       featuredImage:
         'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&q=80&w=1200',
-      amenities: ['Gym', 'Swimming pool', 'Elevator', 'Concierge'],
-      features: ['Balcony', 'Open-plan kitchen', 'Smart entry'],
+      amenities: ['Survey plan available', 'Good road access', 'Secure neighborhood'],
+      features: ['Dry land', 'Investment-ready title', 'Development permit eligible'],
       coordinates: [3.4241, 6.4474],
       status: 'available',
       featured: false,
@@ -345,7 +345,7 @@ const run = async (): Promise<void> => {
   const contactSeed2 = {
     name: 'Chinedu Okafor',
     email: 'chinedu.okafor@houseunlimitednigeria.com',
-    subject: 'Schedule inspection for Lekki Phase One Apartment',
+    subject: 'Schedule site visit for Lekki Phase One Land Plot',
     message: 'Looking to inspect this week. Please share available time slots.',
     phone: '+2348091102233',
     type: 'property_inquiry',

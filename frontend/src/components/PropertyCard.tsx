@@ -24,8 +24,8 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
       <img src={property.image} alt={property.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/50 via-slate-900/10 to-transparent"></div>
       <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-        <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg ${property.category === 'rent' ? 'bg-teal-600 text-white' : 'bg-teal-100 text-teal-800'}`}>
-          For {property.category === 'rent' ? 'Rent' : 'Sale'}
+        <span className="px-3 py-1 rounded-full text-xs font-bold shadow-lg bg-teal-100 text-teal-800">
+          For Sale
         </span>
         <span className="px-3 py-1 bg-white/90 text-slate-900 rounded-full text-xs font-bold shadow-lg">{property.type}</span>
       </div>

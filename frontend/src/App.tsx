@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Page, User, Property, BlogArticle } from './types';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Phone, Mail, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
-import { getWishlist, addToWishlist, removeFromWishlist } from './services/api';
+import { getWishlist, addToWishlist, removeFromWishlist, getPublicSiteContent } from './services/api';
 
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -39,10 +39,19 @@ const AppContent = () => {
   const [isForgotPasswordFlowActive, setIsForgotPasswordFlowActive] = useState(false);
   const [resetPasswordEmail, setResetPasswordEmail] = useState<string | null>(null);
   const [resetToken, setResetToken] = useState<string | null>(null);
+  const [siteContent, setSiteContent] = useState<any>({});
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage, selectedBlogId, isForgotPasswordFlowActive]);
+
+  useEffect(() => {
+    const loadSiteContent = async () => {
+      const data = await getPublicSiteContent();
+      setSiteContent(data || {});
+    };
+    loadSiteContent();
+  }, []);
 
   useEffect(() => {
     const loadWishlist = async () => {
@@ -180,7 +189,7 @@ const AppContent = () => {
       return <ResetPasswordEmailSentPage email={resetPasswordEmail || ''} onNavigate={setCurrentPage} />;
     }
     switch(currentPage) {
-      case 'home': return <Home onSearch={handleSearch} wishlistIds={wishlistIds} onWishlistToggle={handleWishlistToggle} onNavigate={navigateToProperty} />;
+      case 'home': return <Home onSearch={handleSearch} wishlistIds={wishlistIds} onWishlistToggle={handleWishlistToggle} onNavigate={navigateToProperty} siteContent={siteContent} />;
       case 'property': return <PropertyPage searchCriteria={searchCriteria} wishlistIds={wishlistIds} onWishlistToggle={handleWishlistToggle} onNavigate={navigateToProperty} />;
       case 'blog': return <BlogPage onNavigate={handleNavigateToBlog} />;
       case 'blog-details': 
@@ -189,17 +198,17 @@ const AppContent = () => {
         ) : (
           <BlogPage onNavigate={handleNavigateToBlog} />
         );
-      case 'about': return <AboutPage />;
-      case 'contact': return <ContactPage />;
+      case 'about': return <AboutPage siteContent={siteContent} />;
+      case 'contact': return <ContactPage siteContent={siteContent} />;
       case 'agents': return <AgentsPage />;
-      case 'faq': return <FAQPage />;
-      case 'terms': return <PolicyPage title="Terms & Conditions" content={[
+      case 'faq': return <FAQPage siteContent={siteContent} />;
+      case 'terms': return <PolicyPage title={siteContent?.policies?.terms?.title || "Terms & Conditions"} content={siteContent?.policies?.terms?.content || [
         "House Unlimited & Land Services Nigeria Ltd (RC 1600988) operates the House Unlimited Nigeria platform. By accessing this platform, you agree to comply with and be bound by the following terms and conditions. If you do not agree, please do not use our services.",
-        "Our services provided through the platform, including property listings, investment insights, and buyer/tenant guidance, are for informational purposes. While we strive for accuracy, users must verify all details independently.",
+        "Our services provided through the platform, including property listings, investment insights, and buyer/seller guidance, are for informational purposes. While we strive for accuracy, users must verify all details independently.",
         "User accounts are personal and should not be shared. You are responsible for maintaining the confidentiality of your sign-in credentials.",
         "All content and branding are property of House Unlimited Nigeria or its licensors. Unauthorized commercial use is strictly prohibited."
       ]} />;
-      case 'privacy': return <PolicyPage title="Privacy Policy" content={[
+      case 'privacy': return <PolicyPage title={siteContent?.policies?.privacy?.title || "Privacy Policy"} content={siteContent?.policies?.privacy?.content || [
         "Your privacy is important to House Unlimited Nigeria. This policy outlines how we collect, use, and safeguard your personal information when you use our platform.",
         "We collect information such as your name, email address, and property preferences when you create an account or inquire about a listing.",
         "Your data is used to provide personalized property recommendations, facilitate communication with agents, and improve our services.",
@@ -217,7 +226,7 @@ const AppContent = () => {
             openAuthModal={openAuthModal}
           />
         ) : (
-          <Home onSearch={handleSearch} wishlistIds={wishlistIds} onWishlistToggle={handleWishlistToggle} onNavigate={navigateToProperty} />
+          <Home onSearch={handleSearch} wishlistIds={wishlistIds} onWishlistToggle={handleWishlistToggle} onNavigate={navigateToProperty} siteContent={siteContent} />
         );
       case 'profile':
         return (
@@ -231,7 +240,7 @@ const AppContent = () => {
             onUpdateAvatar={(file) => updateAvatar(file)}
           />
         );
-      default: return <Home onSearch={handleSearch} wishlistIds={wishlistIds} onWishlistToggle={handleWishlistToggle} onNavigate={navigateToProperty} />;
+      default: return <Home onSearch={handleSearch} wishlistIds={wishlistIds} onWishlistToggle={handleWishlistToggle} onNavigate={navigateToProperty} siteContent={siteContent} />;
     }
   };
 
@@ -240,8 +249,8 @@ const AppContent = () => {
       <div className="bg-slate-900 text-white py-2 text-[10px] uppercase tracking-widest font-bold">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
           <div className="flex space-x-6">
-            <span className="flex items-center"><Phone className="w-4 h-4 mr-2 text-teal-500" /> +234 904 375 2708</span>
-            <span className="flex items-center"><Mail className="w-4 h-4 mr-2 text-teal-500" /> official@houseunlimitednigeria.com</span>
+            <span className="flex items-center"><Phone className="w-4 h-4 mr-2 text-teal-500" /> {siteContent?.topBar?.phone || '+234 904 375 2708'}</span>
+            <span className="flex items-center"><Mail className="w-4 h-4 mr-2 text-teal-500" /> {siteContent?.topBar?.email || 'official@houseunlimitednigeria.com'}</span>
           </div>
           <div className="flex space-x-4">
             <Facebook className="w-4 h-4 hover:text-teal-500 cursor-pointer transition-colors" />
@@ -272,7 +281,7 @@ const AppContent = () => {
       
       {renderPage()}
       
-      <Footer onNavigate={setCurrentPage} />
+      <Footer onNavigate={setCurrentPage} siteContent={siteContent} />
       
       <AuthModal
         isOpen={isAuthModalOpen}

@@ -5,7 +5,7 @@ export interface IProperty extends Document {
   description: string;
   price: string;
   priceValue: number;
-  type: string;
+  type: 'house' | 'land';
   category: 'rent' | 'sale';
   address: string;
   city: string;
@@ -79,7 +79,9 @@ const PropertySchema: Schema<IProperty> = new Schema(
     type: {
       type: String,
       required: [true, 'Please add a property type'],
-      enum: ['apartment', 'house', 'condo', 'townhouse', 'land', 'commercial', 'other'],
+      trim: true,
+      lowercase: true,
+      enum: ['house', 'land'],
     },
     category: {
       type: String,
