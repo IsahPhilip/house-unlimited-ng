@@ -1,0 +1,191 @@
+/*
+Theme Name: House Unlimited Theme
+Theme URI: https://houseunlimitednigeria.com
+Author: House Unlimited Nigeria
+Author URI: https://houseunlimitednigeria.com
+Description: Custom WordPress theme scaffold for migrating the House Unlimited Nigeria frontend into WordPress.
+Version: 0.1.0
+Requires at least: 6.4
+Tested up to: 6.7
+Requires PHP: 8.1
+Text Domain: house-unlimited
+*/
+
+:root {
+  --hu-color-primary: #0d9488;
+  --hu-color-primary-dark: #0f766e;
+  --hu-color-slate-900: #0f172a;
+  --hu-color-slate-700: #334155;
+  --hu-color-slate-500: #64748b;
+  --hu-color-slate-100: #f1f5f9;
+  --hu-color-slate-50: #f8fafc;
+  --hu-color-white: #ffffff;
+  --hu-color-border: #e2e8f0;
+  --hu-color-success: #16a34a;
+  --hu-color-danger: #dc2626;
+  --hu-shadow-sm: 0 10px 30px -20px rgba(15, 23, 42, 0.35);
+  --hu-shadow-md: 0 25px 80px -55px rgba(15, 23, 42, 0.8);
+  --hu-radius-sm: 0.75rem;
+  --hu-radius-md: 1.5rem;
+  --hu-radius-lg: 2rem;
+  --hu-max-width: 1280px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, Arial, sans-serif;
+  color: var(--hu-color-slate-900);
+  background: var(--hu-color-white);
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.hu-container {
+  width: min(100% - 2rem, var(--hu-max-width));
+  margin-inline: auto;
+}
+
+.hu-section {
+  padding: 5rem 0;
+}
+
+.hu-section--muted {
+  background: var(--hu-color-slate-50);
+}
+
+.hu-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.95rem 1.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--hu-color-primary);
+  color: var(--hu-color-white);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hu-button:hover {
+  background: var(--hu-color-primary-dark);
+}
+
+.hu-card {
+  background: var(--hu-color-white);
+  border: 1px solid var(--hu-color-border);
+  border-radius: var(--hu-radius-md);
+  box-shadow: var(--hu-shadow-sm);
+}
+
+.hu-site-header,
+.hu-site-footer {
+  background: var(--hu-color-white);
+}
+
+.hu-site-topbar {
+  background: var(--hu-color-slate-900);
+  color: var(--hu-color-white);
+  font-size: 0.75rem;
+}
+
+.hu-site-topbar__inner,
+.hu-site-header__inner,
+.hu-site-footer__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+}
+
+.hu-site-brand {
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.hu-nav-menu {
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.hu-page-hero {
+  padding: 5rem 0 3rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #ecfeff 100%);
+}
+
+.hu-page-title {
+  margin: 0 0 1rem;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.1;
+}
+
+.hu-page-subtitle {
+  margin: 0;
+  max-width: 48rem;
+  color: var(--hu-color-slate-700);
+}
+
+.hu-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.hu-grid--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.hu-grid--4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 960px) {
+  .hu-grid--3,
+  .hu-grid--4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hu-site-header__inner,
+  .hu-site-footer__inner,
+  .hu-site-topbar__inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hu-nav-menu {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 640px) {
+  .hu-grid--3,
+  .hu-grid--4 {
+    grid-template-columns: 1fr;
+  }
+
+  .hu-section {
+    padding: 3.5rem 0;
+  }
+}
