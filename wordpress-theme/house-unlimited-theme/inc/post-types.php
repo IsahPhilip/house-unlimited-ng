@@ -177,6 +177,41 @@ function hu_modify_property_archive_query($query) {
         // Handle meta filters
         $meta_query = [];
 
+        if (!empty($_GET['price_range'])) {
+            $range = sanitize_text_field($_GET['price_range']);
+            if (strpos($range, '+') !== false) {
+                $min = preg_replace('/[^0-9]/', '', $range);
+                if ($min !== '') {
+                    $meta_query[] = [
+                        'key' => 'price_numeric',
+                        'value' => intval($min),
+                        'compare' => '>=',
+                        'type' => 'NUMERIC',
+                    ];
+                }
+            } elseif (strpos($range, '-') !== false) {
+                $parts = explode('-', $range);
+                $min = preg_replace('/[^0-9]/', '', $parts[0] ?? '');
+                $max = preg_replace('/[^0-9]/', '', $parts[1] ?? '');
+                if ($min !== '') {
+                    $meta_query[] = [
+                        'key' => 'price_numeric',
+                        'value' => intval($min),
+                        'compare' => '>=',
+                        'type' => 'NUMERIC',
+                    ];
+                }
+                if ($max !== '') {
+                    $meta_query[] = [
+                        'key' => 'price_numeric',
+                        'value' => intval($max),
+                        'compare' => '<=',
+                        'type' => 'NUMERIC',
+                    ];
+                }
+            }
+        }
+
         if (!empty($_GET['price_min'])) {
             $meta_query[] = [
                 'key'     => 'price_numeric',

@@ -6,11 +6,11 @@
  */
 
 // MongoDB Configuration
-define('HU_MONGODB_HOST', 'localhost');
+define('HU_MONGODB_HOST', 'ac-tjgosgg-shard-00-00.qkrfwnj.mongodb.net');
 define('HU_MONGODB_PORT', '27017');
 define('HU_MONGODB_DATABASE', 'houseunlimited');
-define('HU_MONGODB_USERNAME', ''); // Add username if authentication is required
-define('HU_MONGODB_PASSWORD', ''); // Add password if authentication is required
+define('HU_MONGODB_USERNAME', 'houseunlimited1_db_user'); // Add username if authentication is required
+define('HU_MONGODB_PASSWORD', 'r5i3gj7Bx9ylIjRX'); // Add password if authentication is required
 
 // Migration Settings
 define('HU_MIGRATION_BATCH_SIZE', 50); // Number of records to process at once

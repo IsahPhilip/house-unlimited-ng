@@ -1,240 +1,244 @@
 <?php
 /**
- * Single property template.
+ * Property single template.
  *
  * @package HouseUnlimited
  */
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 get_header();
 
-if (have_posts()) :
-    while (have_posts()) :
-        the_post();
+while (have_posts()) :
+    the_post();
 
-        $price   = get_post_meta(get_the_ID(), 'price', true);
-        $address = get_post_meta(get_the_ID(), 'address', true);
-        $beds    = get_post_meta(get_the_ID(), 'beds', true);
-        $baths   = get_post_meta(get_the_ID(), 'baths', true);
-        $sqft    = get_post_meta(get_the_ID(), 'sqft', true);
-        $year_built = get_post_meta(get_the_ID(), 'year_built', true);
-        $lot_size = get_post_meta(get_the_ID(), 'lot_size', true);
-        $parking = get_post_meta(get_the_ID(), 'parking', true);
-        $gallery = get_post_meta(get_the_ID(), 'gallery', true);
-        $virtual_tour = get_post_meta(get_the_ID(), 'virtual_tour', true);
-        $video_tour = get_post_meta(get_the_ID(), 'video_tour', true);
-        $amenities = get_post_meta(get_the_ID(), 'amenities', true);
-        $agent_id = get_post_meta(get_the_ID(), 'agent_id', true);
+    $post_id = get_the_ID();
+    $price = get_post_meta($post_id, 'price', true);
+    $address = get_post_meta($post_id, 'address', true);
+    $beds = get_post_meta($post_id, 'beds', true);
+    $baths = get_post_meta($post_id, 'baths', true);
+    $sqft = get_post_meta($post_id, 'sqft', true);
+    $year_built = get_post_meta($post_id, 'year_built', true);
+    $lot_size = get_post_meta($post_id, 'lot_size', true);
+    $parking = get_post_meta($post_id, 'parking', true);
+    $amenities = get_post_meta($post_id, 'amenities', true);
+    $gallery = get_post_meta($post_id, 'gallery', true);
 
-        ?>
-        <section class="hu-property-hero">
-            <div class="hu-container">
-                <div class="hu-property-hero__content">
-                    <h1 class="hu-property-hero__title"><?php the_title(); ?></h1>
-                    <?php if ($address) : ?>
-                        <p class="hu-property-hero__address"><?php echo esc_html($address); ?></p>
-                    <?php endif; ?>
-                    <?php if ($price) : ?>
-                        <p class="hu-property-hero__price"><?php echo esc_html($price); ?></p>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </section>
+    $type_terms = wp_get_post_terms($post_id, 'property_type');
+    $status_terms = wp_get_post_terms($post_id, 'property_status');
+    $type_label = $type_terms && !is_wp_error($type_terms) ? $type_terms[0]->name : 'House';
+    $status_label = $status_terms && !is_wp_error($status_terms) ? $status_terms[0]->name : 'For Sale';
 
-        <section class="hu-section">
-            <div class="hu-container">
-                <div class="hu-property-layout">
-                    <div class="hu-property-main">
-                        <?php if ($gallery || has_post_thumbnail()) : ?>
-                            <div class="hu-property-gallery">
-                                <?php if ($gallery) : ?>
-                                    <!-- Gallery implementation would go here -->
-                                    <div class="hu-gallery-placeholder">
-                                        <p><?php esc_html_e('Property gallery will be displayed here.', 'house-unlimited'); ?></p>
-                                    </div>
-                                <?php elseif (has_post_thumbnail()) : ?>
-                                    <?php the_post_thumbnail('large'); ?>
-                                <?php endif; ?>
-                            </div>
-                        <?php endif; ?>
+    $gallery_ids = [];
+    if (is_array($gallery)) {
+        $gallery_ids = $gallery;
+    } elseif (is_string($gallery) && $gallery !== '') {
+        $gallery_ids = array_map('intval', explode(',', $gallery));
+    }
 
-                        <div class="hu-property-content">
-                            <h2><?php esc_html_e('About This Property', 'house-unlimited'); ?></h2>
-                            <div class="entry-content">
-                                <?php the_content(); ?>
-                            </div>
-                        </div>
+    $gallery_urls = [];
+    if (has_post_thumbnail()) {
+        $gallery_urls[] = get_the_post_thumbnail_url($post_id, 'large');
+    }
+    foreach ($gallery_ids as $image_id) {
+        $url = wp_get_attachment_image_url($image_id, 'large');
+        if ($url) {
+            $gallery_urls[] = $url;
+        }
+    }
+    if (!$gallery_urls) {
+        $gallery_urls[] = HU_THEME_URI . '/assets/img/maitama-ii.jpeg';
+    }
 
-                        <?php if ($amenities) : ?>
-                            <div class="hu-property-amenities">
-                                <h3><?php esc_html_e('Amenities', 'house-unlimited'); ?></h3>
-                                <ul>
-                                    <?php foreach ((array) $amenities as $amenity) : ?>
-                                        <li><?php echo esc_html($amenity); ?></li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            </div>
-                        <?php endif; ?>
-
-                        <?php if ($virtual_tour || $video_tour) : ?>
-                            <div class="hu-property-tours">
-                                <h3><?php esc_html_e('Virtual Tours', 'house-unlimited'); ?></h3>
-                                <?php if ($virtual_tour) : ?>
-                                    <div class="hu-virtual-tour">
-                                        <iframe src="<?php echo esc_url($virtual_tour); ?>" width="100%" height="400" frameborder="0"></iframe>
-                                    </div>
-                                <?php endif; ?>
-                                <?php if ($video_tour) : ?>
-                                    <div class="hu-video-tour">
-                                        <video controls width="100%">
-                                            <source src="<?php echo esc_url($video_tour); ?>" type="video/mp4">
-                                        </video>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-
-                    <aside class="hu-property-sidebar">
-                        <div class="hu-property-details">
-                            <h3><?php esc_html_e('Property Details', 'house-unlimited'); ?></h3>
-                            <dl class="hu-property-specs">
-                                <?php if ($beds) : ?>
-                                    <div class="hu-spec-item">
-                                        <dt><?php esc_html_e('Bedrooms', 'house-unlimited'); ?></dt>
-                                        <dd><?php echo esc_html($beds); ?></dd>
-                                    </div>
-                                <?php endif; ?>
-                                <?php if ($baths) : ?>
-                                    <div class="hu-spec-item">
-                                        <dt><?php esc_html_e('Bathrooms', 'house-unlimited'); ?></dt>
-                                        <dd><?php echo esc_html($baths); ?></dd>
-                                    </div>
-                                <?php endif; ?>
-                                <?php if ($sqft) : ?>
-                                    <div class="hu-spec-item">
-                                        <dt><?php esc_html_e('Square Feet', 'house-unlimited'); ?></dt>
-                                        <dd><?php echo esc_html($sqft); ?></dd>
-                                    </div>
-                                <?php endif; ?>
-                                <?php if ($year_built) : ?>
-                                    <div class="hu-spec-item">
-                                        <dt><?php esc_html_e('Year Built', 'house-unlimited'); ?></dt>
-                                        <dd><?php echo esc_html($year_built); ?></dd>
-                                    </div>
-                                <?php endif; ?>
-                                <?php if ($lot_size) : ?>
-                                    <div class="hu-spec-item">
-                                        <dt><?php esc_html_e('Lot Size', 'house-unlimited'); ?></dt>
-                                        <dd><?php echo esc_html($lot_size); ?></dd>
-                                    </div>
-                                <?php endif; ?>
-                                <?php if ($parking) : ?>
-                                    <div class="hu-spec-item">
-                                        <dt><?php esc_html_e('Parking', 'house-unlimited'); ?></dt>
-                                        <dd><?php echo esc_html($parking); ?></dd>
-                                    </div>
-                                <?php endif; ?>
-                            </dl>
-                        </div>
-
-                        <?php if ($agent_id) : ?>
-                            <div class="hu-property-agent">
-                                <h3><?php esc_html_e('Listed By', 'house-unlimited'); ?></h3>
-                                <?php
-                                $agent = get_post($agent_id);
-                                if ($agent) :
-                                    ?>
-                                    <div class="hu-agent-card">
-                                        <?php if (has_post_thumbnail($agent)) : ?>
-                                            <div class="hu-agent-avatar">
-                                                <?php echo get_the_post_thumbnail($agent, 'thumbnail'); ?>
-                                            </div>
-                                        <?php endif; ?>
-                                        <div class="hu-agent-info">
-                                            <h4><?php echo esc_html(get_the_title($agent)); ?></h4>
-                                            <p><?php echo esc_html(get_post_meta($agent_id, 'role', true)); ?></p>
-                                            <a href="tel:<?php echo esc_attr(get_post_meta($agent_id, 'phone', true)); ?>">
-                                                <?php echo esc_html(get_post_meta($agent_id, 'phone', true)); ?>
-                                            </a>
-                                        </div>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        <?php endif; ?>
-
-                        <div class="hu-property-actions">
-                            <button class="hu-button hu-button--primary"><?php esc_html_e('Contact Agent', 'house-unlimited'); ?></button>
-                            <button class="hu-button hu-button--secondary"><?php esc_html_e('Share Property', 'house-unlimited'); ?></button>
-                        </div>
-                    </aside>
-                </div>
-            </div>
-        </section>
-
-        <?php
-        // Similar properties
-        $similar_query = new WP_Query([
-            'post_type' => 'property',
-            'posts_per_page' => 3,
-            'post__not_in' => [get_the_ID()],
-            'tax_query' => [
-                [
-                    'taxonomy' => 'property_type',
-                    'field'    => 'id',
-                    'terms'    => wp_get_post_terms(get_the_ID(), 'property_type', ['fields' => 'ids']),
-                ]
-            ]
-        ]);
-
-        if ($similar_query->have_posts()) :
-            ?>
-            <section class="hu-section hu-section--muted">
-                <div class="hu-container">
-                    <h2><?php esc_html_e('Similar Properties', 'house-unlimited'); ?></h2>
-                    <div class="hu-property-grid">
-                        <?php
-                        while ($similar_query->have_posts()) :
-                            $similar_query->the_post();
-                            $similar_price = get_post_meta(get_the_ID(), 'price', true);
-                            $similar_address = get_post_meta(get_the_ID(), 'address', true);
-                            ?>
-                            <article class="hu-card hu-property-card">
-                                <a class="hu-property-card__image" href="<?php the_permalink(); ?>">
-                                    <?php if (has_post_thumbnail()) : ?>
-                                        <?php the_post_thumbnail('large'); ?>
-                                    <?php endif; ?>
-                                </a>
-                                <div class="hu-property-card__content">
-                                    <?php if ($similar_price) : ?>
-                                        <p class="hu-property-card__price"><?php echo esc_html($similar_price); ?></p>
-                                    <?php endif; ?>
-                                    <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
-                                    <?php if ($similar_address) : ?>
-                                        <p><?php echo esc_html($similar_address); ?></p>
-                                    <?php endif; ?>
-                                </div>
-                            </article>
-                        <?php endwhile;
-                        wp_reset_postdata();
-                        ?>
-                    </div>
-                </div>
-            </section>
-        <?php endif; ?>
-
-        <?php
-    endwhile;
-else :
+    $amenity_list = [];
+    if ($amenities) {
+        $amenity_list = array_filter(array_map('trim', preg_split('/[\r\n,]+/', $amenities)));
+    }
     ?>
-    <section class="hu-template-placeholder">
-        <div class="hu-container">
-            <div class="hu-card hu-template-placeholder__box">
-                <h1><?php esc_html_e('Property Not Found', 'house-unlimited'); ?></h1>
-                <p><?php esc_html_e('The property you are looking for could not be found.', 'house-unlimited'); ?></p>
+
+    <div class="min-h-screen bg-gradient-to-br from-teal-50 via-white to-slate-50">
+        <div class="bg-white/80 backdrop-blur border-b border-white">
+            <div class="max-w-7xl mx-auto px-4 md:px-6 py-4 text-sm text-gray-600">
+                <div class="flex items-center space-x-2">
+                    <a href="<?php echo esc_url(get_post_type_archive_link('property')); ?>" class="hover:text-teal-600 transition-colors font-medium">
+                        <span class="inline-flex items-center gap-2">
+                            <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Properties
+                        </span>
+                    </a>
+                    <span class="text-gray-300">/</span>
+                    <span class="font-medium text-gray-900 truncate max-w-[300px]"><?php the_title(); ?></span>
+                </div>
             </div>
         </div>
-    </section>
+
+        <main class="max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-14 space-y-10">
+            <section class="bg-white rounded-[28px] border border-white/80 shadow-[0_25px_80px_-55px_rgba(15,23,42,0.8)] overflow-hidden">
+                <div class="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-2 p-2">
+                    <div class="relative aspect-[16/11] md:aspect-[16/10] rounded-2xl overflow-hidden">
+                        <img src="<?php echo esc_url($gallery_urls[0]); ?>" alt="<?php the_title_attribute(); ?>" class="w-full h-full object-cover" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/50 via-transparent to-transparent"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <?php foreach (array_slice($gallery_urls, 1, 4) as $image) : ?>
+                            <div class="relative aspect-[1/1] rounded-2xl overflow-hidden border-2 border-transparent">
+                                <img src="<?php echo esc_url($image); ?>" alt="" class="w-full h-full object-cover" />
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <?php if (count($gallery_urls) > 1) : ?>
+                    <div class="flex gap-3 overflow-x-auto px-4 pb-4 pt-2">
+                        <?php foreach ($gallery_urls as $image) : ?>
+                            <div class="flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 border-transparent">
+                                <img src="<?php echo esc_url($image); ?>" alt="" class="w-full h-full object-cover" />
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </section>
+
+            <section class="bg-white rounded-[32px] border border-white/80 shadow-[0_25px_80px_-55px_rgba(15,23,42,0.8)] p-6 md:p-8">
+                <div class="flex flex-wrap items-start justify-between gap-6">
+                    <div class="min-w-[260px]">
+                        <div class="flex flex-wrap gap-3 mb-4">
+                            <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide bg-teal-100 text-teal-800"><?php echo esc_html($status_label); ?></span>
+                            <span class="px-4 py-1.5 bg-white text-slate-700 rounded-full text-xs font-semibold border border-slate-200"><?php echo esc_html($type_label); ?></span>
+                        </div>
+                        <h1 class="text-3xl md:text-5xl font-bold text-slate-950 tracking-tight mb-3"><?php the_title(); ?></h1>
+                        <p class="text-slate-700 flex items-center text-lg">
+                            <i data-lucide="map-pin" class="w-4 h-4 mr-2 text-teal-600"></i>
+                            <?php echo esc_html($address); ?>
+                        </p>
+                        <?php if ($price) : ?>
+                            <p class="text-2xl font-bold text-teal-600 mt-4"><?php echo esc_html($price); ?></p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
+                    <?php
+                    $stats = [
+                        ['icon' => 'bed', 'label' => 'Bedrooms', 'value' => $beds ?: '0'],
+                        ['icon' => 'bath', 'label' => 'Bathrooms', 'value' => $baths ?: '0'],
+                        ['icon' => 'ruler', 'label' => 'Sqft', 'value' => $sqft ?: '0'],
+                        ['icon' => 'home', 'label' => 'Type', 'value' => $type_label],
+                    ];
+                    foreach ($stats as $stat) :
+                    ?>
+                        <div class="bg-slate-50 rounded-2xl p-4 flex items-center gap-4">
+                            <div class="w-11 h-11 rounded-xl bg-white text-teal-600 flex items-center justify-center shadow-sm">
+                                <i data-lucide="<?php echo esc_attr($stat['icon']); ?>" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <div class="text-xl font-bold text-slate-950"><?php echo esc_html($stat['value']); ?></div>
+                                <div class="text-xs text-slate-500"><?php echo esc_html($stat['label']); ?></div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </section>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+                <div class="lg:col-span-2 space-y-10">
+                    <section class="bg-white p-6 md:p-8 rounded-[28px] shadow-[0_25px_80px_-55px_rgba(15,23,42,0.8)] border border-white/80">
+                        <div class="flex items-center justify-between mb-5">
+                            <h2 class="text-2xl font-bold">Overview</h2>
+                        </div>
+                        <div class="text-slate-700 leading-relaxed text-lg prose max-w-none">
+                            <?php the_content(); ?>
+                        </div>
+                    </section>
+
+                    <?php if ($amenity_list) : ?>
+                        <section class="bg-white p-6 md:p-8 rounded-[28px] shadow-[0_25px_80px_-55px_rgba(15,23,42,0.8)] border border-white/80">
+                            <h2 class="text-2xl font-bold mb-6">Amenities</h2>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-5">
+                                <?php foreach ($amenity_list as $amenity) : ?>
+                                    <div class="flex items-center gap-3 p-3 bg-gradient-to-r from-teal-50 to-slate-50 rounded-xl">
+                                        <div class="text-teal-600"><i data-lucide="check" class="w-5 h-5"></i></div>
+                                        <span class="font-medium"><?php echo esc_html($amenity); ?></span>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </section>
+                    <?php endif; ?>
+
+                    <section class="bg-white p-6 md:p-8 rounded-[28px] shadow-[0_25px_80px_-55px_rgba(15,23,42,0.8)] border border-white/80">
+                        <h2 class="text-2xl font-bold mb-6">Property Specifications</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <?php if ($year_built) : ?>
+                                <div class="flex items-center justify-between p-4 bg-gradient-to-r from-teal-50 to-slate-50 rounded-xl">
+                                    <div>
+                                        <span class="text-sm text-gray-500">Year Built</span>
+                                        <p class="font-bold text-lg"><?php echo esc_html($year_built); ?></p>
+                                    </div>
+                                    <div class="text-2xl text-teal-600"><i data-lucide="home" class="w-6 h-6"></i></div>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($lot_size) : ?>
+                                <div class="flex items-center justify-between p-4 bg-gradient-to-r from-teal-50 to-slate-50 rounded-xl">
+                                    <div>
+                                        <span class="text-sm text-gray-500">Lot Size</span>
+                                        <p class="font-bold text-lg"><?php echo esc_html($lot_size); ?></p>
+                                    </div>
+                                    <div class="text-2xl text-teal-600"><i data-lucide="ruler" class="w-6 h-6"></i></div>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($parking) : ?>
+                                <div class="flex items-center justify-between p-4 bg-gradient-to-r from-teal-50 to-slate-50 rounded-xl">
+                                    <div>
+                                        <span class="text-sm text-gray-500">Parking Spaces</span>
+                                        <p class="font-bold text-lg"><?php echo esc_html($parking); ?></p>
+                                    </div>
+                                    <div class="text-2xl text-teal-600"><i data-lucide="car" class="w-6 h-6"></i></div>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </section>
+                </div>
+
+                <aside class="lg:col-span-1">
+                    <div class="sticky top-6 space-y-8">
+                        <div class="bg-white rounded-[28px] shadow-[0_25px_80px_-55px_rgba(15,23,42,0.8)] overflow-hidden border border-white/80">
+                            <div class="p-6 md:p-8">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h3 class="text-xl md:text-2xl font-bold">Contact Agent</h3>
+                                </div>
+                                <form method="post" class="space-y-5">
+                                    <?php wp_nonce_field('hu_property_inquiry', 'hu_property_inquiry_nonce'); ?>
+                                    <input type="hidden" name="hu_property_id" value="<?php echo esc_attr($post_id); ?>">
+                                    <input name="name" placeholder="Full Name" class="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none" required>
+                                    <input name="email" type="email" placeholder="Email Address" class="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none" required>
+                                    <textarea name="message" rows="4" placeholder="I'm interested in this property..." class="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none resize-none"></textarea>
+                                    <button type="submit" class="w-full py-4 px-6 rounded-xl font-medium text-white bg-teal-600 hover:bg-teal-700 transition-all">Send Inquiry</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-teal-600 via-teal-500 to-slate-700 text-white rounded-[28px] p-8 shadow-[0_30px_90px_-50px_rgba(15,23,42,0.9)]">
+                            <h4 class="text-lg font-semibold mb-5 opacity-90">Listed by</h4>
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-16 h-16 rounded-full bg-white/25 flex items-center justify-center text-2xl font-bold">LA</div>
+                                <div>
+                                    <p class="font-bold text-lg">Leslie Alexander</p>
+                                    <p class="text-teal-100 text-sm">Senior Property Consultant</p>
+                                </div>
+                            </div>
+                            <div class="space-y-3 text-sm">
+                                <a href="<?php echo esc_url(home_url('/contact')); ?>" class="w-full py-3 bg-white/20 hover:bg-white/30 rounded-xl transition-colors inline-flex items-center justify-center gap-2">
+                                    <i data-lucide="calendar" class="w-4 h-4"></i> Schedule Viewing
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </div>
+
     <?php
-endif;
+endwhile;
 
 get_footer();

@@ -1,93 +1,68 @@
 <?php
 /**
- * Agent archive template.
+ * Agents archive template.
  *
  * @package HouseUnlimited
  */
 
-get_header();
+if (!defined('ABSPATH')) {
+    exit;
+}
 
-hu_page_intro(
-    post_type_archive_title('', false),
-    esc_html__('Meet our team of experienced real estate professionals.', 'house-unlimited')
-);
+get_header();
 ?>
-<section class="hu-section">
-    <div class="hu-container">
+
+<div class="py-24 bg-gray-50 min-h-screen animate-in fade-in duration-500">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-16">
+            <p class="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Meet our experts</p>
+            <h1 class="text-4xl font-bold text-gray-900">Our Professional <span class="text-gray-400 font-light italic">Agents</span></h1>
+        </div>
+
         <?php if (have_posts()) : ?>
-            <div class="hu-agent-grid">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 <?php
                 while (have_posts()) :
                     the_post();
-
-                    $role = get_post_meta(get_the_ID(), 'role', true);
-                    $phone = get_post_meta(get_the_ID(), 'phone', true);
-                    $email = get_post_meta(get_the_ID(), 'email', true);
-                    $specialties = get_post_meta(get_the_ID(), 'specialties', true);
+                    $post_id = get_the_ID();
+                    $role = get_post_meta($post_id, 'role', true);
+                    $linkedin = get_post_meta($post_id, 'linkedin', true);
+                    $twitter = get_post_meta($post_id, 'twitter', true);
+                    $facebook = get_post_meta($post_id, 'facebook', true);
+                    $image_url = get_the_post_thumbnail_url($post_id, 'large');
+                    if (!$image_url) {
+                        $image_url = 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&q=80&w=400';
+                    }
                     ?>
-                    <article <?php post_class('hu-card hu-agent-card'); ?>>
-                        <div class="hu-agent-card__image">
-                            <?php if (has_post_thumbnail()) : ?>
-                                <?php the_post_thumbnail('medium'); ?>
-                            <?php else : ?>
-                                <div class="hu-template-placeholder__box">
-                                    <p><?php esc_html_e('Agent photo coming soon.', 'house-unlimited'); ?></p>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-
-                        <div class="hu-agent-card__content">
-                            <h3 class="hu-agent-card__title">
-                                <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-                            </h3>
-
-                            <?php if ($role) : ?>
-                                <p class="hu-agent-card__role"><?php echo esc_html($role); ?></p>
-                            <?php endif; ?>
-
-                            <div class="hu-agent-card__contact">
-                                <?php if ($phone) : ?>
-                                    <a href="tel:<?php echo esc_attr($phone); ?>" class="hu-agent-contact-item">
-                                        <span class="hu-icon-phone"></span>
-                                        <?php echo esc_html($phone); ?>
-                                    </a>
-                                <?php endif; ?>
-
-                                <?php if ($email) : ?>
-                                    <a href="mailto:<?php echo esc_attr($email); ?>" class="hu-agent-contact-item">
-                                        <span class="hu-icon-email"></span>
-                                        <?php echo esc_html($email); ?>
-                                    </a>
-                                <?php endif; ?>
-                            </div>
-
-                            <?php if ($specialties) : ?>
-                                <div class="hu-agent-card__specialties">
-                                    <h4><?php esc_html_e('Specialties', 'house-unlimited'); ?></h4>
-                                    <p><?php echo esc_html($specialties); ?></p>
-                                </div>
-                            <?php endif; ?>
-
-                            <p class="hu-agent-card__excerpt"><?php echo esc_html(get_the_excerpt()); ?></p>
-
-                            <a href="<?php the_permalink(); ?>" class="hu-button hu-button--secondary">
-                                <?php esc_html_e('View Profile', 'house-unlimited'); ?>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 text-center hover:shadow-xl transition-all group">
+                        <a href="<?php the_permalink(); ?>" class="block">
+                            <img src="<?php echo esc_url($image_url); ?>" alt="<?php the_title_attribute(); ?>" class="w-32 h-32 rounded-full mx-auto mb-6 object-cover border-4 border-teal-50" />
+                            <h4 class="text-xl font-bold text-gray-900"><?php the_title(); ?></h4>
+                            <p class="text-teal-600 text-xs font-bold uppercase tracking-widest mt-1 mb-6"><?php echo esc_html($role ?: 'Agent'); ?></p>
+                        </a>
+                        <div class="flex justify-center space-x-3">
+                            <a href="<?php echo esc_url($facebook ?: '#'); ?>" class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-teal-600 hover:text-white transition-colors">
+                                <i data-lucide="facebook" class="w-4 h-4"></i>
+                            </a>
+                            <a href="<?php echo esc_url($twitter ?: '#'); ?>" class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-teal-600 hover:text-white transition-colors">
+                                <i data-lucide="twitter" class="w-4 h-4"></i>
+                            </a>
+                            <a href="<?php echo esc_url($linkedin ?: '#'); ?>" class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-teal-600 hover:text-white transition-colors">
+                                <i data-lucide="linkedin" class="w-4 h-4"></i>
                             </a>
                         </div>
-                    </article>
+                    </div>
                 <?php endwhile; ?>
             </div>
-
-            <?php hu_pagination(); ?>
-
         <?php else : ?>
-            <div class="hu-card hu-template-placeholder__box">
-                <h2><?php esc_html_e('No Agents Found', 'house-unlimited'); ?></h2>
-                <p><?php esc_html_e('Agent profiles will appear here once they are added in WordPress.', 'house-unlimited'); ?></p>
+            <div class="bg-white rounded-3xl p-20 text-center border border-dashed border-gray-200">
+                <div class="text-6xl mb-6">👥</div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">No agents found</h3>
+                <p class="text-gray-500 mb-8">Agents will appear here once they are added.</p>
             </div>
         <?php endif; ?>
     </div>
-</section>
+</div>
 
 <?php
 get_footer();

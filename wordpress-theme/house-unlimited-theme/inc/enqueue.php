@@ -11,6 +11,14 @@ if (!defined('ABSPATH')) {
 
 function hu_enqueue_assets(): void
 {
+    wp_enqueue_script(
+        'house-unlimited-tailwind',
+        'https://cdn.tailwindcss.com',
+        [],
+        null,
+        false
+    );
+
     wp_enqueue_style(
         'house-unlimited-fonts',
         'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
@@ -30,6 +38,14 @@ function hu_enqueue_assets(): void
         HU_THEME_URI . '/assets/css/main.css',
         ['house-unlimited-style'],
         HU_THEME_VERSION
+    );
+
+    wp_enqueue_script(
+        'house-unlimited-lucide',
+        'https://unpkg.com/lucide@latest',
+        [],
+        null,
+        true
     );
 
     wp_enqueue_script(

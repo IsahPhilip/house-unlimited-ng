@@ -69,3 +69,133 @@ function hu_pagination(): void
         echo '</nav>';
     }
 }
+
+function hu_get_profile_table_name(): string
+{
+    global $wpdb;
+    return $wpdb->prefix . 'hu_user_profiles';
+}
+
+function hu_profile_table_exists(): bool
+{
+    global $wpdb;
+    $table = hu_get_profile_table_name();
+    return $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $table)) === $table;
+}
+
+function hu_get_user_profile_data(int $user_id): array
+{
+    global $wpdb;
+
+    $defaults = [
+        'phone' => '',
+        'bio' => '',
+        'location' => '',
+        'avatar_url' => '',
+        'preferences' => [
+            'email' => true,
+            'sms' => false,
+        ],
+    ];
+
+    if ($user_id <= 0) {
+        return $defaults;
+    }
+
+    if (hu_profile_table_exists()) {
+        $table = hu_get_profile_table_name();
+        $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE user_id = %d", $user_id), ARRAY_A);
+        if ($row) {
+            $prefs = [];
+            if (!empty($row['preferences'])) {
+                $decoded = json_decode($row['preferences'], true);
+                if (is_array($decoded)) {
+                    $prefs = $decoded;
+                }
+            }
+            return [
+                'phone' => $row['phone'] ?? '',
+                'bio' => $row['bio'] ?? '',
+                'location' => $row['location'] ?? '',
+                'avatar_url' => $row['avatar_url'] ?? '',
+                'preferences' => array_merge($defaults['preferences'], $prefs),
+            ];
+        }
+    }
+
+    $prefs_raw = get_user_meta($user_id, 'hu_preferences', true);
+    $prefs = is_array($prefs_raw) ? $prefs_raw : [];
+
+    return [
+        'phone' => get_user_meta($user_id, 'hu_phone', true) ?: '',
+        'bio' => get_user_meta($user_id, 'hu_bio', true) ?: '',
+        'location' => get_user_meta($user_id, 'hu_location', true) ?: '',
+        'avatar_url' => get_user_meta($user_id, 'hu_avatar_url', true) ?: '',
+        'preferences' => array_merge($defaults['preferences'], $prefs),
+    ];
+}
+
+function hu_update_user_profile_data(int $user_id, array $data): void
+{
+    global $wpdb;
+
+    if ($user_id <= 0) {
+        return;
+    }
+
+    $payload = [
+        'phone' => sanitize_text_field($data['phone'] ?? ''),
+        'bio' => sanitize_textarea_field($data['bio'] ?? ''),
+        'location' => sanitize_text_field($data['location'] ?? ''),
+        'avatar_url' => esc_url_raw($data['avatar_url'] ?? ''),
+        'preferences' => wp_json_encode($data['preferences'] ?? []),
+    ];
+
+    if (hu_profile_table_exists()) {
+        $table = hu_get_profile_table_name();
+        $exists = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table} WHERE user_id = %d", $user_id));
+        if ($exists) {
+            $wpdb->update($table, $payload, ['user_id' => $user_id]);
+        } else {
+            $payload['user_id'] = $user_id;
+            $wpdb->insert($table, $payload);
+        }
+        return;
+    }
+
+    update_user_meta($user_id, 'hu_phone', $payload['phone']);
+    update_user_meta($user_id, 'hu_bio', $payload['bio']);
+    update_user_meta($user_id, 'hu_location', $payload['location']);
+    update_user_meta($user_id, 'hu_avatar_url', $payload['avatar_url']);
+    update_user_meta($user_id, 'hu_preferences', json_decode($payload['preferences'], true));
+}
+
+function hu_get_user_activity_counts(int $user_id): array
+{
+    global $wpdb;
+
+    $defaults = [
+        'wishlist' => 0,
+        'reviews' => 0,
+    ];
+
+    if ($user_id <= 0) {
+        return $defaults;
+    }
+
+    $wishlist_table = $wpdb->prefix . 'hu_wishlist';
+    $reviews_table = $wpdb->prefix . 'hu_reviews';
+
+    $wishlist_exists = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wishlist_table)) === $wishlist_table;
+    $reviews_exists = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $reviews_table)) === $reviews_table;
+
+    if ($wishlist_exists) {
+        $defaults['wishlist'] = (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$wishlist_table} WHERE user_id = %d", $user_id));
+    }
+
+    if ($reviews_exists) {
+        $defaults['reviews'] = (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$reviews_table} WHERE user_id = %d", $user_id));
+    }
+
+    return $defaults;
+}

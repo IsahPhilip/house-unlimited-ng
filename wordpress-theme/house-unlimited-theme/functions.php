@@ -15,6 +15,10 @@ define('HU_THEME_URI', get_template_directory_uri());
 
 require_once HU_THEME_DIR . '/inc/setup.php';
 require_once HU_THEME_DIR . '/inc/enqueue.php';
+require_once HU_THEME_DIR . '/inc/post-types.php';
 require_once HU_THEME_DIR . '/inc/theme-options.php';
 require_once HU_THEME_DIR . '/inc/acf-options.php';
 require_once HU_THEME_DIR . '/inc/template-tags.php';
+if (file_exists(HU_THEME_DIR . '/setup-database.php')) {
+    require_once HU_THEME_DIR . '/setup-database.php';
+}
