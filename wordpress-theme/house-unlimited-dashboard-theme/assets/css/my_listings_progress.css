@@ -1,0 +1,96 @@
+.add_property_btn{
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: var(--white);
+    border: none;
+    padding: 0.9rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.4s;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: var(--shadow);
+}
+.property-thumb {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    object-fit: cover;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+.property-info h4 {
+    margin: 0 0 0.5rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+.property-location {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.progress-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.progress-bar {
+    flex: 1;
+    height: 12px;
+    background: var(--border);
+    border-radius: 50px;
+    overflow: hidden;
+}
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    border-radius: 50px;
+    width: 0%;
+    transition: width 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.progress-text {
+    font-weight: 700;
+    font-size: 1.1rem;
+    min-width: 60px;
+    text-align: right;
+    color: var(--primary);
+}
+
+.phase-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.8rem;
+}
+.phase-item {
+    text-align: center;
+    padding: 0.8rem;
+    border-radius: 16px;
+    background: var(--bg-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+.phase-item.done {
+    background: var(--success-bg);
+    color: var(--success-text);
+    border: 2px solid var(--success);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 8rem 2rem;
+    color: var(--text-muted);
+}
+.empty-state i {
+    font-size: 5rem;
+    opacity: 0.3;
+    margin-bottom: 1.5rem;
+}
+
+.text-muted {
+    color: var(--text-muted);
+}

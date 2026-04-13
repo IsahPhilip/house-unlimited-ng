@@ -11,6 +11,20 @@ if (!defined('ABSPATH')) {
 
 get_header();
 
+$page_content = '';
+if (have_posts()) {
+    the_post();
+    $page_content = trim(get_the_content());
+}
+
+if ($page_content !== '') {
+    echo '<main class="animate-in fade-in duration-500">';
+    echo apply_filters('the_content', $page_content);
+    echo '</main>';
+    get_footer();
+    return;
+}
+
 $contact_info = hu_get_contact_info();
 $hero_badge = function_exists('get_field') ? get_field('hero_badge', 'option') : '';
 $hero_title_line1 = function_exists('get_field') ? get_field('hero_title_line1', 'option') : '';

@@ -1,0 +1,140 @@
+
+.badge {
+    display: inline-block;
+    padding: .35em .65em;
+    font-size: .75em;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25rem;
+    color: #fff;
+}
+.badge-provisional-allocation, .badge-pending { background-color: #ffc107; color: #212529; } /* Warning */
+.badge-final-allocation, .badge-approved, .badge-paid { background-color: #28a745; } /* Success */
+.badge-partially-paid { background-color: #fd7e14; color: #fff; } /* Orange for partial payments */
+.badge-cancelled, .badge-rejected, .badge-overdue { background-color: #dc3545; } /* Danger */
+.badge-pending-review { background-color: #17a2b8; } /* Info */
+
+.allocation-summary-card, .progress-bar-container, .countdown-card {
+    margin-bottom: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border: 1px solid var(--border);
+    background-color: var(--bg-primary);
+}
+.card-body { padding: 1.5rem; }
+.summary-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+.property-thumbnail { width: 80px; height: 80px; object-fit: cover; border-radius: 0.5rem; }
+.summary-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+.summary-info div strong { display: block; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.2rem; }
+.summary-info div span { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); }
+.summary-info .badge { font-size: 0.9rem; padding: 0.5em 0.75em; }
+
+.progress {
+    height: 25px;
+    margin-top: 1rem;
+    background-color: var(--bg-secondary);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+.progress-bar {
+    background-color: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    transition: width 0.6s ease;
+}
+.countdown-text {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-align: center;
+    margin-top: 1rem;
+}
+.btn-primary { background-color: var(--primary); color: #fff; border: none; margin-top: 2rem; }
+.btn-sm { padding: .25rem .5rem; font-size: .875rem; border-radius: .2rem; }
+
+/* Allocation actions (Download letter / Export schedule) should sit on the far left of the section. */
+.allocation-actions {
+    margin-top: 1.25rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.allocation-actions .btn {
+    margin-top: 0 !important; /* override the page-wide .btn-primary margin-top */
+}
+
+/* Modal Enhancements */
+
+.modal-overlay .card {
+    animation: modalSlideIn 0.3s ease-out;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    border: none;
+    border-radius: var(--radius-lg);
+    max-width: 500px;
+    position: relative;
+}
+
+.modal-overlay .close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+}
+
+.modal-overlay .close-button:hover {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+    transform: scale(1.1);
+}
+
+.modal-overlay h2 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+}
+
+.modal-overlay #modal-installment-info {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+    border-left: 4px solid var(--primary);
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}

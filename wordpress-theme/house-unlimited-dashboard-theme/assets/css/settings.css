@@ -1,0 +1,253 @@
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+.avatar-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--border);
+}
+.tab-nav {
+    display: flex;
+    gap: 1rem;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 2rem;
+}
+.tab-link {
+    padding: 1rem 1.5rem;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+.tab-link.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+}
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+.secret-field {
+    position: relative;
+}
+.eye-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: .2s;
+}
+
+.eye-toggle:hover {
+    color: var(--primary-dynamic);
+}
+.logo-preview {
+    margin-top: .7rem;
+    width: 160px;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 5px 20px var(--shadow);
+}
+.theme-colors-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+@media (max-width: 768px) {
+    .theme-colors-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.toggle {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 55px;
+    height: 28px;
+}
+
+.toggle-switch input {
+    display: none;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    background: #d1d5db;
+    border-radius: 50px;
+    inset: 0;
+    transition: .3s;
+}
+
+.slider:before {
+    content: '';
+    height: 22px;
+    width: 22px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    left: 3px;
+    bottom: 3px;
+    transition: .3s;
+}
+
+.toggle-switch input:checked + .slider {
+    background: var(--primary-dynamic);
+}
+
+.toggle-switch input:checked + .slider:before {
+    transform: translateX(27px);
+}
+.tab-title {
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 1rem;
+}
+/* Comprehensive Responsive Design */
+@media (max-width: 1024px) {
+    .form-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .tab-nav {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .tab-link {
+        padding: 0.8rem 1rem;
+        font-size: 14px;
+        flex-grow: 1;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        padding: 1rem;
+    }
+
+    .tab-nav {
+        flex-direction: column;
+        gap: 0;
+        border-bottom: none;
+        max-height: 60vh;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+    }
+    .tab-nav::-webkit-scrollbar {
+        width: 4px;
+    }
+    .tab-nav::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .tab-nav::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 2px;
+    }
+    .tab-nav::-webkit-scrollbar-thumb:hover {
+        background: var(--text-muted);
+    }
+
+    .tab-link {
+        border-bottom: 1px solid var(--border);
+        border-radius: 0;
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+
+    .tab-link.active {
+        border-bottom-color: var(--primary);
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+    }
+
+    #saveButton {
+        padding: 1rem 2rem !important;
+        font-size: 1rem !important;
+        width: 100%;
+    }
+
+    .theme-colors-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tab-title {
+        margin-bottom: 1.5rem;
+    }
+
+    .tab-title h3 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        padding: 0.75rem;
+    }
+
+    .tab-link {
+        padding: 0.625rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+        padding: 0.75rem 0.875rem;
+        font-size: 0.95rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.95rem;
+    }
+
+    .logo-preview {
+        width: 120px;
+        height: auto;
+    }
+
+    .secret-field .eye-toggle {
+        right: 0.75rem;
+    }
+}
