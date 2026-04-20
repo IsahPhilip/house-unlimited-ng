@@ -1,7 +1,8 @@
 import mongoose, { Document, Schema } from 'mongoose';
+import type { IBlogPost } from './BlogPost.mongoose.js';
 
 export interface IBlogBookmark extends Document {
-  post: mongoose.Types.ObjectId;
+  post: mongoose.Types.ObjectId | IBlogPost;
   user: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;

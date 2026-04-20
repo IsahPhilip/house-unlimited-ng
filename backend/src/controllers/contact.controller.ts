@@ -226,7 +226,6 @@ export const addContactNote = async (req: Request, res: Response): Promise<void>
     }
 
     const author = (req as any).user?.name || (req as any).user?.email || 'Admin';
-    contact.internalNotes = contact.internalNotes || [];
     contact.internalNotes.push({ text, author, createdAt: new Date() });
 
     await contact.save();
