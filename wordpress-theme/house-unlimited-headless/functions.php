@@ -7,6 +7,23 @@
 
 define( 'HUN_HEADLESS_THEME_VERSION', '0.1.0' );
 
+// Define headless frontend URL function immediately
+if ( ! function_exists( 'hun_headless_frontend_url' ) ) {
+	function hun_headless_frontend_url(): string {
+		if ( defined( 'HUN_HEADLESS_FRONTEND_URL' ) && HUN_HEADLESS_FRONTEND_URL ) {
+			return untrailingslashit( HUN_HEADLESS_FRONTEND_URL );
+		}
+
+		$option = get_option( 'hun_headless_frontend_url' );
+
+		if ( is_string( $option ) && $option ) {
+			return untrailingslashit( $option );
+		}
+
+		return 'http://localhost:3000';
+	}
+}
+
 require_once get_template_directory() . '/inc/headless.php';
 
 add_action(
@@ -119,31 +136,6 @@ add_action(
 				'show_in_graphql'       => true,
 				'graphql_field_name'    => 'propertyFields',
 			) );
-		}
-	}
-);
-
-add_action(
-	'graphql_register_types',
-	static function () {
-		// Register menu locations for GraphQL
-		if ( function_exists( 'register_graphql_enum_type' ) ) {
-			register_graphql_enum_type(
-				'MenuLocationEnum',
-				array(
-					'description' => __( 'Menu locations', 'house-unlimited-headless' ),
-					'values'      => array(
-						'PRIMARY' => array(
-							'value'       => 'primary',
-							'description' => __( 'Primary menu location', 'house-unlimited-headless' ),
-						),
-						'FOOTER'  => array(
-							'value'       => 'footer',
-							'description' => __( 'Footer menu location', 'house-unlimited-headless' ),
-						),
-					),
-				)
-			);
 		}
 	}
 );
