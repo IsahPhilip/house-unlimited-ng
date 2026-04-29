@@ -1,0 +1,16 @@
+/*
+Theme Name: House Unlimited Headless
+Theme URI: https://houseunlimitednigeria.com
+Author: House Unlimited Nigeria
+Author URI: https://houseunlimitednigeria.com
+Description: Minimal WordPress theme for a headless Next.js frontend powered by WPGraphQL.
+Version: 0.1.0
+Requires at least: 6.5
+Tested up to: 6.8
+Requires PHP: 8.0
+Text Domain: house-unlimited-headless
+*/
+
+body {
+  font-family: Georgia, serif;
+}
