@@ -15,7 +15,9 @@ export function GraphQLHealthCheck() {
   const [message, setMessage] = useState<string>("Checking GraphQL endpoint...");
 
   useEffect(() => {
-    if (!endpoint) {
+    const graphqlEndpoint = endpoint;
+
+    if (!graphqlEndpoint) {
       setStatus("error");
       setMessage("WPGraphQL endpoint is not configured.");
       return;
@@ -23,7 +25,7 @@ export function GraphQLHealthCheck() {
 
     async function check() {
       try {
-        const response = await fetch(endpoint, {
+        const response = await fetch(graphqlEndpoint as string, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ query })
