@@ -33,10 +33,9 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="font-['Inter'] text-gray-900 bg-white antialiased">
-        {/* Top Bar */}
         <div className="bg-slate-900 text-white py-2 text-[10px] uppercase tracking-widest font-bold">
-          <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
-            <div className="flex space-x-6">
+          <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2">
+            <div className="flex flex-col md:flex-row md:space-x-6 items-center">
               <span className="flex items-center"><Phone className="w-4 h-4 mr-2 text-teal-500" /> {settings.phone}</span>
               <span className="flex items-center"><Mail className="w-4 h-4 mr-2 text-teal-500" /> {settings.email}</span>
             </div>

@@ -12,6 +12,10 @@ import {
 const endpoint =
   process.env.NEXT_PUBLIC_WORDPRESS_GRAPHQL_ENDPOINT ||
   `${process.env.NEXT_PUBLIC_WORDPRESS_URL || "http://localhost/wordpress"}/graphql`;
+const restEndpoint =
+  `${process.env.NEXT_PUBLIC_WORDPRESS_URL || "http://localhost/wordpress"}/wp-json/hun/v1`;
+const wpRestEndpoint =
+  `${process.env.NEXT_PUBLIC_WORDPRESS_URL || "http://localhost/wordpress"}/wp-json/wp/v2`;
 
 const fallbackSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 const fallbackWordPressUrl = process.env.NEXT_PUBLIC_WORDPRESS_URL || "http://localhost/wordpress";
@@ -20,6 +24,43 @@ const revalidateSeconds = Number(process.env.NEXT_PUBLIC_REVALIDATE_SECONDS || 1
 type GraphQLResponse<T> = {
   data?: T;
   errors?: Array<{ message: string }>;
+};
+
+type RestProperty = {
+  slug: string;
+  title: string;
+  excerpt?: string;
+  content?: string;
+  image?: string;
+  price?: string;
+  type?: string;
+  location?: string;
+  bedrooms?: number;
+  bathrooms?: number;
+  area?: string;
+  status?: string;
+  gallery?: string[];
+};
+
+type WordPressRestProperty = {
+  slug?: string;
+  title?: { rendered?: string };
+  excerpt?: { rendered?: string };
+  content?: { rendered?: string };
+  featured_media?: number;
+  _embedded?: {
+    ["wp:featuredmedia"]?: Array<{ source_url?: string }>;
+  };
+  acf?: {
+    price?: string;
+    property_type?: string;
+    location?: string;
+    bedrooms?: number;
+    bathrooms?: number;
+    area?: string;
+    property_status?: string;
+    gallery?: Array<number | string | { url?: string }>;
+  };
 };
 
 export type MenuItem = {
@@ -94,6 +135,48 @@ async function fetchGraphQL<T>(query: string, variables?: Record<string, unknown
   }
 }
 
+async function fetchRest<T>(path: string, options?: { suppressNotFound?: boolean }): Promise<T | null> {
+  try {
+    const response = await fetch(`${restEndpoint}${path}`, {
+      next: { revalidate: revalidateSeconds }
+    });
+
+    if (!response.ok) {
+      if (response.status === 404 && options?.suppressNotFound) {
+        return null;
+      }
+
+      throw new Error(`Headless REST request failed with status ${response.status}`);
+    }
+
+    return (await response.json()) as T;
+  } catch (error) {
+    console.error("REST fetch error:", error);
+    return null;
+  }
+}
+
+async function fetchWordPressRest<T>(path: string, options?: { suppressNotFound?: boolean }): Promise<T | null> {
+  try {
+    const response = await fetch(`${wpRestEndpoint}${path}`, {
+      next: { revalidate: revalidateSeconds }
+    });
+
+    if (!response.ok) {
+      if (response.status === 404 && options?.suppressNotFound) {
+        return null;
+      }
+
+      throw new Error(`WordPress REST request failed with status ${response.status}`);
+    }
+
+    return (await response.json()) as T;
+  } catch (error) {
+    console.error("WordPress REST fetch error:", error);
+    return null;
+  }
+}
+
 function stripHtml(value: string | null | undefined): string {
   if (!value) {
     return "";
@@ -115,23 +198,33 @@ function formatDate(value: string | null | undefined): string {
 }
 
 export async function getSiteSettings(): Promise<SiteSettings> {
-  const data = await fetchGraphQL<{
-    generalSettings?: {
-      title?: string;
-      description?: string;
-      url?: string;
-    };
-  }>(SITE_SETTINGS_QUERY);
+  const [data, restSettings] = await Promise.all([
+    fetchGraphQL<{
+      generalSettings?: {
+        title?: string;
+        description?: string;
+        url?: string;
+      };
+    }>(SITE_SETTINGS_QUERY),
+    fetchRest<{
+      frontendUrl?: string;
+      graphqlUrl?: string;
+      siteUrl?: string;
+      phone?: string;
+      email?: string;
+      address?: string;
+    }>("/settings", { suppressNotFound: true })
+  ]);
 
   return {
     title: data?.generalSettings?.title || "House Unlimited Nigeria",
     description:
       data?.generalSettings?.description ||
       "A headless WordPress and Next.js real-estate frontend for fast pages and better SEO.",
-    siteUrl: fallbackSiteUrl,
-    phone: "+234 904 375 2708",
-    email: "official@houseunlimitednigeria.com",
-    address: "Abuja, Nigeria",
+    siteUrl: restSettings?.siteUrl || fallbackSiteUrl,
+    phone: restSettings?.phone || "+234 904 375 2708",
+    email: restSettings?.email || "official@houseunlimitednigeria.com",
+    address: restSettings?.address || "Abuja, Nigeria",
     heroTitle: "Modern editorial and listing workflows, without giving up WordPress.",
     heroDescription:
       "Use WordPress for publishing, menus, media, and plugin data. Use Next.js for SSR, routing, caching, and performance.",
@@ -140,6 +233,22 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 }
 
 export async function getPrimaryMenu(): Promise<MenuItem[]> {
+  const restMenu = await fetchRest<{
+    items?: Array<{ label?: string; path?: string }>;
+  }>("/menu", { suppressNotFound: true });
+
+  const restItems =
+    restMenu?.items
+      ?.filter((item) => item.label && item.path)
+      .map((item) => ({
+        label: item.label as string,
+        path: normalizeWpPath(item.path as string)
+      })) || [];
+
+  if (restItems.length > 0) {
+    return restItems;
+  }
+
   const data = await fetchGraphQL<{
     menuItems?: {
       nodes?: Array<{ label?: string; path?: string }>;
@@ -231,7 +340,73 @@ export async function getPostBySlug(slug: string): Promise<PostPreview | null> {
   };
 }
 
+function mapRestProperty(property: RestProperty): PropertyPreview {
+  return {
+    slug: property.slug || "",
+    title: property.title || "Untitled property",
+    excerpt: stripHtml(property.excerpt),
+    content: property.content || "",
+    image: property.image,
+    price: property.price,
+    type: property.type,
+    location: property.location,
+    bedrooms: property.bedrooms,
+    bathrooms: property.bathrooms,
+    area: property.area,
+    status: property.status,
+    gallery: property.gallery || []
+  };
+}
+
+function mapWordPressRestProperty(property: WordPressRestProperty): PropertyPreview {
+  const gallery =
+    property.acf?.gallery?.map((item) => {
+      if (typeof item === "string") {
+        return item;
+      }
+
+      if (typeof item === "object" && item && "url" in item && item.url) {
+        return item.url;
+      }
+
+      return "";
+    }).filter(Boolean) || [];
+
+  return {
+    slug: property.slug || "",
+    title: stripHtml(property.title?.rendered) || "Untitled property",
+    excerpt: stripHtml(property.excerpt?.rendered),
+    content: property.content?.rendered || "",
+    image: property._embedded?.["wp:featuredmedia"]?.[0]?.source_url,
+    price: property.acf?.price,
+    type: property.acf?.property_type,
+    location: property.acf?.location,
+    bedrooms: property.acf?.bedrooms,
+    bathrooms: property.acf?.bathrooms,
+    area: property.acf?.area,
+    status: property.acf?.property_status,
+    gallery
+  };
+}
+
 export async function getFeaturedProperties(first = 6): Promise<PropertyPreview[]> {
+  const restData = await fetchRest<{
+    items?: RestProperty[];
+  }>(`/properties?per_page=${first}`, { suppressNotFound: true });
+
+  if (restData?.items?.length) {
+    return restData.items.map(mapRestProperty);
+  }
+
+  const wpRestData = await fetchWordPressRest<WordPressRestProperty[]>(
+    `/property?per_page=${first}&_embed=wp:featuredmedia`,
+    { suppressNotFound: true }
+  );
+
+  if (wpRestData?.length) {
+    return wpRestData.map(mapWordPressRestProperty);
+  }
+
   const data = await fetchGraphQL<{
     properties?: {
       nodes?: Array<{
@@ -262,6 +437,23 @@ export async function getFeaturedProperties(first = 6): Promise<PropertyPreview[
 }
 
 export async function getPropertySlugs(): Promise<string[]> {
+  const restData = await fetchRest<{
+    items?: RestProperty[];
+  }>("/properties?per_page=24", { suppressNotFound: true });
+
+  if (restData?.items?.length) {
+    return restData.items.map((item) => item.slug || "").filter(Boolean);
+  }
+
+  const wpRestData = await fetchWordPressRest<WordPressRestProperty[]>(
+    "/property?per_page=24",
+    { suppressNotFound: true }
+  );
+
+  if (wpRestData?.length) {
+    return wpRestData.map((item) => item.slug || "").filter(Boolean);
+  }
+
   const data = await fetchGraphQL<{
     properties?: {
       nodes?: Array<{ slug?: string }>;
@@ -272,6 +464,21 @@ export async function getPropertySlugs(): Promise<string[]> {
 }
 
 export async function getPropertyBySlug(slug: string): Promise<PropertyPreview | null> {
+  const restProperty = await fetchRest<RestProperty>(`/properties/${slug}`, { suppressNotFound: true });
+
+  if (restProperty?.slug) {
+    return mapRestProperty(restProperty);
+  }
+
+  const wpRestProperty = await fetchWordPressRest<WordPressRestProperty[]>(
+    `/property?slug=${encodeURIComponent(slug)}&_embed=wp:featuredmedia`,
+    { suppressNotFound: true }
+  );
+
+  if (wpRestProperty?.[0]?.slug) {
+    return mapWordPressRestProperty(wpRestProperty[0]);
+  }
+
   const data = await fetchGraphQL<{
     property?: {
       slug?: string;

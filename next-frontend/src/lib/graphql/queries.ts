@@ -10,7 +10,7 @@ export const SITE_SETTINGS_QUERY = `
 
 export const PRIMARY_MENU_QUERY = `
   query PrimaryMenu {
-    menuItems(where: { location: PRIMARY }) {
+    menuItems(first: 100) {
       nodes {
         label
         path

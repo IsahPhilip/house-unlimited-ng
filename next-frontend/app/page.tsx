@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { PropertyPreviewCard } from "@/components/property-preview-card";
 import { PostPreviewCard } from "@/components/post-preview-card";
-import { GraphQLHealthCheck } from "@/components/graphql-health-check";
 import { getFeaturedProperties, getRecentPosts, getSiteSettings } from "@/lib/wordpress";
 import maitamaHero from "../../frontend/src/img/maitama-ii.jpeg";
 import {
@@ -39,9 +38,8 @@ export default async function HomePage() {
   ];
 
   return (
-    <>
-      {/* Hero Section */}
-      <section className="relative h-[650px] flex items-center bg-gray-50">
+    <div className="animate-in fade-in duration-500">
+      <section className="relative h-[650px] flex items-center">
         <div className="absolute inset-0 z-0">
           <img src={maitamaHero.src} alt="Hero" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/40 to-transparent"></div>
@@ -50,7 +48,7 @@ export default async function HomePage() {
           <div className="max-w-2xl">
             <p className="text-teal-600 font-semibold mb-4 tracking-wide uppercase tracking-[0.2em] text-xs font-bold">Find Your Dream Property Easily</p>
             <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
-              Instant Property Deals: <br />
+              Instant Property Deals:<br />
               <span className="text-teal-600">Buy and Sell</span>
             </h1>
             <p className="text-gray-600 text-lg mb-10 max-w-lg">Experience the next generation of real estate discovery. We use cutting-edge AI to match you with your perfect home.</p>
@@ -93,13 +91,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="bg-gray-50 py-10">
-        <div className="max-w-7xl mx-auto px-4">
-          <GraphQLHealthCheck />
-        </div>
-      </section>
-
-      {/* Verified Listings Highlight */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-stretch">
@@ -146,117 +137,230 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Services Section */}
       <section className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Our Services</p>
-            <h2 className="text-4xl font-bold text-gray-900">What We <span className="text-gray-400 font-light italic">Offer</span></h2>
-            <p className="text-gray-600 mt-4 max-w-2xl mx-auto">Comprehensive real estate solutions tailored to your needs, from buying and selling to investment opportunities.</p>
+            <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Services</p>
+            <h2 className="text-4xl font-bold text-gray-900">Who We <span className="text-gray-400 italic font-light">Serve</span></h2>
+            <p className="text-gray-600 mt-3">Expert support for buying and selling properties.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
-            {services.map((service, idx) => (
-              <div key={idx} className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 hover:shadow-xl transition-all text-center">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">{service.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{service.desc}</p>
-              </div>
-            ))}
+          <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {services.map((service, index) => {
+              const icons = [HomeIcon, Trees, DollarSign, Building2, Briefcase];
+              const Icon = icons[index % icons.length];
+
+              return (
+                <div key={service.title} className="p-6 rounded-3xl transition-all bg-white border border-gray-100 hover:border-teal-500 hover:shadow-xl">
+                  <div className="w-12 h-12 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center mb-4">
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <h4 className="font-bold text-gray-900 mb-2">{service.title}</h4>
+                  <p className="text-sm text-gray-600">{service.desc}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Featured Properties */}
       <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-wrap items-end justify-between gap-6 mb-8">
-            <div>
-              <div className="kicker">Featured listings</div>
-              <h2 className="page-title" style={{ fontSize: "clamp(2rem, 3vw, 3rem)" }}>
-                Properties from WordPress
-              </h2>
-              <p className="text-gray-600 mt-3 max-w-2xl">Premium properties verified and ready for you. Each listing includes detailed information and high-quality images.</p>
-              {properties[0] ? (
-                <p className="text-sm text-gray-500 mt-4">
-                  Preview route: <Link href={`/properties/${properties[0].slug}`} className="text-teal-600 hover:text-teal-700">/properties/{properties[0].slug}</Link>
-                </p>
-              ) : null}
-            </div>
-            <Link className="button button-secondary" href="/properties">
-              See all properties
-            </Link>
+        <div className="max-w-7xl mx-auto px-4 flex justify-between items-end mb-12 gap-6 flex-wrap">
+          <div>
+            <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Featured Listings</p>
+            <h2 className="text-4xl font-bold text-gray-900">Discover <span className="text-gray-400 italic font-light">Featured Properties</span></h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {properties.length > 0 ? (
-              properties.map((property) => (
-                <PropertyPreviewCard key={property.slug} property={property} />
-              ))
-            ) : (
-              <div className="col-span-full text-center py-16">
-                <p className="text-gray-500">No properties available at the moment.</p>
-              </div>
-            )}
-          </div>
+          <Link href="/properties" className="bg-teal-600 text-white px-8 py-3 rounded-full flex items-center group font-bold text-sm shadow-lg shadow-teal-100">
+            Visit All Properties <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {properties.length > 0 ? (
+            properties.map((property) => (
+              <PropertyPreviewCard key={property.slug} property={property} />
+            ))
+          ) : (
+            <div className="col-span-full text-center text-gray-500">No featured properties available.</div>
+          )}
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-24 bg-gray-50">
+      <section className="py-24">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Testimonials</p>
-            <h2 className="text-4xl font-bold text-gray-900">What Our <span className="text-gray-400 font-light italic">Clients Say</span></h2>
-            <p className="text-gray-600 mt-4 max-w-2xl mx-auto">Real experiences from satisfied customers who found their perfect property with us.</p>
+            <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Why Choose Us</p>
+            <h2 className="text-4xl font-bold text-gray-900">Built to <span className="text-gray-400 italic font-light">Outperform</span></h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {testimonials.map((testimonial, idx) => (
-              <div key={idx} className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-                <div className="flex items-center mb-6">
-                  <img src={testimonial.img} alt={testimonial.name} className="w-12 h-12 rounded-full mr-4" />
-                  <div>
-                    <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
-                    <div className="flex text-teal-600">
-                      {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {[
+                { icon: MapPin, title: 'Local Market Expertise', desc: 'Neighborhood-level insight that protects your investment.' },
+                { icon: Search, title: 'Data-Driven Pricing', desc: 'Pricing strategies backed by real comps and demand data.' },
+                { icon: Smartphone, title: 'Pro Photography & Marketing', desc: 'High-impact visuals and targeted campaigns that convert.' },
+                { icon: Briefcase, title: 'Strong Negotiation', desc: 'We secure favorable terms without slowing the deal.' },
+                { icon: Star, title: 'Concierge Service', desc: 'Personalized guidance from shortlist to closing.' },
+              ].map((feature) => {
+                const Icon = feature.icon;
+
+                return (
+                  <div key={feature.title} className="p-6 rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-all">
+                    <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center mb-3">
+                      <Icon className="w-5 h-5" />
                     </div>
+                    <h4 className="font-bold text-gray-900 mb-1 text-sm">{feature.title}</h4>
+                    <p className="text-xs text-gray-600">{feature.desc}</p>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="relative bg-teal-600 rounded-3xl p-8 md:p-12 text-white overflow-hidden">
+              <div className="absolute inset-0 opacity-20">
+                <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&q=80&w=800" alt="Happy family" className="w-full h-full object-cover" />
+              </div>
+              <div className="relative z-10">
+                <h3 className="text-3xl font-bold mb-4">A Partner, Not Just a Platform</h3>
+                <p className="text-teal-100 mb-6">We combine market intelligence with hands-on support to help you move faster and smarter.</p>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <span className="bg-white/20 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">✓</span>
+                    <span className="text-sm">Verified listings only</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <span className="bg-white/20 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">✓</span>
+                    <span className="text-sm">Expert agent support</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <span className="bg-white/20 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">✓</span>
+                    <span className="text-sm">Secure transactions</span>
                   </div>
                 </div>
-                <p className="text-gray-600 italic">"{testimonial.text}"</p>
+                <Link
+                  href="/properties"
+                  className="mt-8 inline-flex bg-white text-teal-600 px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition-all shadow-lg"
+                >
+                  Start Your Search
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">How It Works</p>
+            <h2 className="text-4xl font-bold text-gray-900">Simple Steps to <span className="text-gray-400 italic font-light">Your Home</span></h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {[
+              { step: '01', title: 'Book a consultation', text: 'Tell us your goals and preferred locations.' },
+              { step: '02', title: 'Get a custom plan', text: 'We shortlist options tailored to your budget and needs.' },
+              { step: '03', title: 'Tour or market homes', text: 'View verified listings or list with pro marketing.' },
+              { step: '04', title: 'Close with confidence', text: 'Negotiation, paperwork, and secure closing handled.' },
+            ].map((item) => (
+              <div key={item.step} className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                <div className="text-teal-600 text-sm font-bold mb-3">Step {item.step}</div>
+                <h4 className="font-bold text-gray-900 mb-2">{item.title}</h4>
+                <p className="text-sm text-gray-600">{item.text}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Blog Section */}
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 text-center mb-16">
+          <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Our Testimonials</p>
+          <h2 className="text-4xl font-bold text-gray-900">What Our <span className="text-gray-400 italic font-light font-normal">Client Say About Us</span></h2>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-8">
+          {testimonials.map((testimonial, idx) => (
+            <div key={idx} className="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 flex items-start space-x-6">
+              <img src={testimonial.img} alt={testimonial.name} className="w-20 h-20 rounded-full border-4 border-teal-50 object-cover" />
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <div>
+                    <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
+                    <p className="text-gray-400 text-sm">Customer</p>
+                  </div>
+                  <div className="text-teal-200 text-6xl font-serif h-10 overflow-hidden leading-[1]">"</div>
+                </div>
+                <p className="text-gray-600 leading-relaxed italic text-sm">"{testimonial.text}"</p>
+                <div className="mt-4 flex text-yellow-400 space-x-1">
+                  {'★★★★★'.split('').map((s, index) => <span key={index} className="text-xs">{s}</span>)}
+                  <span className="text-gray-900 font-bold ml-2 text-xs">5.0</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-wrap items-end justify-between gap-6 mb-8">
             <div>
-              <div className="kicker">Editorial</div>
-              <h2 className="page-title" style={{ fontSize: "clamp(2rem, 3vw, 3rem)" }}>
-                Blog posts rendered for SEO
-              </h2>
-              <p className="text-gray-600 mt-3 max-w-2xl">Stay informed with the latest real estate insights, market trends, and investment opportunities.</p>
-              {posts[0] ? (
-                <p className="text-sm text-gray-500 mt-4">
-                  Preview route: <Link href={`/blog/${posts[0].slug}`} className="text-teal-600 hover:text-teal-700">/blog/{posts[0].slug}</Link>
-                </p>
-              ) : null}
+              <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Editorial</p>
+              <h2 className="text-4xl font-bold text-gray-900">From Our <span className="text-gray-400 italic font-light">Blog</span></h2>
+              <p className="text-gray-600 mt-3 max-w-2xl">Stay informed with market updates, property advice, and investment insights from the WordPress backend.</p>
             </div>
-            <Link className="button button-secondary" href="/blog">
-              See all posts
+            <Link className="bg-teal-600 text-white px-8 py-3 rounded-full flex items-center group font-bold text-sm shadow-lg shadow-teal-100" href="/blog">
+              See all posts <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {posts.length > 0 ? (
               posts.map((post) => <PostPreviewCard key={post.slug} post={post} />)
             ) : (
-              <div className="col-span-full text-center py-16">
-                <p className="text-gray-500">No blog posts available at the moment.</p>
-              </div>
+              <div className="col-span-full text-center text-gray-500">No blog posts available at the moment.</div>
             )}
           </div>
         </div>
       </section>
-    </>
+
+      <section className="py-16 bg-teal-600 text-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="bg-teal-700 rounded-3xl p-8 md:p-12 relative overflow-hidden">
+            <div className="absolute inset-0 opacity-10">
+              <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1920" alt="Background" className="w-full h-full object-cover" />
+            </div>
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+              <div>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Find Your Perfect Property?</h2>
+                <p className="text-teal-100 mb-6 max-w-lg">
+                  Start your real estate journey today. Whether you&apos;re buying or selling, we have the right solution for you.
+                </p>
+                <div className="flex flex-wrap gap-4">
+                  <Link
+                    href="/properties"
+                    className="bg-white text-teal-700 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-all shadow-lg"
+                  >
+                    Browse Properties for Sale
+                  </Link>
+                </div>
+              </div>
+              <div className="flex justify-center lg:justify-end">
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 max-w-sm">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="bg-white/20 w-12 h-12 rounded-full flex items-center justify-center">
+                      <Phone className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <p className="text-white/80 text-sm">Contact our team</p>
+                      <p className="font-bold text-lg">{settings.phone}</p>
+                    </div>
+                  </div>
+                  <Link href="/contact" className="block w-full bg-white text-teal-700 py-3 rounded-xl font-bold hover:bg-gray-100 transition-all text-center">
+                    Get in Touch
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }
