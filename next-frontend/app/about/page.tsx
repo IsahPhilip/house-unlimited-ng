@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getSiteSettings } from "@/lib/wordpress";
+import { getSiteSettings, getTeamMembers } from "@/lib/wordpress";
 import {
   ArrowRight,
   Eye,
@@ -17,7 +17,18 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const settings = await getSiteSettings();
+  const [settings, teamMembers] = await Promise.all([
+    getSiteSettings(),
+    getTeamMembers(8)
+  ]);
+
+  const fallbackTeamMembers = [
+    { slug: "julia-abege", name: "Julia Abege", role: "Chief Executive Officer", image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400" },
+    { slug: "terzungwe-abege", name: "ARC Terzungwe Abege", role: "Chairman & Lead Architect", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400" },
+    { slug: "client-advisory", name: "House Unlimited Nigeria Team", role: "Client Advisory", image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=400" },
+    { slug: "investment-strategy", name: "House Unlimited Nigeria Team", role: "Investment & Strategy", image: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&q=80&w=400" },
+  ];
+  const team = teamMembers.length > 0 ? teamMembers : fallbackTeamMembers;
 
   return (
     <div className="animate-in fade-in duration-500">
@@ -112,24 +123,11 @@ export default async function AboutPage() {
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              { name: 'Julia Abege', role: 'Chief Executive Officer', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400' },
-              { name: 'ARC Terzungwe Abege', role: 'Chairman & Lead Architect', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400' },
-              { name: 'House Unlimited Nigeria Team', role: 'Client Advisory', image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=400' },
-              { name: 'House Unlimited Nigeria Team', role: 'Investment & Strategy', image: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&q=80&w=400' },
-            ].map((member, idx) => (
-              <div key={idx} className="group cursor-pointer">
+            {team.map((member, idx) => (
+              <div key={member.slug || idx} className="group cursor-pointer">
                 <div className="relative overflow-hidden rounded-3xl aspect-[4/5] mb-6">
                   <img src={member.image} alt={member.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="absolute bottom-6 left-6 right-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-500 opacity-0 group-hover:opacity-100 flex space-x-3">
-                    <div className="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-xs">
-                      l
-                    </div>
-                    <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-xs">
-                      t
-                    </div>
-                  </div>
                 </div>
                 <h4 className="text-xl font-bold group-hover:text-teal-400 transition-colors">{member.name}</h4>
                 <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">{member.role}</p>

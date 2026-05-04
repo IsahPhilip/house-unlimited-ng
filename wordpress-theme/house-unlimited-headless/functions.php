@@ -52,6 +52,58 @@ add_action(
 			)
 		);
 
+		register_post_type(
+			'team_member',
+			array(
+				'labels'              => array(
+					'name'               => __( 'Team Members', 'house-unlimited-headless' ),
+					'singular_name'      => __( 'Team Member', 'house-unlimited-headless' ),
+					'add_new_item'       => __( 'Add New Team Member', 'house-unlimited-headless' ),
+					'edit_item'          => __( 'Edit Team Member', 'house-unlimited-headless' ),
+					'new_item'           => __( 'New Team Member', 'house-unlimited-headless' ),
+					'view_item'          => __( 'View Team Member', 'house-unlimited-headless' ),
+					'search_items'       => __( 'Search Team Members', 'house-unlimited-headless' ),
+					'not_found'          => __( 'No team members found', 'house-unlimited-headless' ),
+					'not_found_in_trash' => __( 'No team members found in trash', 'house-unlimited-headless' ),
+				),
+				'public'              => false,
+				'show_ui'             => true,
+				'show_in_menu'        => true,
+				'show_in_rest'        => true,
+				'show_in_graphql'     => true,
+				'graphql_single_name' => 'TeamMember',
+				'graphql_plural_name' => 'TeamMembers',
+				'supports'            => array( 'title', 'editor', 'thumbnail', 'excerpt', 'page-attributes' ),
+				'menu_icon'           => 'dashicons-groups',
+			)
+		);
+
+		register_post_type(
+			'testimonial',
+			array(
+				'labels'              => array(
+					'name'               => __( 'Testimonials', 'house-unlimited-headless' ),
+					'singular_name'      => __( 'Testimonial', 'house-unlimited-headless' ),
+					'add_new_item'       => __( 'Add New Testimonial', 'house-unlimited-headless' ),
+					'edit_item'          => __( 'Edit Testimonial', 'house-unlimited-headless' ),
+					'new_item'           => __( 'New Testimonial', 'house-unlimited-headless' ),
+					'view_item'          => __( 'View Testimonial', 'house-unlimited-headless' ),
+					'search_items'       => __( 'Search Testimonials', 'house-unlimited-headless' ),
+					'not_found'          => __( 'No testimonials found', 'house-unlimited-headless' ),
+					'not_found_in_trash' => __( 'No testimonials found in trash', 'house-unlimited-headless' ),
+				),
+				'public'              => false,
+				'show_ui'             => true,
+				'show_in_menu'        => true,
+				'show_in_rest'        => true,
+				'show_in_graphql'     => true,
+				'graphql_single_name' => 'Testimonial',
+				'graphql_plural_name' => 'Testimonials',
+				'supports'            => array( 'title', 'editor', 'thumbnail', 'excerpt', 'page-attributes' ),
+				'menu_icon'           => 'dashicons-format-quote',
+			)
+		);
+
 		// Register Property Fields for ACF if using ACF
 		if ( function_exists( 'acf_add_local_field_group' ) ) {
 			acf_add_local_field_group( array(

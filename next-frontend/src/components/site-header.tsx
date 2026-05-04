@@ -45,7 +45,7 @@ export function SiteHeader({ menu, settings }: SiteHeaderProps) {
             className="hidden md:inline-flex items-center justify-center bg-teal-600 text-white px-6 py-2.5 rounded-full font-semibold hover:bg-teal-700 transition-all text-sm shadow-lg shadow-teal-100"
             href="/contact"
           >
-            Contact Us
+            Book Inspection
           </Link>
         </div>
       </div>

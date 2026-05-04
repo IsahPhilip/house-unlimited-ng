@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PropertyPreviewCard } from "@/components/property-preview-card";
 import { PostPreviewCard } from "@/components/post-preview-card";
-import { getFeaturedProperties, getRecentPosts, getSiteSettings } from "@/lib/wordpress";
+import { getFeaturedProperties, getRecentPosts, getSiteSettings, getTestimonials } from "@/lib/wordpress";
 import maitamaHero from "../../frontend/src/img/maitama-ii.jpeg";
 import {
   ArrowRight,
@@ -18,24 +18,31 @@ import {
 } from "lucide-react";
 
 export default async function HomePage() {
-  const [settings, properties, posts] = await Promise.all([
+  const [settings, properties, posts, testimonialItems] = await Promise.all([
     getSiteSettings(),
     getFeaturedProperties(),
-    getRecentPosts()
+    getRecentPosts(),
+    getTestimonials(6)
   ]);
 
   const services = [
     { title: 'Buy a Home', desc: 'Find the right home faster with verified listings and guided tours.' },
     { title: 'Buy Land', desc: 'Discover verified land parcels with clear documentation and strong value.' },
-    { title: 'Sell a Home', desc: 'Price it right, market it well, and close with confidence.' },
-    { title: 'Luxury Properties', desc: 'Discreet, curated access to premium homes and estates.' },
     { title: 'Investment Sales', desc: 'Identify high‑value house and land opportunities with strong upside.' },
   ];
 
-  const testimonials = [
-    { name: 'Jenny Wilson', text: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa.', img: 'https://i.pravatar.cc/150?u=jenny' },
-    { name: 'Esther Howard', text: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa.', img: 'https://i.pravatar.cc/150?u=esther' },
+  const fallbackTestimonials = [
+    { name: 'Jenny Wilson', role: 'Customer', text: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa.', img: 'https://i.pravatar.cc/150?u=jenny' },
+    { name: 'Esther Howard', role: 'Customer', text: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa.', img: 'https://i.pravatar.cc/150?u=esther' },
   ];
+  const testimonials = testimonialItems.length > 0
+    ? testimonialItems.map((item) => ({
+        name: item.name,
+        text: item.text,
+        role: item.role,
+        img: item.image || `https://i.pravatar.cc/150?u=${item.slug}`
+      }))
+    : fallbackTestimonials;
 
   return (
     <div className="animate-in fade-in duration-500">
@@ -48,10 +55,10 @@ export default async function HomePage() {
           <div className="max-w-2xl">
             <p className="text-teal-600 font-semibold mb-4 tracking-wide uppercase tracking-[0.2em] text-xs font-bold">Find Your Dream Property Easily</p>
             <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
-              Instant Property Deals:<br />
-              <span className="text-teal-600">Buy and Sell</span>
+              Luxury Homes & Investment<br />
+              <span className="text-teal-600">Properties in Abuja</span>
             </h1>
-            <p className="text-gray-600 text-lg mb-10 max-w-lg">Experience the next generation of real estate discovery. We use cutting-edge AI to match you with your perfect home.</p>
+            <p className="text-gray-600 text-lg mb-10 max-w-lg">Discover verified lands and homes in prime locations designed for smart investors and future homeowners.</p>
 
             <div className="bg-white p-2 rounded-2xl shadow-2xl inline-flex flex-col w-full md:w-auto transition-all">
               <div className="flex p-1">
@@ -283,7 +290,7 @@ export default async function HomePage() {
                 <div className="flex justify-between items-center mb-4">
                   <div>
                     <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
-                    <p className="text-gray-400 text-sm">Customer</p>
+                    <p className="text-gray-400 text-sm">{testimonial.role}</p>
                   </div>
                   <div className="text-teal-200 text-6xl font-serif h-10 overflow-hidden leading-[1]">"</div>
                 </div>

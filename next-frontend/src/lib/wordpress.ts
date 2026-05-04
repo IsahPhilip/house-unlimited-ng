@@ -107,6 +107,22 @@ export type PropertyPreview = {
   content?: string;
 };
 
+export type TeamMember = {
+  slug: string;
+  name: string;
+  role: string;
+  bio?: string;
+  image?: string;
+};
+
+export type Testimonial = {
+  slug: string;
+  name: string;
+  role: string;
+  text: string;
+  image?: string;
+};
+
 async function fetchGraphQL<T>(query: string, variables?: Record<string, unknown>): Promise<T | null> {
   try {
     const response = await fetch(endpoint, {
@@ -340,6 +356,21 @@ export async function getPostBySlug(slug: string): Promise<PostPreview | null> {
   };
 }
 
+export async function getBlogCategories(): Promise<string[]> {
+  const posts = await getRecentPosts(100);
+  const categories = new Set<string>();
+
+  posts.forEach((post) => {
+    post.categories.forEach((category) => {
+      if (category) {
+        categories.add(category);
+      }
+    });
+  });
+
+  return Array.from(categories).sort((a, b) => a.localeCompare(b));
+}
+
 function mapRestProperty(property: RestProperty): PropertyPreview {
   return {
     slug: property.slug || "",
@@ -519,6 +550,50 @@ export async function getPropertyBySlug(slug: string): Promise<PropertyPreview |
     status: data.property.propertyFields?.propertyStatus,
     gallery: data.property.propertyFields?.gallery?.map((img) => img.sourceUrl || "").filter(Boolean) || []
   };
+}
+
+export async function getTeamMembers(limit = 8): Promise<TeamMember[]> {
+  const restData = await fetchRest<{
+    items?: Array<{
+      slug?: string;
+      name?: string;
+      role?: string;
+      bio?: string;
+      image?: string;
+    }>;
+  }>(`/team?per_page=${limit}`, { suppressNotFound: true });
+
+  return (
+    restData?.items?.map((item) => ({
+      slug: item.slug || "",
+      name: item.name || "House Unlimited Nigeria Team",
+      role: item.role || "",
+      bio: item.bio || "",
+      image: item.image || ""
+    })) || []
+  );
+}
+
+export async function getTestimonials(limit = 6): Promise<Testimonial[]> {
+  const restData = await fetchRest<{
+    items?: Array<{
+      slug?: string;
+      name?: string;
+      role?: string;
+      text?: string;
+      image?: string;
+    }>;
+  }>(`/testimonials?per_page=${limit}`, { suppressNotFound: true });
+
+  return (
+    restData?.items?.map((item) => ({
+      slug: item.slug || "",
+      name: item.name || "Customer",
+      role: item.role || "Customer",
+      text: item.text || "",
+      image: item.image || ""
+    })) || []
+  );
 }
 
 function normalizeWpPath(path: string): string {

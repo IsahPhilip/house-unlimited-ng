@@ -109,6 +109,42 @@ if ( ! function_exists( 'hun_prepare_property_payload' ) ) {
 	}
 }
 
+if ( ! function_exists( 'hun_prepare_team_member_payload' ) ) {
+	/**
+	 * Build a frontend-friendly team member payload.
+	 *
+	 * @param WP_Post $post Team member post object.
+	 */
+	function hun_prepare_team_member_payload( WP_Post $post ): array {
+		return array(
+			'id'      => $post->ID,
+			'slug'    => $post->post_name,
+			'name'    => get_the_title( $post ),
+			'role'    => has_excerpt( $post ) ? get_the_excerpt( $post ) : '',
+			'bio'     => apply_filters( 'the_content', $post->post_content ),
+			'image'   => get_the_post_thumbnail_url( $post, 'large' ) ?: '',
+		);
+	}
+}
+
+if ( ! function_exists( 'hun_prepare_testimonial_payload' ) ) {
+	/**
+	 * Build a frontend-friendly testimonial payload.
+	 *
+	 * @param WP_Post $post Testimonial post object.
+	 */
+	function hun_prepare_testimonial_payload( WP_Post $post ): array {
+		return array(
+			'id'       => $post->ID,
+			'slug'     => $post->post_name,
+			'name'     => get_the_title( $post ),
+			'role'     => has_excerpt( $post ) ? get_the_excerpt( $post ) : __( 'Customer', 'house-unlimited-headless' ),
+			'text'     => wp_strip_all_tags( $post->post_content ),
+			'image'    => get_the_post_thumbnail_url( $post, 'thumbnail' ) ?: '',
+		);
+	}
+}
+
 add_action(
 	'admin_init',
 	static function () {
@@ -318,6 +354,64 @@ add_action(
 					}
 
 					return rest_ensure_response( hun_prepare_property_payload( $posts[0] ) );
+				},
+			)
+		);
+
+		register_rest_route(
+			'hun/v1',
+			'/team',
+			array(
+				'methods'             => 'GET',
+				'permission_callback' => '__return_true',
+				'callback'            => static function ( WP_REST_Request $request ) {
+					$per_page = max( 1, min( 24, (int) $request->get_param( 'per_page' ) ?: 8 ) );
+					$posts    = get_posts(
+						array(
+							'post_type'      => 'team_member',
+							'post_status'    => 'publish',
+							'posts_per_page' => $per_page,
+							'orderby'        => array(
+								'menu_order' => 'ASC',
+								'date'       => 'DESC',
+							),
+						)
+					);
+
+					return rest_ensure_response(
+						array(
+							'items' => array_map( 'hun_prepare_team_member_payload', $posts ),
+						)
+					);
+				},
+			)
+		);
+
+		register_rest_route(
+			'hun/v1',
+			'/testimonials',
+			array(
+				'methods'             => 'GET',
+				'permission_callback' => '__return_true',
+				'callback'            => static function ( WP_REST_Request $request ) {
+					$per_page = max( 1, min( 24, (int) $request->get_param( 'per_page' ) ?: 6 ) );
+					$posts    = get_posts(
+						array(
+							'post_type'      => 'testimonial',
+							'post_status'    => 'publish',
+							'posts_per_page' => $per_page,
+							'orderby'        => array(
+								'menu_order' => 'ASC',
+								'date'       => 'DESC',
+							),
+						)
+					);
+
+					return rest_ensure_response(
+						array(
+							'items' => array_map( 'hun_prepare_testimonial_payload', $posts ),
+						)
+					);
 				},
 			)
 		);

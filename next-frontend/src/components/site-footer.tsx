@@ -1,9 +1,54 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import type { SiteSettings } from "@/lib/wordpress";
 import hunLogo from "../../../frontend/src/img/hun_logo.png";
-import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Send, Youtube } from "lucide-react";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
 
 export function SiteFooter({ settings }: { settings: SiteSettings }) {
+  const [email, setEmail] = useState("");
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleNewsletterSignup(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError("");
+    setIsSubscribed(false);
+
+    if (!email || !email.includes("@")) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/newsletter`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email })
+      });
+
+      if (response.ok) {
+        setIsSubscribed(true);
+        setEmail("");
+      } else {
+        setError("Failed to subscribe. Please try again.");
+      }
+    } catch (signupError) {
+      console.error("Newsletter signup error:", signupError);
+      setError("An error occurred. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <footer className="bg-slate-900 text-white pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12">
@@ -48,9 +93,35 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
         </div>
         <div>
           <h4 className="font-bold mb-6">Get the latest information</h4>
-          <div className="bg-slate-800 rounded-lg px-4 py-3 text-sm text-gray-400">
-            Follow our listings, updates, and market insights through our contact channels and public pages.
+          <div className="relative">
+            <form onSubmit={handleNewsletterSignup}>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email address"
+                className="w-full bg-slate-800 border-none rounded-lg px-4 py-3 pr-14 text-sm focus:ring-2 focus:ring-teal-600 outline-none"
+                disabled={isLoading}
+              />
+              <button
+                type="submit"
+                disabled={isLoading}
+                className={`absolute right-1 top-1 bottom-1 px-3 rounded-md transition-colors ${
+                  isLoading
+                    ? "bg-gray-600 cursor-wait"
+                    : "bg-teal-600 hover:bg-teal-700"
+                }`}
+              >
+                {isLoading ? "..." : <Send className="w-4 h-4" />}
+              </button>
+            </form>
           </div>
+          {error && (
+            <p className="text-red-400 text-xs mt-2">{error}</p>
+          )}
+          {isSubscribed && (
+            <p className="text-green-400 text-xs mt-2">Thank you for subscribing!</p>
+          )}
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 mt-16 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between text-gray-500 text-xs text-center md:text-left gap-4">
