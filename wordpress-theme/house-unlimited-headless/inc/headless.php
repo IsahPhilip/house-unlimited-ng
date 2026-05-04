@@ -24,15 +24,35 @@ if ( ! function_exists( 'hun_headless_frontend_url' ) ) {
 	}
 }
 
+if ( ! function_exists( 'hun_sanitize_headless_frontend_url' ) ) {
+	/**
+	 * Normalize the saved frontend URL.
+	 */
+	function hun_sanitize_headless_frontend_url( $value ): string {
+		$value = is_string( $value ) ? trim( $value ) : '';
+		$value = esc_url_raw( $value );
+
+		if ( '' === $value ) {
+			return 'http://localhost:3000';
+		}
+
+		return untrailingslashit( $value );
+	}
+}
+
 add_action(
 	'admin_init',
 	static function () {
+		if ( false === get_option( 'hun_headless_frontend_url', false ) ) {
+			add_option( 'hun_headless_frontend_url', 'http://localhost:3000', '', false );
+		}
+
 		register_setting(
 			'reading',
 			'hun_headless_frontend_url',
 			array(
 				'type'              => 'string',
-				'sanitize_callback' => 'esc_url_raw',
+				'sanitize_callback' => 'hun_sanitize_headless_frontend_url',
 				'default'           => 'http://localhost:3000',
 			)
 		);

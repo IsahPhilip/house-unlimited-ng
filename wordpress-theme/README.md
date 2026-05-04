@@ -18,6 +18,12 @@
 4. Set the `Headless Frontend URL` under `Settings > Reading`.
 5. Create a WordPress menu and assign it to the `Primary Menu` location.
 
+If saving `Settings > Reading` fails on the host, you can hard-code the frontend URL in `wp-config.php` instead:
+
+```php
+define( 'HUN_HEADLESS_FRONTEND_URL', 'https://houseunlimitednigeria.com' );
+```
+
 ## Important note on plugin compatibility
 
 Plugin compatibility in a headless build is not automatic. A plugin must expose the data you need through:
