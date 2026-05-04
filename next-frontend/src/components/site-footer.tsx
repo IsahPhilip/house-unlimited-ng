@@ -61,7 +61,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
             />
           </Link>
           <p className="text-gray-400 text-sm">
-            {settings.description || "Empowering home seekers with expert human guidance since 1995."}
+            {"Empowering home seekers with expert human guidance since 1995."}
           </p>
           <div className="flex space-x-4">
             {[Facebook, Instagram, Linkedin, Youtube].map((Icon, index) => (
@@ -131,7 +131,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
             alt={settings.title}
             className="h-5 w-auto opacity-70"
           />
-          <span>&copy; 2024 {settings.title}. All rights reserved.</span>
+          <span>&copy; 2026 houseunlimitednigeria.com. All rights reserved.</span>
         </div>
         <div className="space-x-6">
           <Link href="/terms" className="hover:text-white transition-colors">User Terms & Conditions</Link>
