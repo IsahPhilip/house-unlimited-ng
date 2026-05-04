@@ -8,6 +8,17 @@ type SiteHeaderProps = {
 };
 
 export function SiteHeader({ menu, settings }: SiteHeaderProps) {
+  const defaultNavItems: MenuItem[] = [
+    { label: "Home", path: "/" },
+    { label: "Property", path: "/properties" },
+    { label: "Blog", path: "/blog" },
+    { label: "About Us", path: "/about" },
+    { label: "Contact Us", path: "/contact" }
+  ];
+
+  const menuMap = new Map(menu.map((item) => [item.path, item]));
+  const navItems = defaultNavItems.map((item) => menuMap.get(item.path) || item);
+
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4">
@@ -20,7 +31,7 @@ export function SiteHeader({ menu, settings }: SiteHeaderProps) {
             />
           </Link>
           <nav className="hidden md:flex items-center justify-center gap-8 flex-1" aria-label="Primary navigation">
-            {menu.map((item) => (
+            {navItems.map((item) => (
               <Link
                 key={`${item.path}-${item.label}`}
                 href={item.path}

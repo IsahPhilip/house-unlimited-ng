@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getPrimaryMenu, getSiteSettings } from "@/lib/wordpress";
-import { Phone, Mail } from "lucide-react";
+import { Phone, Mail, Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-body"
+});
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -32,18 +38,18 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className="font-['Inter'] text-gray-900 bg-white antialiased">
+      <body className={`${inter.variable} text-gray-900 bg-white antialiased`}>
         <div className="bg-slate-900 text-white py-2 text-[10px] uppercase tracking-widest font-bold">
           <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2">
             <div className="flex flex-col md:flex-row md:space-x-6 items-center">
               <span className="flex items-center"><Phone className="w-4 h-4 mr-2 text-teal-500" /> {settings.phone}</span>
               <span className="flex items-center"><Mail className="w-4 h-4 mr-2 text-teal-500" /> {settings.email}</span>
             </div>
-            <div className="flex space-x-4">
-              <span className="w-4 h-4 hover:text-teal-500 cursor-pointer transition-colors">f</span>
-              <span className="w-4 h-4 hover:text-teal-500 cursor-pointer transition-colors">t</span>
-              <span className="w-4 h-4 hover:text-teal-500 cursor-pointer transition-colors">i</span>
-              <span className="w-4 h-4 hover:text-teal-500 cursor-pointer transition-colors">l</span>
+            <div className="flex items-center space-x-4 text-slate-300">
+              <Facebook className="w-4 h-4 hover:text-teal-500 cursor-pointer transition-colors" />
+              <Instagram className="w-4 h-4 hover:text-teal-500 cursor-pointer transition-colors" />
+              <Linkedin className="w-4 h-4 hover:text-teal-500 cursor-pointer transition-colors" />
+              <Youtube className="w-4 h-4 hover:text-teal-500 cursor-pointer transition-colors" />
             </div>
           </div>
         </div>

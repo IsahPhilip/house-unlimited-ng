@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { SiteSettings } from "@/lib/wordpress";
 import hunLogo from "../../../frontend/src/img/hun_logo.png";
-import { Facebook, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from "lucide-react";
 
 export function SiteFooter({ settings }: { settings: SiteSettings }) {
   return (
@@ -19,7 +19,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
             {settings.description || "Empowering home seekers with expert human guidance since 1995."}
           </p>
           <div className="flex space-x-4">
-            {[Facebook, Twitter, Linkedin].map((Icon, index) => (
+            {[Facebook, Instagram, Linkedin, Youtube].map((Icon, index) => (
               <span
                 key={index}
                 className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-teal-600 transition-colors"
