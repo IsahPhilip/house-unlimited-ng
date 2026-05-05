@@ -101,7 +101,7 @@ export function ContactClient({ settings }: ContactClientProps) {
     <div className="py-24 bg-gray-50 min-h-screen animate-in fade-in duration-500">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
-          <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Get In Touch</p>
+          <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Get In Touch</p>
           <h1 className="text-4xl font-bold text-gray-900">
             Contact <span className="text-gray-400 font-light italic">Us</span>
           </h1>
@@ -114,7 +114,7 @@ export function ContactClient({ settings }: ContactClientProps) {
           <div className="lg:col-span-1 space-y-8">
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
               <div className="flex items-center space-x-4 mb-6">
-                <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-[#005555] text-white rounded-2xl flex items-center justify-center">
                   <Phone className="w-6 h-6" />
                 </div>
                 <div>
@@ -123,7 +123,7 @@ export function ContactClient({ settings }: ContactClientProps) {
                 </div>
               </div>
               <div className="flex items-center space-x-4 mb-6">
-                <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-[#005555] text-white rounded-2xl flex items-center justify-center">
                   <Mail className="w-6 h-6" />
                 </div>
                 <div>
@@ -134,7 +134,7 @@ export function ContactClient({ settings }: ContactClientProps) {
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-[#005555] text-white rounded-2xl flex items-center justify-center">
                   <MapPin className="w-6 h-6" />
                 </div>
                 <div>
@@ -155,11 +155,11 @@ export function ContactClient({ settings }: ContactClientProps) {
                 </div>
                 <div className="flex justify-between border-b border-white/10 pb-2">
                   <span className="text-gray-400">Saturday</span>
-                  <span className="font-bold text-teal-400">Closed</span>
+                  <span className="font-bold text-[#005555]">Closed</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Sunday</span>
-                  <span className="font-bold text-teal-400">Closed</span>
+                  <span className="font-bold text-[#005555]">Closed</span>
                 </div>
               </div>
             </div>
@@ -206,7 +206,7 @@ export function ContactClient({ settings }: ContactClientProps) {
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="Your full name"
-                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none"
+                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-[#005555] outline-none"
                         disabled={isSubmitting}
                       />
                     </div>
@@ -218,7 +218,7 @@ export function ContactClient({ settings }: ContactClientProps) {
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="you@houseunlimitednigeria.com"
-                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none"
+                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-[#005555] outline-none"
                         disabled={isSubmitting}
                       />
                     </div>
@@ -230,7 +230,7 @@ export function ContactClient({ settings }: ContactClientProps) {
                         value={formData.subject}
                         onChange={handleChange}
                         placeholder="What can we help you with?"
-                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none"
+                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-[#005555] outline-none"
                         disabled={isSubmitting}
                       />
                     </div>
@@ -242,7 +242,7 @@ export function ContactClient({ settings }: ContactClientProps) {
                         onChange={handleChange}
                         rows={6}
                         placeholder="Please provide details about your inquiry..."
-                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none resize-none"
+                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-[#005555] outline-none resize-none"
                         disabled={isSubmitting}
                       />
                     </div>
@@ -254,7 +254,7 @@ export function ContactClient({ settings }: ContactClientProps) {
                         value={formData.phone}
                         onChange={handleChange}
                         placeholder="+1 (555) 123-4567"
-                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none"
+                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-[#005555] outline-none"
                         disabled={isSubmitting}
                       />
                     </div>
@@ -264,7 +264,7 @@ export function ContactClient({ settings }: ContactClientProps) {
                         name="type"
                         value={formData.type}
                         onChange={handleChange}
-                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-teal-600 outline-none"
+                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-[#005555] outline-none"
                         disabled={isSubmitting}
                       >
                         <option value="general">General Inquiry</option>
@@ -278,8 +278,8 @@ export function ContactClient({ settings }: ContactClientProps) {
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className={`w-full md:w-auto bg-teal-600 hover:bg-teal-700 text-white px-10 py-4 rounded-xl font-bold transition-all shadow-lg shadow-teal-200 uppercase tracking-widest text-xs ${
-                          isSubmitting ? "opacity-50 cursor-wait" : "hover:shadow-teal-300"
+                        className={`w-full md:w-auto bg-[#005555] hover:bg-[#004444] text-white px-10 py-4 rounded-xl font-bold transition-all shadow-lg shadow-[#005555]/20 uppercase tracking-widest text-xs ${
+                          isSubmitting ? "opacity-50 cursor-wait" : "hover:shadow-[#005555]/30"
                         }`}
                       >
                         {isSubmitting ? "Sending..." : "Send Message"}

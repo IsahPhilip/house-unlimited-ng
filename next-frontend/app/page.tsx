@@ -62,7 +62,7 @@ export default async function HomePage() {
 
             <div className="bg-white p-2 rounded-2xl shadow-2xl inline-flex flex-col w-full md:w-auto transition-all">
               <div className="flex p-1">
-                <button className="px-8 py-2.5 rounded-xl font-bold transition-all bg-[#005555] text-white">Buy & Sell</button>
+                <button className="px-8 py-2.5 rounded-xl font-bold transition-all bg-[#005555] text-white">Buy & Invest</button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 items-center">
                 <div className="relative">

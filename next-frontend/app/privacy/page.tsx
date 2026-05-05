@@ -50,7 +50,7 @@ export default async function PrivacyPage() {
     <div className="py-24 bg-gray-50 min-h-screen animate-in fade-in duration-500">
       <div className="max-w-4xl mx-auto px-4">
         <div className="text-center mb-12">
-          <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Privacy</p>
+          <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Privacy</p>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Privacy <span className="text-gray-400 italic font-light">Policy</span></h1>
           <p className="text-gray-600 text-sm max-w-2xl mx-auto">
             This policy explains how {settings.title} collects, uses, and protects personal information across our website and client touchpoints.

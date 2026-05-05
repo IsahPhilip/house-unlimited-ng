@@ -29,10 +29,10 @@ export default async function PropertiesPage() {
           </div>
 
           <div className="flex items-center bg-white p-1 rounded-2xl shadow-sm border border-gray-100">
-             <button className="px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center bg-teal-600 text-white shadow-md">
+             <button className="px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center bg-[#005555] text-white shadow-md">
                <span className="mr-2 text-base">⊞</span> Grid
              </button>
-             <button className="px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center text-gray-500 hover:text-teal-600">
+             <button className="px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center text-gray-500 hover:text-[#005555]">
                <span className="mr-2 text-base">🗺</span> Map
              </button>
           </div>
@@ -41,13 +41,13 @@ export default async function PropertiesPage() {
         {/* Filters & Results Summary */}
         <div className="flex flex-col md:flex-row justify-between mb-8 gap-4 items-center">
           <div className="flex bg-white p-1 rounded-xl shadow-sm border border-gray-100">
-            <button className="px-8 py-2.5 rounded-lg capitalize font-bold transition-all bg-teal-600 text-white shadow-md">
-              buy/sell
+            <button className="px-8 py-2.5 rounded-lg capitalize font-bold transition-all bg-[#005555] text-white shadow-md">
+              buy/invest
             </button>
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-sm font-medium text-gray-500">{properties.length} Results found</span>
-            <select className="bg-white border border-gray-100 rounded-xl px-4 py-2 font-medium text-gray-600 outline-none focus:ring-2 focus:ring-teal-600 shadow-sm">
+            <select className="bg-white border border-gray-100 rounded-xl px-4 py-2 font-medium text-gray-600 outline-none focus:ring-2 focus:ring-[#005555] shadow-sm">
               <option>Price: Low to High</option>
               <option>Price: High to Low</option>
             </select>
@@ -65,7 +65,7 @@ export default async function PropertiesPage() {
             <div className="text-6xl mb-6">🏜️</div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">No matching properties found</h3>
             <p className="text-gray-500 mb-8">Try adjusting your filters or check back later for new listings.</p>
-            <button className="text-teal-600 font-bold hover:underline">Reset all filters</button>
+            <button className="text-[#005555] font-bold hover:underline">Reset all filters</button>
           </div>
         )}
       </div>

@@ -358,13 +358,13 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                 displayPost.categories.map((category) => (
                   <span
                     key={category}
-                    className="bg-teal-600 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg"
+                    className="bg-[#005555] text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg"
                   >
                     {category}
                   </span>
                 ))
               ) : (
-                <span className="bg-teal-600 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg">
+                <span className="bg-[#005555] text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg">
                   Blog
                 </span>
               )}
@@ -400,21 +400,21 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
             <div>
               <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-6">Share Article</h4>
               <div className="flex flex-col space-y-4">
-                <a href={buildShareUrl("facebook", displayPost.slug, displayPost.title)} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-teal-600 hover:text-white transition-all shadow-sm">
+                <a href={buildShareUrl("facebook", displayPost.slug, displayPost.title)} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#005555] hover:text-white transition-all shadow-sm">
                   <Facebook className="w-5 h-5" />
                 </a>
-                <a href={buildShareUrl("twitter", displayPost.slug, displayPost.title)} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-teal-400 hover:text-white transition-all shadow-sm">
+                <a href={buildShareUrl("twitter", displayPost.slug, displayPost.title)} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#005555] hover:text-white transition-all shadow-sm">
                   <Twitter className="w-5 h-5" />
                 </a>
-                <a href={buildShareUrl("linkedin", displayPost.slug, displayPost.title)} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-teal-700 hover:text-white transition-all shadow-sm">
+                <a href={buildShareUrl("linkedin", displayPost.slug, displayPost.title)} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#005555] hover:text-white transition-all shadow-sm">
                   <Linkedin className="w-5 h-5" />
                 </a>
-                <button onClick={handleCopyLink} className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-slate-900 hover:text-white transition-all shadow-sm">
+                <button onClick={handleCopyLink} className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#005555] hover:text-white transition-all shadow-sm">
                   <Link2 className="w-5 h-5" />
                 </button>
               </div>
             </div>
-            <Link href="/blog" className="inline-flex items-center text-teal-600 hover:text-teal-700 transition-colors">
+            <Link href="/blog" className="inline-flex items-center text-[#005555] hover:text-[#005555] transition-colors">
               <ArrowLeft className="w-5 h-5 mr-2" />
               Back to Blog
             </Link>
@@ -422,7 +422,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
         </div>
 
         <div className="lg:col-span-2">
-          <article className="prose prose-lg prose-slate max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-strong:text-gray-900 prose-a:text-teal-600 hover:prose-a:text-teal-700">
+          <article className="prose prose-lg prose-slate max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-strong:text-gray-900 prose-a:text-[#005555] hover:prose-a:text-[#005555]">
             <div dangerouslySetInnerHTML={{ __html: displayPost.content || displayPost.excerpt }} />
           </article>
 
@@ -440,7 +440,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
               <span>{commentCount} Comments</span>
             </div>
             <button
-              className={`flex items-center space-x-2 transition-colors ${bookmarked ? "text-teal-600" : "text-gray-600 hover:text-teal-600"}`}
+              className={`flex items-center space-x-2 transition-colors ${bookmarked ? "text-[#005555]" : "text-gray-600 hover:text-[#005555]"}`}
               onClick={handleToggleBookmark}
               disabled={!interactivePost?.id}
             >
@@ -462,13 +462,13 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                 value={commentText}
                 onChange={(event) => setCommentText(event.target.value)}
                 placeholder={currentUser ? "Write a thoughtful comment..." : "Sign in to comment"}
-                className="w-full min-h-[120px] rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                className="w-full min-h-[120px] rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#005555] focus:border-[#005555]"
                 disabled={!currentUser || commentSubmitting || !interactivePost?.id}
               />
               <div className="mt-3 flex items-center justify-end">
                 <button
                   type="submit"
-                  className="bg-teal-600 text-white px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm disabled:opacity-60"
+                  className="bg-[#005555] text-white px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm disabled:opacity-60"
                   disabled={!currentUser || commentSubmitting || !commentText.trim() || !interactivePost?.id}
                 >
                   {commentSubmitting ? "Posting..." : "Post Comment"}
@@ -497,7 +497,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                           {comment.user?.avatar ? (
                             <img src={comment.user.avatar} alt={comment.user.name} className="w-10 h-10 rounded-full object-cover" />
                           ) : (
-                            <div className="w-10 h-10 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-bold">
+                            <div className="w-10 h-10 rounded-full bg-[#005555] text-[#005555] flex items-center justify-center text-xs font-bold">
                               {comment.user?.name?.split(" ").map((part) => part[0]).join("").slice(0, 2) || "NA"}
                             </div>
                           )}
@@ -515,7 +515,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
 
                         {isOwner && (
                           <div className="flex items-center gap-2">
-                            <button type="button" className="text-gray-500 hover:text-teal-600" onClick={() => handleStartEdit(comment)}>
+                            <button type="button" className="text-gray-500 hover:text-[#005555]" onClick={() => handleStartEdit(comment)}>
                               <Pencil className="w-4 h-4" />
                             </button>
                             <button type="button" className="text-gray-500 hover:text-red-500" onClick={() => handleDeleteComment(comment.id)}>
@@ -531,13 +531,13 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                             <textarea
                               value={editingContent}
                               onChange={(event) => setEditingContent(event.target.value)}
-                              className="w-full min-h-[100px] rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                              className="w-full min-h-[100px] rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#005555] focus:border-[#005555]"
                             />
                             <div className="flex items-center justify-end gap-2">
                               <button type="button" className="px-4 py-2 text-xs font-bold uppercase tracking-widest text-gray-500" onClick={handleCancelEdit}>
                                 Cancel
                               </button>
-                              <button type="button" className="bg-teal-600 text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest" onClick={() => handleSaveEdit(comment.id)} disabled={!editingContent.trim()}>
+                              <button type="button" className="bg-[#005555] text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest" onClick={() => handleSaveEdit(comment.id)} disabled={!editingContent.trim()}>
                                 Save
                               </button>
                             </div>
@@ -565,9 +565,9 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
               <div>
                 <h4 className="text-xl font-bold text-gray-900 mb-1">{displayPost.author || "Unknown Author"}</h4>
                 {displayPost.authorRole ? (
-                  <p className="text-teal-600 text-xs font-bold uppercase tracking-widest mb-3">{displayPost.authorRole}</p>
+                  <p className="text-[#005555] text-xs font-bold uppercase tracking-widest mb-3">{displayPost.authorRole}</p>
                 ) : (
-                  <p className="text-teal-600 text-xs font-bold uppercase tracking-widest mb-3">Editorial Team</p>
+                  <p className="text-[#005555] text-xs font-bold uppercase tracking-widest mb-3">Editorial Team</p>
                 )}
                 <p className="text-gray-500 text-sm leading-relaxed italic">
                   {displayPost.authorBio || "House Unlimited Nigeria shares practical real estate updates, market intelligence, and property guidance for buyers, sellers, and investors."}
@@ -592,7 +592,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                       </div>
                     )}
                   </div>
-                  <h5 className="font-bold text-gray-900 text-sm leading-snug group-hover:text-teal-600 transition-colors">
+                  <h5 className="font-bold text-gray-900 text-sm leading-snug group-hover:text-[#005555] transition-colors">
                     {relatedPost.title}
                   </h5>
                   <p className="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-wider">{relatedPost.date}</p>
@@ -600,10 +600,10 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
               ))}
             </div>
 
-            <div className="mt-12 bg-teal-600 rounded-3xl p-8 text-white">
+            <div className="mt-12 bg-[#005555] rounded-3xl p-8 text-white">
               <h4 className="text-lg font-bold mb-4">Want more insights?</h4>
-              <p className="text-teal-100 text-xs leading-relaxed mb-6">Join the conversation, ask questions, and get practical guidance from our property team.</p>
-              <Link href="/contact" className="block w-full bg-white text-teal-600 py-3 rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg text-center">
+              <p className="text-[#005555] text-xs leading-relaxed mb-6">Join the conversation, ask questions, and get practical guidance from our property team.</p>
+              <Link href="/contact" className="block w-full bg-white text-[#005555] py-3 rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg text-center">
                 Talk to Our Team
               </Link>
             </div>

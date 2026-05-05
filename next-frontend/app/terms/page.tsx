@@ -50,7 +50,7 @@ export default async function TermsPage() {
     <div className="py-24 bg-gray-50 min-h-screen animate-in fade-in duration-500">
       <div className="max-w-4xl mx-auto px-4">
         <div className="text-center mb-12">
-          <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Legal</p>
+          <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Legal</p>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Terms & <span className="text-gray-400 italic font-light">Conditions</span></h1>
           <p className="text-gray-600 text-sm max-w-2xl mx-auto">
             These terms govern access to and use of the {settings.title} website, content, and public enquiry features.
