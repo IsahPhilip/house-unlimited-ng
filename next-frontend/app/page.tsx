@@ -53,16 +53,16 @@ export default async function HomePage() {
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 w-full">
           <div className="max-w-2xl">
-            <p className="text-teal-600 font-semibold mb-4 tracking-wide uppercase tracking-[0.2em] text-xs font-bold">Find Your Dream Property Easily</p>
+            <p className="text-[#005555] font-semibold mb-4 tracking-wide uppercase tracking-[0.2em] text-xs font-bold">Find Your Dream Property Easily</p>
             <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
               Luxury Homes & Investment<br />
-              <span className="text-teal-600">Properties in Abuja</span>
+              <span className="text-[#005555]">Properties in Abuja</span>
             </h1>
             <p className="text-gray-600 text-lg mb-10 max-w-lg">Discover verified lands and homes in prime locations designed for smart investors and future homeowners.</p>
 
             <div className="bg-white p-2 rounded-2xl shadow-2xl inline-flex flex-col w-full md:w-auto transition-all">
               <div className="flex p-1">
-                <button className="px-8 py-2.5 rounded-xl font-bold transition-all bg-teal-600 text-white">Buy & Sell</button>
+                <button className="px-8 py-2.5 rounded-xl font-bold transition-all bg-[#005555] text-white">Buy & Sell</button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 items-center">
                 <div className="relative">
@@ -88,7 +88,7 @@ export default async function HomePage() {
                     <option>N300,000,000+</option>
                   </select>
                 </div>
-                <Link href="/properties" className="bg-teal-600 text-white h-14 w-14 md:w-full rounded-xl flex items-center justify-center font-bold hover:bg-teal-700 transition-all shadow-lg shadow-teal-200">
+                <Link href="/properties" className="bg-[#005555] text-white h-14 w-14 md:w-full rounded-xl flex items-center justify-center font-bold hover:bg-[#004242] transition-all shadow-lg shadow-[#d8eeee]">
                   <Search className="md:hidden w-5 h-5" />
                   <span className="hidden md:block">Search</span>
                 </Link>
@@ -102,7 +102,7 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-stretch">
             <div className="lg:col-span-2">
-              <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Trust & Transparency</p>
+              <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Trust & Transparency</p>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 Verified Listings, Clearer Decisions
               </h2>
@@ -113,10 +113,10 @@ export default async function HomePage() {
               <div className="bg-gray-50 border border-gray-100 rounded-2xl p-5">
                 <div className="flex items-center justify-between text-sm text-gray-600 mb-3">
                   <span>Verification Coverage</span>
-                  <span className="font-bold text-teal-600">98%+</span>
+                  <span className="font-bold text-[#005555]">98%+</span>
                 </div>
                 <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div className="h-full w-[92%] bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full"></div>
+                  <div className="h-full w-[92%] bg-gradient-to-r from-[#005555] to-[#0f6b6b] rounded-full"></div>
                 </div>
                 <p className="text-xs text-gray-500 mt-3">Listings are verified within 48 hours in most cases.</p>
               </div>
@@ -131,7 +131,7 @@ export default async function HomePage() {
                 const Icon = item.icon;
                 return (
                   <div key={item.label} className="border border-gray-100 rounded-2xl p-5 bg-white shadow-sm hover:shadow-md transition-all">
-                    <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#d8eeee] text-[#005555] flex items-center justify-center mb-3">
                       <Icon className="w-5 h-5" />
                     </div>
                     <div className="text-gray-900 font-bold text-sm mb-1">{item.label}</div>
@@ -147,7 +147,7 @@ export default async function HomePage() {
       <section className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Services</p>
+            <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Services</p>
             <h2 className="text-4xl font-bold text-gray-900">Who We <span className="text-gray-400 italic font-light">Serve</span></h2>
             <p className="text-gray-600 mt-3">Expert support for buying and selling properties.</p>
           </div>
@@ -157,8 +157,8 @@ export default async function HomePage() {
               const Icon = icons[index % icons.length];
 
               return (
-                <div key={service.title} className="p-6 rounded-3xl transition-all bg-white border border-gray-100 hover:border-teal-500 hover:shadow-xl">
-                  <div className="w-12 h-12 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center mb-4">
+                <div key={service.title} className="p-6 rounded-3xl transition-all bg-white border border-gray-100 hover:border-[#0f6b6b] hover:shadow-xl">
+                  <div className="w-12 h-12 rounded-2xl bg-[#d8eeee] text-[#005555] flex items-center justify-center mb-4">
                     <Icon className="w-6 h-6" />
                   </div>
                   <h4 className="font-bold text-gray-900 mb-2">{service.title}</h4>
@@ -173,10 +173,10 @@ export default async function HomePage() {
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-end mb-12 gap-6 flex-wrap">
           <div>
-            <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Featured Listings</p>
+            <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Featured Listings</p>
             <h2 className="text-4xl font-bold text-gray-900">Discover <span className="text-gray-400 italic font-light">Featured Properties</span></h2>
           </div>
-          <Link href="/properties" className="bg-teal-600 text-white px-8 py-3 rounded-full flex items-center group font-bold text-sm shadow-lg shadow-teal-100">
+          <Link href="/properties" className="bg-[#005555] text-white px-8 py-3 rounded-full flex items-center group font-bold text-sm shadow-lg shadow-[#d8eeee]">
             Visit All Properties <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
@@ -194,7 +194,7 @@ export default async function HomePage() {
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Why Choose Us</p>
+            <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Why Choose Us</p>
             <h2 className="text-4xl font-bold text-gray-900">Built to <span className="text-gray-400 italic font-light">Outperform</span></h2>
           </div>
 
@@ -211,7 +211,7 @@ export default async function HomePage() {
 
                 return (
                   <div key={feature.title} className="p-6 rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-all">
-                    <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#d8eeee] text-[#005555] flex items-center justify-center mb-3">
                       <Icon className="w-5 h-5" />
                     </div>
                     <h4 className="font-bold text-gray-900 mb-1 text-sm">{feature.title}</h4>
@@ -221,13 +221,13 @@ export default async function HomePage() {
               })}
             </div>
 
-            <div className="relative bg-teal-600 rounded-3xl p-8 md:p-12 text-white overflow-hidden">
+            <div className="relative bg-[#005555] rounded-3xl p-8 md:p-12 text-white overflow-hidden">
               <div className="absolute inset-0 opacity-20">
                 <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&q=80&w=800" alt="Happy family" className="w-full h-full object-cover" />
               </div>
               <div className="relative z-10">
                 <h3 className="text-3xl font-bold mb-4">A Partner, Not Just a Platform</h3>
-                <p className="text-teal-100 mb-6">We combine market intelligence with hands-on support to help you move faster and smarter.</p>
+                <p className="text-[#d8eeee] mb-6">We combine market intelligence with hands-on support to help you move faster and smarter.</p>
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
                     <span className="bg-white/20 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">✓</span>
@@ -244,7 +244,7 @@ export default async function HomePage() {
                 </div>
                 <Link
                   href="/properties"
-                  className="mt-8 inline-flex bg-white text-teal-600 px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition-all shadow-lg"
+                  className="mt-8 inline-flex bg-white text-[#005555] px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition-all shadow-lg"
                 >
                   Start Your Search
                 </Link>
@@ -257,7 +257,7 @@ export default async function HomePage() {
       <section className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">How It Works</p>
+            <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">How It Works</p>
             <h2 className="text-4xl font-bold text-gray-900">Simple Steps to <span className="text-gray-400 italic font-light">Your Home</span></h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -268,7 +268,7 @@ export default async function HomePage() {
               { step: '04', title: 'Close with confidence', text: 'Negotiation, paperwork, and secure closing handled.' },
             ].map((item) => (
               <div key={item.step} className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all">
-                <div className="text-teal-600 text-sm font-bold mb-3">Step {item.step}</div>
+                <div className="text-[#005555] text-sm font-bold mb-3">Step {item.step}</div>
                 <h4 className="font-bold text-gray-900 mb-2">{item.title}</h4>
                 <p className="text-sm text-gray-600">{item.text}</p>
               </div>
@@ -279,20 +279,20 @@ export default async function HomePage() {
 
       <section className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 text-center mb-16">
-          <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Our Testimonials</p>
+          <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Our Testimonials</p>
           <h2 className="text-4xl font-bold text-gray-900">What Our <span className="text-gray-400 italic font-light font-normal">Client Say About Us</span></h2>
         </div>
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-8">
           {testimonials.map((testimonial, idx) => (
             <div key={idx} className="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 flex items-start space-x-6">
-              <img src={testimonial.img} alt={testimonial.name} className="w-20 h-20 rounded-full border-4 border-teal-50 object-cover" />
+              <img src={testimonial.img} alt={testimonial.name} className="w-20 h-20 rounded-full border-4 border-[#d8eeee] object-cover" />
               <div>
                 <div className="flex justify-between items-center mb-4">
                   <div>
                     <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
                     <p className="text-gray-400 text-sm">{testimonial.role}</p>
                   </div>
-                  <div className="text-teal-200 text-6xl font-serif h-10 overflow-hidden leading-[1]">"</div>
+                  <div className="text-[#9fd1d1] text-6xl font-serif h-10 overflow-hidden leading-[1]">"</div>
                 </div>
                 <p className="text-gray-600 leading-relaxed italic text-sm">"{testimonial.text}"</p>
                 <div className="mt-4 flex text-yellow-400 space-x-1">
@@ -309,11 +309,11 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-wrap items-end justify-between gap-6 mb-8">
             <div>
-              <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Editorial</p>
+              <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Editorial</p>
               <h2 className="text-4xl font-bold text-gray-900">From Our <span className="text-gray-400 italic font-light">Blog</span></h2>
               <p className="text-gray-600 mt-3 max-w-2xl">Stay informed with market updates, property advice, and investment insights from the WordPress backend.</p>
             </div>
-            <Link className="bg-teal-600 text-white px-8 py-3 rounded-full flex items-center group font-bold text-sm shadow-lg shadow-teal-100" href="/blog">
+            <Link className="bg-[#005555] text-white px-8 py-3 rounded-full flex items-center group font-bold text-sm shadow-lg shadow-[#d8eeee]" href="/blog">
               See all posts <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
@@ -327,22 +327,22 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="py-16 bg-teal-600 text-white">
+      <section className="py-16 bg-[#005555] text-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="bg-teal-700 rounded-3xl p-8 md:p-12 relative overflow-hidden">
+          <div className="bg-[#004242] rounded-3xl p-8 md:p-12 relative overflow-hidden">
             <div className="absolute inset-0 opacity-10">
               <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1920" alt="Background" className="w-full h-full object-cover" />
             </div>
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
               <div>
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Find Your Perfect Property?</h2>
-                <p className="text-teal-100 mb-6 max-w-lg">
+                <p className="text-[#d8eeee] mb-6 max-w-lg">
                   Start your real estate journey today. Whether you&apos;re buying or selling, we have the right solution for you.
                 </p>
                 <div className="flex flex-wrap gap-4">
                   <Link
                     href="/properties"
-                    className="bg-white text-teal-700 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-all shadow-lg"
+                    className="bg-white text-[#005555] px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-all shadow-lg"
                   >
                     Browse Properties for Sale
                   </Link>
@@ -359,7 +359,7 @@ export default async function HomePage() {
                       <p className="font-bold text-lg">{settings.phone}</p>
                     </div>
                   </div>
-                  <Link href="/contact" className="block w-full bg-white text-teal-700 py-3 rounded-xl font-bold hover:bg-gray-100 transition-all text-center">
+                  <Link href="/contact" className="block w-full bg-white text-[#005555] py-3 rounded-xl font-bold hover:bg-gray-100 transition-all text-center">
                     Get in Touch
                   </Link>
                 </div>

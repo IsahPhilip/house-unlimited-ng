@@ -9,9 +9,11 @@
   --foreground: #0f172a;
   --muted: #526071;
   --border: rgba(15, 23, 42, 0.08);
-  --brand: #0f766e;
-  --brand-dark: #115e59;
-  --accent: #d97706;
+  --brand: #005555;
+  --brand-dark: #004242;
+  --brand-soft: #0f6b6b;
+  --brand-tint: #d8eeee;
+  --accent: #007070;
   --shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
 }
 
@@ -26,7 +28,7 @@ html {
 body {
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(15, 118, 110, 0.08), transparent 24rem),
+    radial-gradient(circle at top left, rgba(0, 85, 85, 0.08), transparent 24rem),
     linear-gradient(180deg, #fcfcfb 0%, var(--background) 100%);
   color: var(--foreground);
   font-family: var(--font-body);

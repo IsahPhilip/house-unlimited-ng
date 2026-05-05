@@ -67,7 +67,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
             {[Facebook, Instagram, Linkedin, Youtube].map((Icon, index) => (
               <span
                 key={index}
-                className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-teal-600 transition-colors"
+                className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-[#005555] transition-colors"
               >
                 <Icon className="w-4 h-4" />
               </span>
@@ -77,18 +77,18 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
         <div>
           <h4 className="font-bold mb-6">Company</h4>
           <div className="space-y-3 text-gray-400 text-sm">
-            <Link href="/properties" className="block hover:text-teal-400 transition-colors">Properties</Link>
-            <Link href="/blog" className="block hover:text-teal-400 transition-colors">Blog</Link>
-            <Link href="/about" className="block hover:text-teal-400 transition-colors">About Us</Link>
-            <Link href="/contact" className="block hover:text-teal-400 transition-colors">Contact Us</Link>
+            <Link href="/properties" className="block hover:text-[#9fd1d1] transition-colors">Properties</Link>
+            <Link href="/blog" className="block hover:text-[#9fd1d1] transition-colors">Blog</Link>
+            <Link href="/about" className="block hover:text-[#9fd1d1] transition-colors">About Us</Link>
+            <Link href="/contact" className="block hover:text-[#9fd1d1] transition-colors">Contact Us</Link>
           </div>
         </div>
         <div>
           <h4 className="font-bold mb-6">Contact</h4>
           <div className="space-y-3 text-gray-400 text-sm">
-            <p className="flex items-center"><Phone className="w-4 h-4 mr-2 text-teal-500" /> {settings.phone}</p>
-            <p className="flex items-center"><Mail className="w-4 h-4 mr-2 text-teal-500" /> {settings.email}</p>
-            <p className="flex items-center"><MapPin className="w-4 h-4 mr-2 text-teal-500" /> {settings.address}</p>
+            <p className="flex items-center"><Phone className="w-4 h-4 mr-2 text-[#005555]" /> {settings.phone}</p>
+            <p className="flex items-center"><Mail className="w-4 h-4 mr-2 text-[#005555]" /> {settings.email}</p>
+            <p className="flex items-center"><MapPin className="w-4 h-4 mr-2 text-[#005555]" /> {settings.address}</p>
           </div>
         </div>
         <div>
@@ -100,7 +100,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email address"
-                className="w-full bg-slate-800 border-none rounded-lg px-4 py-3 pr-14 text-sm focus:ring-2 focus:ring-teal-600 outline-none"
+                className="w-full bg-slate-800 border-none rounded-lg px-4 py-3 pr-14 text-sm focus:ring-2 focus:ring-[#005555] outline-none"
                 disabled={isLoading}
               />
               <button
@@ -109,7 +109,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
                 className={`absolute right-1 top-1 bottom-1 px-3 rounded-md transition-colors ${
                   isLoading
                     ? "bg-gray-600 cursor-wait"
-                    : "bg-teal-600 hover:bg-teal-700"
+                    : "bg-[#005555] hover:bg-[#004242]"
                 }`}
               >
                 {isLoading ? "..." : <Send className="w-4 h-4" />}

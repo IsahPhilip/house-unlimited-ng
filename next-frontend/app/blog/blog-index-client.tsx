@@ -27,7 +27,7 @@ export function BlogIndexClient({ posts, categories }: BlogIndexClientProps) {
     <div className="py-24 bg-gray-50 min-h-screen animate-in fade-in duration-500">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
-          <p className="text-teal-600 font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Latest Updates</p>
+          <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Latest Updates</p>
           <h1 className="text-4xl font-bold text-gray-900">Industry Insights & <span className="text-gray-400 font-light italic">News</span></h1>
         </div>
 
@@ -38,7 +38,7 @@ export function BlogIndexClient({ posts, categories }: BlogIndexClientProps) {
               onClick={() => setSelectedCategory(category)}
               className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
                 selectedCategory === category
-                  ? "bg-teal-600 text-white"
+                  ? "bg-[#005555] text-white"
                   : "bg-white text-gray-600 hover:bg-gray-100"
               }`}
             >
@@ -59,17 +59,17 @@ export function BlogIndexClient({ posts, categories }: BlogIndexClientProps) {
                       No Image
                     </div>
                   )}
-                  <div className="absolute top-4 left-4 bg-teal-600 text-white px-4 py-1.5 rounded-full text-[10px] font-bold shadow-md">{post.date}</div>
+                  <div className="absolute top-4 left-4 bg-[#005555] text-white px-4 py-1.5 rounded-full text-[10px] font-bold shadow-md">{post.date}</div>
                 </div>
                 <div className="p-8">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-teal-600 font-bold text-xs uppercase tracking-wider">{post.categories.join(", ") || "Blog"}</span>
+                    <span className="text-[#005555] font-bold text-xs uppercase tracking-wider">{post.categories.join(", ") || "Blog"}</span>
                     <span className="text-gray-400 text-[10px] font-medium uppercase">5 min read</span>
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 group-hover:text-teal-600 transition-colors line-clamp-2 leading-snug">{post.title}</h3>
+                  <h3 className="text-lg font-bold text-gray-900 mb-4 group-hover:text-[#005555] transition-colors line-clamp-2 leading-snug">{post.title}</h3>
                   <p className="text-gray-500 text-xs mb-6 line-clamp-3 leading-relaxed">{post.excerpt}</p>
                   <Link href={`/blog/${post.slug}`} className="text-gray-900 font-bold text-sm flex items-center group-hover:translate-x-1 transition-transform">
-                    Read More <ArrowRight className="ml-2 w-4 h-4 text-teal-600" />
+                    Read More <ArrowRight className="ml-2 w-4 h-4 text-[#005555]" />
                   </Link>
                 </div>
               </div>

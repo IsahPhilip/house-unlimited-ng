@@ -14,19 +14,19 @@ export function PropertyPreviewCard({ property }: { property: PropertyPreview })
               No Image
             </div>
           )}
-          <div className="absolute top-4 right-4 bg-teal-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+          <div className="absolute top-4 right-4 bg-[#005555] text-white px-3 py-1 rounded-full text-xs font-bold">
             {property.type || "Property"}
           </div>
         </div>
         <div className="p-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-teal-600 font-bold text-lg">{property.price || "Contact for price"}</span>
+            <span className="text-[#005555] font-bold text-lg">{property.price || "Contact for price"}</span>
             <div className="flex items-center text-gray-400 text-sm">
               <MapPin className="w-4 h-4 mr-1" />
               {property.location || "Location"}
             </div>
           </div>
-          <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-teal-600 transition-colors line-clamp-2 leading-snug">{property.title}</h3>
+          <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-[#005555] transition-colors line-clamp-2 leading-snug">{property.title}</h3>
           <p className="text-gray-500 text-sm mb-4 line-clamp-2 leading-relaxed">{property.excerpt}</p>
           <div className="flex items-center justify-between text-xs text-gray-400">
             <div className="flex items-center space-x-3">

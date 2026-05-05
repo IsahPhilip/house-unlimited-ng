@@ -42,14 +42,14 @@ export default async function RootLayout({
         <div className="bg-slate-900 text-white py-2 text-[10px] uppercase tracking-widest font-bold">
           <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2">
             <div className="flex flex-col md:flex-row md:space-x-6 items-center">
-              <span className="flex items-center"><Phone className="w-4 h-4 mr-2 text-teal-500" /> {settings.phone}</span>
-              <span className="flex items-center"><Mail className="w-4 h-4 mr-2 text-teal-500" /> {settings.email}</span>
+              <span className="flex items-center"><Phone className="w-4 h-4 mr-2 text-[#005555]" /> {settings.phone}</span>
+              <span className="flex items-center"><Mail className="w-4 h-4 mr-2 text-[#005555]" /> {settings.email}</span>
             </div>
             <div className="flex items-center space-x-4 text-slate-300">
-              <Facebook className="w-4 h-4 hover:text-teal-500 cursor-pointer transition-colors" />
-              <Instagram className="w-4 h-4 hover:text-teal-500 cursor-pointer transition-colors" />
-              <Linkedin className="w-4 h-4 hover:text-teal-500 cursor-pointer transition-colors" />
-              <Youtube className="w-4 h-4 hover:text-teal-500 cursor-pointer transition-colors" />
+              <Facebook className="w-4 h-4 hover:text-[#5fc0c0] cursor-pointer transition-colors" />
+              <Instagram className="w-4 h-4 hover:text-[#5fc0c0] cursor-pointer transition-colors" />
+              <Linkedin className="w-4 h-4 hover:text-[#5fc0c0] cursor-pointer transition-colors" />
+              <Youtube className="w-4 h-4 hover:text-[#5fc0c0] cursor-pointer transition-colors" />
             </div>
           </div>
         </div>

@@ -236,14 +236,14 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     title: data?.generalSettings?.title || "House Unlimited Nigeria",
     description:
       data?.generalSettings?.description ||
-      "A headless WordPress and Next.js real-estate frontend for fast pages and better SEO.",
+      "House Unlimited Nigeria is a leading real estate company dedicated to helping you find your dream home. With a wide range of properties, expert guidance, and personalized service, we make the home buying process seamless and enjoyable. Whether you're looking for a cozy apartment or a spacious family home, House Unlimited Nigeria is here to turn your vision into reality.",
     siteUrl: restSettings?.siteUrl || fallbackSiteUrl,
     phone: restSettings?.phone || "+234 904 375 2708",
     email: restSettings?.email || "official@houseunlimitednigeria.com",
-    address: restSettings?.address || "Abuja, Nigeria",
+    address: restSettings?.address || "Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria",
     heroTitle: "Modern editorial and listing workflows, without giving up WordPress.",
     heroDescription:
-      "Use WordPress for publishing, menus, media, and plugin data. Use Next.js for SSR, routing, caching, and performance.",
+      "House Unlimited Nigeria is a leading real estate company dedicated to helping you find your dream home. With a wide range of properties, expert guidance, and personalized service, we make the home buying process seamless and enjoyable. Whether you're looking for a cozy apartment or a spacious family home, House Unlimited Nigeria is here to turn your vision into reality.",
     heroImage: ""
   };
 }
