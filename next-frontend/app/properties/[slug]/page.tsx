@@ -53,7 +53,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               </div>
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold text-teal-600 mb-1">{property.price}</div>
+              <div className="text-3xl font-bold text-[#005555] mb-1">{property.price}</div>
               <div className="text-sm text-gray-500">{property.status}</div>
             </div>
           </div>
@@ -61,17 +61,17 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           {/* Property Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
-              <Bed className="w-6 h-6 text-teal-600 mx-auto mb-2" />
+              <Bed className="w-6 h-6 text-[#005555] mx-auto mb-2" />
               <div className="text-lg font-bold text-gray-900">{property.bedrooms}</div>
               <div className="text-sm text-gray-600">Bedrooms</div>
             </div>
             <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
-              <Bath className="w-6 h-6 text-teal-600 mx-auto mb-2" />
+              <Bath className="w-6 h-6 text-[#005555] mx-auto mb-2" />
               <div className="text-lg font-bold text-gray-900">{property.bathrooms}</div>
               <div className="text-sm text-gray-600">Bathrooms</div>
             </div>
             <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
-              <Square className="w-6 h-6 text-teal-600 mx-auto mb-2" />
+              <Square className="w-6 h-6 text-[#005555] mx-auto mb-2" />
               <div className="text-lg font-bold text-gray-900">{property.area}</div>
               <div className="text-sm text-gray-600">Area</div>
             </div>
@@ -131,33 +131,33 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                   <input
                     type="text"
                     placeholder="Your name"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-600 focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#005555] focus:border-transparent outline-none"
                   />
                 </div>
                 <div>
                   <input
                     type="email"
                     placeholder="Your email"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-600 focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#005555] focus:border-transparent outline-none"
                   />
                 </div>
                 <div>
                   <input
                     type="tel"
                     placeholder="Your phone"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-600 focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#005555] focus:border-transparent outline-none"
                   />
                 </div>
                 <div>
                   <textarea
                     rows={3}
                     placeholder="Your message"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-600 focus:border-transparent outline-none resize-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#005555] focus:border-transparent outline-none resize-none"
                   ></textarea>
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-teal-600 text-white py-3 px-6 rounded-xl font-bold hover:bg-teal-700 transition-colors"
+                  className="w-full bg-[#005555] text-white py-3 px-6 rounded-xl font-bold hover:bg-[#003333] transition-colors"
                 >
                   Send Inquiry
                 </button>
@@ -169,11 +169,11 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               <h3 className="text-xl font-bold text-gray-900 mb-4">Contact Agent</h3>
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
-                  <Phone className="w-5 h-5 text-teal-600" />
+                  <Phone className="w-5 h-5 text-[#005555]" />
                   <span className="text-gray-600">+234 904 375 2708</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Mail className="w-5 h-5 text-teal-600" />
+                  <Mail className="w-5 h-5 text-[#005555]" />
                   <span className="text-gray-600">official@houseunlimitednigeria.com</span>
                 </div>
               </div>
