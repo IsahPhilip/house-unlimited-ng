@@ -239,7 +239,12 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
   }
 
   async function handleToggleLike() {
-    if (!interactivePost?.id || !requireAuth("Please sign in to like this post.")) {
+    if (!interactivePost?.id) {
+      window.alert("This post is still loading. Please try again in a moment.");
+      return;
+    }
+
+    if (!requireAuth("Please sign in to like this post.")) {
       return;
     }
 
@@ -259,7 +264,12 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
   }
 
   async function handleToggleBookmark() {
-    if (!interactivePost?.id || !requireAuth("Please sign in to save this post.")) {
+    if (!interactivePost?.id) {
+      window.alert("This post is still loading. Please try again in a moment.");
+      return;
+    }
+
+    if (!requireAuth("Please sign in to save this post.")) {
       return;
     }
 
@@ -280,6 +290,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
     event.preventDefault();
 
     if (!interactivePost?.id) {
+      window.alert("Comments are still loading. Please try again in a moment.");
       return;
     }
 
@@ -446,7 +457,6 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
             <button
               className={`flex items-center space-x-2 transition-colors ${liked ? "text-red-500" : "text-gray-600 hover:text-red-500"}`}
               onClick={handleToggleLike}
-              disabled={!interactivePost?.id}
             >
               <Heart className="w-4 h-4" />
               <span>{displayPost.likes} Likes</span>
@@ -458,7 +468,6 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
             <button
               className={`flex items-center space-x-2 transition-colors ${bookmarked ? "text-[#005555]" : "text-gray-600 hover:text-[#005555]"}`}
               onClick={handleToggleBookmark}
-              disabled={!interactivePost?.id}
             >
               <Bookmark className="w-4 h-4" />
               <span>{bookmarked ? "Saved" : "Save"}</span>
@@ -480,7 +489,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                   placeholder="Your name"
                   className="w-full mb-3 rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#005555] focus:border-[#005555]"
                   maxLength={80}
-                  disabled={commentSubmitting || !interactivePost?.id}
+                  disabled={commentSubmitting}
                 />
               )}
               <textarea
@@ -488,13 +497,13 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                 onChange={(event) => setCommentText(event.target.value)}
                 placeholder="Write a thoughtful comment..."
                 className="w-full min-h-[120px] rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#005555] focus:border-[#005555]"
-                disabled={commentSubmitting || !interactivePost?.id}
+                disabled={commentSubmitting}
               />
               <div className="mt-3 flex items-center justify-end">
                 <button
                   type="submit"
                   className="bg-[#005555] text-white px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm disabled:opacity-60"
-                  disabled={commentSubmitting || !commentText.trim() || !interactivePost?.id || (!isSignedIn && !guestName.trim())}
+                  disabled={commentSubmitting || !commentText.trim() || (!isSignedIn && !guestName.trim())}
                 >
                   {commentSubmitting ? "Posting..." : "Post Comment"}
                 </button>
