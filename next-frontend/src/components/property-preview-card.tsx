@@ -32,15 +32,15 @@ export function PropertyPreviewCard({ property }: { property: PropertyPreview })
             <div className="flex items-center space-x-3">
               <span className="flex items-center">
                 <Bed className="w-4 h-4 mr-1" />
-                3
+                {property.bedrooms ?? "-"}
               </span>
               <span className="flex items-center">
                 <Bath className="w-4 h-4 mr-1" />
-                2
+                {property.bathrooms ?? "-"}
               </span>
               <span className="flex items-center">
                 <Square className="w-4 h-4 mr-1" />
-                2000 sqft
+                {property.area || "-"}
               </span>
             </div>
           </div>

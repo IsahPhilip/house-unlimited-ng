@@ -55,8 +55,8 @@ type WordPressRestProperty = {
     price?: string;
     property_type?: string;
     location?: string;
-    bedrooms?: number;
-    bathrooms?: number;
+    bedrooms?: number | string;
+    bathrooms?: number | string;
     area?: string;
     property_status?: string;
     gallery?: Array<number | string | { url?: string }>;
@@ -199,6 +199,15 @@ function stripHtml(value: string | null | undefined): string {
   }
 
   return value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function parseNumericField(value: unknown): number | undefined {
+  if (value === null || value === undefined || value === "") {
+    return undefined;
+  }
+
+  const parsed = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
 }
 
 function formatDate(value: string | null | undefined): string {
@@ -381,8 +390,8 @@ function mapRestProperty(property: RestProperty): PropertyPreview {
     price: property.price,
     type: property.type,
     location: property.location,
-    bedrooms: property.bedrooms,
-    bathrooms: property.bathrooms,
+    bedrooms: parseNumericField(property.bedrooms),
+    bathrooms: parseNumericField(property.bathrooms),
     area: property.area,
     status: property.status,
     gallery: property.gallery || []
@@ -412,8 +421,8 @@ function mapWordPressRestProperty(property: WordPressRestProperty): PropertyPrev
     price: property.acf?.price,
     type: property.acf?.property_type,
     location: property.acf?.location,
-    bedrooms: property.acf?.bedrooms,
-    bathrooms: property.acf?.bathrooms,
+    bedrooms: parseNumericField(property.acf?.bedrooms),
+    bathrooms: parseNumericField(property.acf?.bathrooms),
     area: property.acf?.area,
     status: property.acf?.property_status,
     gallery
@@ -544,8 +553,8 @@ export async function getPropertyBySlug(slug: string): Promise<PropertyPreview |
     price: data.property.propertyFields?.price,
     type: data.property.propertyFields?.propertyType,
     location: data.property.propertyFields?.location,
-    bedrooms: data.property.propertyFields?.bedrooms,
-    bathrooms: data.property.propertyFields?.bathrooms,
+    bedrooms: parseNumericField(data.property.propertyFields?.bedrooms),
+    bathrooms: parseNumericField(data.property.propertyFields?.bathrooms),
     area: data.property.propertyFields?.area,
     status: data.property.propertyFields?.propertyStatus,
     gallery: data.property.propertyFields?.gallery?.map((img) => img.sourceUrl || "").filter(Boolean) || []

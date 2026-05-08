@@ -62,6 +62,32 @@ if ( ! function_exists( 'hun_get_property_meta_value' ) ) {
 
 if ( ! function_exists( 'hun_prepare_property_payload' ) ) {
 	/**
+	 * Normalize numeric meta values while preserving decimals.
+	 *
+	 * @param int    $post_id Property post ID.
+	 * @param string $field   Field key.
+	 */
+	function hun_get_property_numeric_meta_value( int $post_id, string $field ) {
+		$value = hun_get_property_meta_value( $post_id, $field );
+
+		if ( '' === $value || null === $value || false === $value ) {
+			return null;
+		}
+
+		if ( is_numeric( $value ) ) {
+			$numeric = (float) $value;
+
+			if ( floor( $numeric ) === $numeric ) {
+				return (int) $numeric;
+			}
+
+			return $numeric;
+		}
+
+		return null;
+	}
+
+	/**
 	 * Build a frontend-friendly property payload.
 	 *
 	 * @param WP_Post $post Property post object.
@@ -100,8 +126,8 @@ if ( ! function_exists( 'hun_prepare_property_payload' ) ) {
 			'price'       => (string) hun_get_property_meta_value( $post->ID, 'price' ),
 			'type'        => (string) hun_get_property_meta_value( $post->ID, 'property_type' ),
 			'location'    => (string) hun_get_property_meta_value( $post->ID, 'location' ),
-			'bedrooms'    => (int) hun_get_property_meta_value( $post->ID, 'bedrooms' ),
-			'bathrooms'   => (int) hun_get_property_meta_value( $post->ID, 'bathrooms' ),
+			'bedrooms'    => hun_get_property_numeric_meta_value( $post->ID, 'bedrooms' ),
+			'bathrooms'   => hun_get_property_numeric_meta_value( $post->ID, 'bathrooms' ),
 			'area'        => (string) hun_get_property_meta_value( $post->ID, 'area' ),
 			'status'      => (string) hun_get_property_meta_value( $post->ID, 'property_status' ),
 			'gallery'     => $gallery,
