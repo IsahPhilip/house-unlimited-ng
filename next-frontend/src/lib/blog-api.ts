@@ -123,11 +123,11 @@ export async function getInteractiveBlogComments(id: string): Promise<BlogCommen
   return await response.json();
 }
 
-export async function addInteractiveBlogComment(id: string, content: string): Promise<BlogComment> {
+export async function addInteractiveBlogComment(id: string, content: string, guestName?: string): Promise<BlogComment> {
   const response = await fetch(`${API_BASE_URL}/blog/public/${id}/comments`, {
     method: "POST",
     headers: getAuthHeaders(),
-    body: JSON.stringify({ content })
+    body: JSON.stringify({ content, ...(guestName ? { guestName } : {}) })
   });
 
   if (!response.ok) {

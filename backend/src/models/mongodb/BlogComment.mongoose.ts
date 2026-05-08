@@ -2,7 +2,8 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IBlogComment extends Document {
   post: mongoose.Types.ObjectId;
-  user: mongoose.Types.ObjectId;
+  user?: mongoose.Types.ObjectId | null;
+  guestName?: string | null;
   content: string;
   status: 'visible' | 'hidden';
   hiddenAt?: Date | null;
@@ -22,8 +23,14 @@ const blogCommentSchema = new Schema<IBlogComment>(
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      default: null,
       index: true,
+    },
+    guestName: {
+      type: String,
+      trim: true,
+      maxlength: [80, 'Guest name cannot be more than 80 characters'],
+      default: null,
     },
     content: {
       type: String,

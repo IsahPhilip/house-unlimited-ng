@@ -68,6 +68,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const [commentText, setCommentText] = useState("");
+  const [guestName, setGuestName] = useState("");
   const [commentSubmitting, setCommentSubmitting] = useState(false);
   const [isCommentsLoading, setIsCommentsLoading] = useState(false);
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
@@ -216,6 +217,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
       }));
 
   const currentUserId = currentUser?.id || currentUser?._id || "";
+  const isSignedIn = Boolean(currentUserId);
   const commentCount = comments.length || interactivePost?.commentsCount || 0;
   const authorInitials =
     displayPost.author
@@ -277,7 +279,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
   async function handleSubmitComment(event: React.FormEvent) {
     event.preventDefault();
 
-    if (!interactivePost?.id || !requireAuth("Please sign in to comment.")) {
+    if (!interactivePost?.id) {
       return;
     }
 
@@ -285,11 +287,25 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
       return;
     }
 
+    const trimmedGuestName = guestName.trim();
+
+    if (!isSignedIn && !trimmedGuestName) {
+      window.alert("Please enter your name to post as a guest.");
+      return;
+    }
+
     try {
       setCommentSubmitting(true);
-      const created = await addInteractiveBlogComment(interactivePost.id, commentText.trim());
+      const created = await addInteractiveBlogComment(
+        interactivePost.id,
+        commentText.trim(),
+        isSignedIn ? undefined : trimmedGuestName
+      );
       setComments((prev) => [created, ...prev]);
       setCommentText("");
+      if (!isSignedIn) {
+        setGuestName("");
+      }
     } catch {
       window.alert("We couldn't post your comment right now.");
     } finally {
@@ -452,24 +468,33 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
           <div className="mt-12">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-gray-900">Comments</h3>
-              {!currentUser && (
-                <span className="text-xs text-gray-500">Sign in to join the discussion.</span>
-              )}
+              {!currentUser && <span className="text-xs text-gray-500">Post as guest without signing in.</span>}
             </div>
 
             <form onSubmit={handleSubmitComment} className="mb-8">
+              {!isSignedIn && (
+                <input
+                  type="text"
+                  value={guestName}
+                  onChange={(event) => setGuestName(event.target.value)}
+                  placeholder="Your name"
+                  className="w-full mb-3 rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#005555] focus:border-[#005555]"
+                  maxLength={80}
+                  disabled={commentSubmitting || !interactivePost?.id}
+                />
+              )}
               <textarea
                 value={commentText}
                 onChange={(event) => setCommentText(event.target.value)}
-                placeholder={currentUser ? "Write a thoughtful comment..." : "Sign in to comment"}
+                placeholder="Write a thoughtful comment..."
                 className="w-full min-h-[120px] rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#005555] focus:border-[#005555]"
-                disabled={!currentUser || commentSubmitting || !interactivePost?.id}
+                disabled={commentSubmitting || !interactivePost?.id}
               />
               <div className="mt-3 flex items-center justify-end">
                 <button
                   type="submit"
                   className="bg-[#005555] text-white px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm disabled:opacity-60"
-                  disabled={!currentUser || commentSubmitting || !commentText.trim() || !interactivePost?.id}
+                  disabled={commentSubmitting || !commentText.trim() || !interactivePost?.id || (!isSignedIn && !guestName.trim())}
                 >
                   {commentSubmitting ? "Posting..." : "Post Comment"}
                 </button>

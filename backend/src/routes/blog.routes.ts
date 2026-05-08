@@ -83,7 +83,7 @@ router.get('/public/category/:category', getBlogPostsByCategory);
 
 // Blog comments
 router.get('/public/:id/comments', getBlogComments);
-router.post('/public/:id/comments', protect, addBlogComment);
+router.post('/public/:id/comments', addBlogComment);
 router.put('/public/comments/:commentId', protect, updateBlogComment);
 router.delete('/public/comments/:commentId', protect, deleteBlogComment);
 

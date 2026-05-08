@@ -70,7 +70,13 @@ const formatCommentResponse = (comment: IBlogComment) => {
         avatar: comment.user.avatar,
         role: comment.user.authorRole || comment.user.role,
       }
-    : null;
+    : comment.guestName
+      ? {
+          id: `guest-${comment._id.toString()}`,
+          name: comment.guestName,
+          role: 'Guest',
+        }
+      : null;
 
   return {
     id: comment._id.toString(),
@@ -457,9 +463,9 @@ export const getBlogComments = asyncHandler(async (req: Request, res: Response) 
 
 // @desc    Add a comment to a blog post
 // @route   POST /api/blog/public/:id/comments
-// @access  Private
+// @access  Public
 export const addBlogComment = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { content } = req.body;
+  const { content, guestName } = req.body;
 
   if (!content || !String(content).trim()) {
     res.status(400);
@@ -473,9 +479,17 @@ export const addBlogComment = asyncHandler(async (req: AuthRequest, res: Respons
     throw new Error('Blog post not found');
   }
 
+  const trimmedGuestName = guestName ? String(guestName).trim() : '';
+
+  if (!req.user && !trimmedGuestName) {
+    res.status(400);
+    throw new Error('Guest name is required for anonymous comments');
+  }
+
   const comment = await BlogComment.create({
     post: post._id,
-    user: req.user!._id,
+    user: req.user?._id || null,
+    guestName: req.user ? null : trimmedGuestName,
     content: String(content).trim(),
     status: 'visible',
   });
@@ -505,7 +519,7 @@ export const updateBlogComment = asyncHandler(async (req: AuthRequest, res: Resp
     throw new Error('Comment not found');
   }
 
-  const isOwner = comment.user.toString() === req.user!._id.toString();
+  const isOwner = comment.user && comment.user.toString() === req.user!._id.toString();
   const isAdmin = req.user?.role === 'admin';
 
   if (!isOwner && !isAdmin) {
@@ -531,7 +545,7 @@ export const deleteBlogComment = asyncHandler(async (req: AuthRequest, res: Resp
     throw new Error('Comment not found');
   }
 
-  const isOwner = comment.user.toString() === req.user!._id.toString();
+  const isOwner = comment.user && comment.user.toString() === req.user!._id.toString();
   const isAdmin = req.user?.role === 'admin';
 
   if (!isOwner && !isAdmin) {
