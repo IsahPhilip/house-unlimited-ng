@@ -23,8 +23,12 @@ add_action(
 				'footer'  => __( 'Footer Menu', 'house-unlimited-headless' ),
 			)
 		);
+	}
+);
 
-		// Register Property Custom Post Type for GraphQL
+add_action(
+	'init',
+	static function () {
 		register_post_type(
 			'property',
 			array(
@@ -67,7 +71,7 @@ add_action(
 					'not_found_in_trash' => __( 'No team members found in trash', 'house-unlimited-headless' ),
 				),
 				'public'              => true,
-				'publicly_queryable'  => false,
+				'publicly_queryable'  => true,
 				'exclude_from_search' => true,
 				'has_archive'         => false,
 				'show_ui'             => true,
@@ -79,6 +83,7 @@ add_action(
 				'graphql_plural_name' => 'TeamMembers',
 				'supports'            => array( 'title', 'editor', 'thumbnail', 'excerpt', 'page-attributes' ),
 				'menu_icon'           => 'dashicons-groups',
+				'rewrite'             => false,
 			)
 		);
 
@@ -96,19 +101,28 @@ add_action(
 					'not_found'          => __( 'No testimonials found', 'house-unlimited-headless' ),
 					'not_found_in_trash' => __( 'No testimonials found in trash', 'house-unlimited-headless' ),
 				),
-				'public'              => false,
+				'public'              => true,
+				'publicly_queryable'  => true,
+				'exclude_from_search' => true,
+				'has_archive'         => false,
 				'show_ui'             => true,
 				'show_in_menu'        => true,
+				'show_in_nav_menus'   => false,
 				'show_in_rest'        => true,
 				'show_in_graphql'     => true,
 				'graphql_single_name' => 'Testimonial',
 				'graphql_plural_name' => 'Testimonials',
 				'supports'            => array( 'title', 'editor', 'thumbnail', 'excerpt', 'page-attributes' ),
 				'menu_icon'           => 'dashicons-format-quote',
+				'rewrite'             => false,
 			)
 		);
+	}
+);
 
-		// Register Property Fields for ACF if using ACF
+add_action(
+	'init',
+	static function () {
 		if ( function_exists( 'acf_add_local_field_group' ) ) {
 			acf_add_local_field_group( array(
 				'key'                   => 'group_property_fields',

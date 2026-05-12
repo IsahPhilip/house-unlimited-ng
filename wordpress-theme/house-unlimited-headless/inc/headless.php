@@ -24,6 +24,33 @@ if ( ! function_exists( 'hun_headless_frontend_url' ) ) {
 	}
 }
 
+if ( ! function_exists( 'hun_is_rest_like_request' ) ) {
+	/**
+	 * Detect requests that should never be redirected away from WordPress.
+	 */
+	function hun_is_rest_like_request(): bool {
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			return true;
+		}
+
+		if ( function_exists( 'wp_is_json_request' ) && wp_is_json_request() ) {
+			return true;
+		}
+
+		if ( isset( $_GET['rest_route'] ) ) {
+			return true;
+		}
+
+		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+
+		if ( '' !== $request_uri && false !== strpos( $request_uri, '/wp-json/' ) ) {
+			return true;
+		}
+
+		return false;
+	}
+}
+
 if ( ! function_exists( 'hun_sanitize_headless_frontend_url' ) ) {
 	/**
 	 * Normalize the saved frontend URL.
@@ -218,11 +245,7 @@ add_filter(
 add_action(
 	'template_redirect',
 	static function () {
-		if ( is_admin() || wp_doing_ajax() || wp_is_json_request() ) {
-			return;
-		}
-
-		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+		if ( is_admin() || wp_doing_ajax() || hun_is_rest_like_request() ) {
 			return;
 		}
 
