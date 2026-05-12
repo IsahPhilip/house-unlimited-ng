@@ -51,6 +51,23 @@ if ( ! function_exists( 'hun_is_rest_like_request' ) ) {
 	}
 }
 
+if ( ! function_exists( 'hun_get_current_request_origin' ) ) {
+	/**
+	 * Resolve the current request origin from the incoming host.
+	 */
+	function hun_get_current_request_origin(): string {
+		$host = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+
+		if ( '' === $host ) {
+			return '';
+		}
+
+		$scheme = is_ssl() ? 'https' : 'http';
+
+		return $scheme . '://' . $host;
+	}
+}
+
 if ( ! function_exists( 'hun_sanitize_headless_frontend_url' ) ) {
 	/**
 	 * Normalize the saved frontend URL.
@@ -240,6 +257,36 @@ add_filter(
 
 		return $hosts;
 	}
+);
+
+add_filter(
+	'rest_url',
+	static function ( string $url, string $path, $blog_id, string $scheme ): string {
+		if ( ! is_admin() ) {
+			return $url;
+		}
+
+		$current_origin = hun_get_current_request_origin();
+
+		if ( '' === $current_origin ) {
+			return $url;
+		}
+
+		$current_host = wp_parse_url( $current_origin, PHP_URL_HOST );
+		$rest_host    = wp_parse_url( $url, PHP_URL_HOST );
+
+		if ( ! $current_host || ! $rest_host || $current_host === $rest_host ) {
+			return $url;
+		}
+
+		$rest_path  = wp_parse_url( $url, PHP_URL_PATH );
+		$rest_query = wp_parse_url( $url, PHP_URL_QUERY );
+		$rest_query = is_string( $rest_query ) && '' !== $rest_query ? '?' . $rest_query : '';
+
+		return untrailingslashit( $current_origin ) . $rest_path . $rest_query;
+	},
+	10,
+	4
 );
 
 add_action(
