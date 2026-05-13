@@ -87,6 +87,7 @@ export type PostPreview = {
   date: string;
   author: string;
   categories: string[];
+  tags: string[];
   featuredImage?: string;
   content?: string;
 };
@@ -249,7 +250,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     siteUrl: restSettings?.siteUrl || fallbackSiteUrl,
     phone: restSettings?.phone || "+234 904 375 2708",
     email: restSettings?.email || "official@houseunlimitednigeria.com",
-    address: restSettings?.address || "Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria",
+    address: "Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria",
     heroTitle: "Modern editorial and listing workflows, without giving up WordPress.",
     heroDescription:
       "House Unlimited Nigeria is a leading real estate company dedicated to helping you find your dream home. With a wide range of properties, expert guidance, and personalized service, we make the home buying process seamless and enjoyable. Whether you're looking for a cozy apartment or a spacious family home, House Unlimited Nigeria is here to turn your vision into reality.",
@@ -307,6 +308,7 @@ export async function getRecentPosts(first = 6): Promise<PostPreview[]> {
         date?: string;
         author?: { node?: { name?: string } };
         categories?: { nodes?: Array<{ name?: string }> };
+        tags?: { nodes?: Array<{ name?: string }> };
         featuredImage?: { node?: { sourceUrl?: string } };
       }>;
     };
@@ -320,6 +322,7 @@ export async function getRecentPosts(first = 6): Promise<PostPreview[]> {
       date: formatDate(node.date),
       author: node.author?.node?.name || "",
       categories: node.categories?.nodes?.map((item) => item.name || "").filter(Boolean) || [],
+      tags: node.tags?.nodes?.map((item) => item.name || "").filter(Boolean) || [],
       featuredImage: node.featuredImage?.node?.sourceUrl
     })) || []
   );
@@ -345,6 +348,7 @@ export async function getPostBySlug(slug: string): Promise<PostPreview | null> {
       date?: string;
       author?: { node?: { name?: string } };
       categories?: { nodes?: Array<{ name?: string }> };
+      tags?: { nodes?: Array<{ name?: string }> };
       featuredImage?: { node?: { sourceUrl?: string } };
     };
   }>(POST_BY_SLUG_QUERY, { slug });
@@ -361,6 +365,7 @@ export async function getPostBySlug(slug: string): Promise<PostPreview | null> {
     date: formatDate(data.post.date),
     author: data.post.author?.node?.name || "",
     categories: data.post.categories?.nodes?.map((item) => item.name || "").filter(Boolean) || [],
+    tags: data.post.tags?.nodes?.map((item) => item.name || "").filter(Boolean) || [],
     featuredImage: data.post.featuredImage?.node?.sourceUrl
   };
 }

@@ -5,6 +5,13 @@ interface EmailOptions {
   email: string;
   subject: string;
   message: string;
+  to?: string;
+  replyTo?: string;
+  attachments?: Array<{
+    filename: string;
+    content: Buffer;
+    contentType?: string;
+  }>;
 }
 
 // Create nodemailer transporter for Gmail
@@ -32,9 +39,11 @@ export const sendEmail = async (options: EmailOptions): Promise<void> => {
           name: process.env.EMAIL_FROM_NAME || 'House Unlimited Nigeria',
           address: process.env.EMAIL_FROM || process.env.EMAIL_USER!,
         },
-        to: options.email,
+        to: options.to || options.email,
+        replyTo: options.replyTo,
         subject: options.subject,
         html: options.message,
+        attachments: options.attachments,
       };
 
       const info = await transporter.sendMail(mailOptions);
@@ -322,6 +331,11 @@ export const sendContactNotification = async (
     message: string;
     phone?: string;
     type?: string;
+    attachments?: Array<{
+      filename: string;
+      content: Buffer;
+      contentType?: string;
+    }>;
   }
 ): Promise<void> => {
   const message = `
@@ -359,6 +373,7 @@ export const sendContactNotification = async (
             ${contactData.phone ? `<p><span class="label">Phone:</span> ${contactData.phone}</p>` : ''}
             <p><span class="label">Type:</span> ${contactData.type || 'General'}</p>
             <p><span class="label">Subject:</span> ${contactData.subject}</p>
+            <p><span class="label">Attachments:</span> ${contactData.attachments?.length || 0}</p>
           </div>
 
           <div class="info-box">
@@ -387,9 +402,12 @@ export const sendContactNotification = async (
 
   // Send to admin email
   await sendEmail({
-    email: process.env.EMAIL_FROM || process.env.EMAIL_USER!,
+    email: 'official@houseunlimitednigeria.com',
+    to: process.env.CONTACT_RECIPIENT_EMAIL || 'official@houseunlimitednigeria.com',
+    replyTo: contactData.email,
     subject: `New Contact Form: ${contactData.subject}`,
     message,
+    attachments: contactData.attachments,
   });
 };
 

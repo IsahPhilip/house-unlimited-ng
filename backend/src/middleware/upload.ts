@@ -52,3 +52,31 @@ export const uploadAvatarImage = multer({
     fileSize: 2 * 1024 * 1024, // 2MB limit for avatars
   },
 }).single('avatar');
+
+const contactAttachmentStorage = multer.memoryStorage();
+
+const contactAttachmentFileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+  const allowedMimeTypes = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+  ];
+
+  if (allowedMimeTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Invalid file type. Only PDF, DOC, DOCX, JPG, PNG, and WEBP files are allowed.'));
+  }
+};
+
+export const uploadContactAttachments = multer({
+  storage: contactAttachmentStorage,
+  fileFilter: contactAttachmentFileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+    files: 3,
+  },
+}).array('attachments', 3);

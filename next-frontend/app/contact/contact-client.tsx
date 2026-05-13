@@ -6,22 +6,37 @@ import type { SiteSettings } from "@/lib/wordpress";
 
 type ContactClientProps = {
   settings: SiteSettings;
+  initialTopic?: string;
+  initialRole?: string;
 };
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
 
-export function ContactClient({ settings }: ContactClientProps) {
+export function ContactClient({ settings, initialTopic = "general", initialRole = "" }: ContactClientProps) {
+  const normalizedTopic = initialTopic === "careers" ? "partnership" : initialTopic;
+  const initialSubject =
+    initialTopic === "careers" && initialRole
+      ? `Career Application: ${initialRole}`
+      : initialTopic === "careers"
+        ? "Career Opportunity"
+        : "";
+  const initialMessage =
+    initialTopic === "careers" && initialRole
+      ? `Hello House Unlimited Nigeria,\n\nI am interested in applying for the ${initialRole} role. Please share the next steps and application requirements.\n`
+      : "";
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    subject: "",
-    message: "",
+    subject: initialSubject,
+    message: initialMessage,
     phone: "",
-    type: "general"
+    type: normalizedTopic
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [attachments, setAttachments] = useState<File[]>([]);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -32,6 +47,11 @@ export function ContactClient({ settings }: ContactClientProps) {
       ...prev,
       [name]: value
     }));
+  }
+
+  function handleAttachmentChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const nextFiles = Array.from(e.target.files || []);
+    setAttachments(nextFiles.slice(0, 3));
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -48,35 +68,46 @@ export function ContactClient({ settings }: ContactClientProps) {
       return;
     }
 
+    const hasOversizedAttachment = attachments.some((file) => file.size > 5 * 1024 * 1024);
+
+    if (hasOversizedAttachment) {
+      setSubmitError("Each attachment must be 5MB or less.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const payload = {
-        name: formData.name,
-        email: formData.email,
-        subject: formData.subject,
-        message: formData.message,
-        type: formData.type,
-        ...(formData.phone.trim() ? { phone: formData.phone } : {})
-      };
+      const payload = new FormData();
+      payload.append("name", formData.name);
+      payload.append("email", formData.email);
+      payload.append("subject", formData.subject);
+      payload.append("message", formData.message);
+      payload.append("type", formData.type);
+
+      if (formData.phone.trim()) {
+        payload.append("phone", formData.phone);
+      }
+
+      attachments.forEach((file) => {
+        payload.append("attachments", file);
+      });
 
       const response = await fetch(`${API_BASE_URL}/contact/submit`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
+        body: payload
       });
 
       if (response.ok) {
         setSubmitSuccess(true);
+        setAttachments([]);
         setFormData({
           name: "",
           email: "",
-          subject: "",
-          message: "",
+          subject: initialSubject,
+          message: initialMessage,
           phone: "",
-          type: "general"
+          type: normalizedTopic
         });
       } else {
         const data = await response.json().catch(() => null);
@@ -108,6 +139,11 @@ export function ContactClient({ settings }: ContactClientProps) {
           <p className="text-gray-500 mt-4 max-w-2xl mx-auto">
             Have questions about a property or want to list your own? Our team is here to help you every step of the way.
           </p>
+          {initialTopic === "careers" && (
+            <p className="text-[#005555] mt-4 max-w-2xl mx-auto text-sm font-medium">
+              You&apos;re contacting us about a career opportunity. Share your experience and the role you&apos;re interested in.
+            </p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
@@ -274,6 +310,33 @@ export function ContactClient({ settings }: ContactClientProps) {
                         <option value="other">Other</option>
                       </select>
                     </div>
+                    <div className="md:col-span-2 space-y-2">
+                      <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Attachments (Optional)</label>
+                      <input
+                        type="file"
+                        name="attachments"
+                        multiple
+                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp"
+                        onChange={handleAttachmentChange}
+                        className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-[#005555] outline-none file:mr-4 file:rounded-full file:border-0 file:bg-[#d8eeee] file:px-4 file:py-2 file:text-xs file:font-bold file:text-[#005555]"
+                        disabled={isSubmitting}
+                      />
+                      <p className="text-xs text-gray-500">
+                        Upload up to 3 files. Accepted formats: PDF, DOC, DOCX, JPG, PNG, WEBP. Max 5MB each.
+                      </p>
+                      {attachments.length > 0 && (
+                        <div className="flex flex-wrap gap-2 pt-1">
+                          {attachments.map((file) => (
+                            <span
+                              key={`${file.name}-${file.size}`}
+                              className="inline-flex items-center rounded-full bg-[#d8eeee] px-3 py-1 text-[11px] font-bold text-[#005555]"
+                            >
+                              {file.name}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                     <div className="md:col-span-2">
                       <button
                         type="submit"
@@ -285,7 +348,7 @@ export function ContactClient({ settings }: ContactClientProps) {
                         {isSubmitting ? "Sending..." : "Send Message"}
                       </button>
                       <p className="text-xs text-gray-500 mt-3">
-                        We typically respond within 24 hours. For urgent matters, please call us directly.
+                        Your message goes directly to official@houseunlimitednigeria.com. We typically respond within 24 hours.
                       </p>
                     </div>
                   </form>

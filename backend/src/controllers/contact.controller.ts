@@ -6,6 +6,7 @@ import { sendContactNotification, sendContactConfirmation } from '../services/em
 export const submitContact = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, email, subject, message, phone, type } = req.body;
+    const uploadedAttachments = (req.files as Express.Multer.File[] | undefined) || [];
 
     // Create new contact submission
     const contact = new Contact({
@@ -14,7 +15,12 @@ export const submitContact = async (req: Request, res: Response): Promise<void> 
       subject: subject.trim(),
       message: message.trim(),
       phone: phone?.trim() || undefined,
-      type: type || 'general'
+      type: type || 'general',
+      attachments: uploadedAttachments.map((file) => ({
+        originalName: file.originalname,
+        mimeType: file.mimetype,
+        size: file.size
+      }))
     });
 
     await contact.save();
@@ -28,7 +34,12 @@ export const submitContact = async (req: Request, res: Response): Promise<void> 
         subject,
         message,
         phone,
-        type
+        type,
+        attachments: uploadedAttachments.map((file) => ({
+          filename: file.originalname,
+          content: file.buffer,
+          contentType: file.mimetype
+        }))
       });
 
       // Send confirmation to user

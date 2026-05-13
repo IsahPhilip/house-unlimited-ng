@@ -35,14 +35,30 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
   const [post, recentPosts] = await Promise.all([
     getPostBySlug(slug),
-    getRecentPosts(8)
+    getRecentPosts(24)
   ]);
 
   if (!post) {
     notFound();
   }
 
-  const relatedPosts = recentPosts.filter((item) => item.slug !== slug).slice(0, 3);
+  const postCategories = new Set(post.categories.map((item) => item.toLowerCase()));
+  const postTags = new Set(post.tags.map((item) => item.toLowerCase()));
+
+  const relatedPosts = recentPosts
+    .filter((item) => item.slug !== slug)
+    .map((item) => {
+      const categoryMatches = item.categories.filter((category) => postCategories.has(category.toLowerCase())).length;
+      const tagMatches = item.tags.filter((tag) => postTags.has(tag.toLowerCase())).length;
+
+      return {
+        item,
+        score: categoryMatches * 3 + tagMatches * 2
+      };
+    })
+    .sort((left, right) => right.score - left.score)
+    .map((entry) => entry.item)
+    .slice(0, 3);
 
   return <BlogPostClient slug={slug} initialPost={post} initialRelatedPosts={relatedPosts} />;
 }

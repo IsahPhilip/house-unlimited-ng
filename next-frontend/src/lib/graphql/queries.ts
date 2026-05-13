@@ -37,6 +37,11 @@ export const RECENT_POSTS_QUERY = `
             name
           }
         }
+        tags {
+          nodes {
+            name
+          }
+        }
         featuredImage {
           node {
             sourceUrl
@@ -71,6 +76,11 @@ export const POST_BY_SLUG_QUERY = `
         }
       }
       categories {
+        nodes {
+          name
+        }
+      }
+      tags {
         nodes {
           name
         }

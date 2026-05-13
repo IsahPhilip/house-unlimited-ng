@@ -67,6 +67,13 @@ const contactSchema = new mongoose.Schema({
       createdAt: { type: Date, default: Date.now }
     }
   ],
+  attachments: [
+    {
+      originalName: { type: String, trim: true },
+      mimeType: { type: String, trim: true },
+      size: { type: Number }
+    }
+  ],
   createdAt: {
     type: Date,
     default: Date.now

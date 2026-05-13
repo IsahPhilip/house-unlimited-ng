@@ -1,11 +1,12 @@
 import express from 'express';
 import { submitContact, getAllContacts, getContactById, updateContactStatus, updateContact, addContactNote, deleteContact, getContactStats } from '../controllers/contact.controller.js';
 import { protect, authorize } from '../middleware/auth.js';
+import { uploadContactAttachments } from '../middleware/upload.js';
 
 const router = express.Router();
 
 // Public routes
-router.post('/submit', submitContact);
+router.post('/submit', uploadContactAttachments, submitContact);
 
 // Protected routes (admin only)
 router.get('/', protect, authorize('admin'), getAllContacts);

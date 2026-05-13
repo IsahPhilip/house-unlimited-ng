@@ -11,8 +11,18 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function ContactPage() {
-  const settings = await getSiteSettings();
+interface ContactPageProps {
+  searchParams?: Promise<{
+    topic?: string;
+    role?: string;
+  }>;
+}
 
-  return <ContactClient settings={settings} />;
+export default async function ContactPage({ searchParams }: ContactPageProps) {
+  const settings = await getSiteSettings();
+  const resolvedSearchParams = (await searchParams) || {};
+  const topic = resolvedSearchParams.topic || "general";
+  const role = resolvedSearchParams.role || "";
+
+  return <ContactClient settings={settings} initialTopic={topic} initialRole={role} />;
 }

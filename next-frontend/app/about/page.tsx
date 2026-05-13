@@ -119,7 +119,7 @@ export default async function AboutPage() {
               <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">The Brains Behind the Brand</p>
               <h2 className="text-4xl font-bold text-gray-900">Meet our <span className="text-[#005555] italic">Visionary</span> Team</h2>
             </div>
-            <Link href="/contact?topic=careers" className="text-[#005555] font-bold hover:underline flex items-center">
+            <Link href="/careers" className="text-[#005555] font-bold hover:underline flex items-center">
               Join our growing team <ArrowRight className="ml-2 w-4 h-4" />
             </Link>
           </div>

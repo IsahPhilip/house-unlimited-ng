@@ -1,16 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
   Bookmark,
+  Check,
   Facebook,
   Heart,
   Link2,
   Linkedin,
+  Loader2,
   MessageCircle,
   Pencil,
+  Share2,
   Trash2,
   Twitter
 } from "lucide-react";
@@ -43,6 +46,25 @@ type StoredUser = {
   name?: string;
 };
 
+type DisplayRelatedPost = {
+  id: string;
+  slug: string;
+  date: string;
+  category?: string;
+  tags: string[];
+  title: string;
+  excerpt: string;
+  content: string;
+  author: {
+    name: string;
+  } | null;
+  image?: string;
+  readTime: string;
+  views: number;
+  likes: number;
+  commentsCount: number;
+};
+
 function buildShareUrl(platform: "facebook" | "twitter" | "linkedin", slug: string, title: string) {
   const baseUrl = typeof window !== "undefined" ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const postUrl = `${baseUrl}/blog/${slug}`;
@@ -67,6 +89,8 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
   const [comments, setComments] = useState<BlogComment[]>([]);
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
+  const [isLikePending, setIsLikePending] = useState(false);
+  const [isBookmarkPending, setIsBookmarkPending] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [guestName, setGuestName] = useState("");
   const [commentSubmitting, setCommentSubmitting] = useState(false);
@@ -74,6 +98,21 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState("");
   const [currentUser, setCurrentUser] = useState<StoredUser | null>(null);
+  const [commentSort, setCommentSort] = useState<"newest" | "oldest">("newest");
+  const [feedback, setFeedback] = useState<{ type: "success" | "error" | "info"; text: string } | null>(null);
+  const commentsRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!feedback) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setFeedback(null);
+    }, 2600);
+
+    return () => window.clearTimeout(timeout);
+  }, [feedback]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -167,6 +206,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
         content: interactivePost.content,
         date: interactivePost.date,
         categories: interactivePost.category ? [interactivePost.category] : initialPost.categories,
+        tags: initialPost.tags,
         featuredImage: interactivePost.image || initialPost.featuredImage,
         author: interactivePost.author?.name || initialPost.author,
         authorRole: interactivePost.author?.role || "",
@@ -186,6 +226,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
       content: initialPost.content || initialPost.excerpt,
       date: initialPost.date,
       categories: initialPost.categories,
+      tags: initialPost.tags,
       featuredImage: initialPost.featuredImage,
       author: initialPost.author,
       authorRole: "",
@@ -198,13 +239,29 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
     };
   }, [initialPost, interactivePost]);
 
-  const displayRelatedPosts = relatedPosts.length > 0
-    ? relatedPosts
+  const displayRelatedPosts: DisplayRelatedPost[] = relatedPosts.length > 0
+    ? relatedPosts.map((post) => ({
+        id: post.id,
+        slug: post.slug,
+        date: post.date,
+        category: post.category,
+        tags: [],
+        title: post.title,
+        excerpt: post.excerpt,
+        content: post.content,
+        author: post.author ? { name: post.author.name } : null,
+        image: post.image,
+        readTime: post.readTime,
+        views: post.views,
+        likes: post.likes,
+        commentsCount: post.commentsCount
+      }))
     : initialRelatedPosts.map((post) => ({
         id: "",
         slug: post.slug,
         date: post.date,
         category: post.categories[0] || "Blog",
+        tags: post.tags,
         title: post.title,
         excerpt: post.excerpt,
         content: post.content || "",
@@ -219,6 +276,17 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
   const currentUserId = currentUser?.id || currentUser?._id || "";
   const isSignedIn = Boolean(currentUserId);
   const commentCount = comments.length || interactivePost?.commentsCount || 0;
+  const visibleComments = useMemo(() => {
+    const sorted = [...comments];
+    sorted.sort((left, right) => {
+      const leftTime = new Date(left.createdAt).getTime();
+      const rightTime = new Date(right.createdAt).getTime();
+
+      return commentSort === "newest" ? rightTime - leftTime : leftTime - rightTime;
+    });
+
+    return sorted;
+  }, [commentSort, comments]);
   const authorInitials =
     displayPost.author
       ?.split(" ")
@@ -231,16 +299,20 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
     const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
 
     if (!token) {
-      window.alert(message);
+      setFeedback({ type: "info", text: message });
       return false;
     }
 
     return true;
   }
 
+  function scrollToComments() {
+    commentsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   async function handleToggleLike() {
     if (!interactivePost?.id) {
-      window.alert("This post is still loading. Please try again in a moment.");
+      setFeedback({ type: "info", text: "This post is still loading. Please try again in a moment." });
       return;
     }
 
@@ -249,23 +321,29 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
     }
 
     try {
+      setIsLikePending(true);
+
       if (liked) {
         const response = await unlikeInteractiveBlogPost(interactivePost.id);
         setLiked(response.liked);
         setInteractivePost((prev) => (prev ? { ...prev, likes: response.likes } : prev));
+        setFeedback({ type: "success", text: "Like removed." });
       } else {
         const response = await likeInteractiveBlogPost(interactivePost.id);
         setLiked(response.liked);
         setInteractivePost((prev) => (prev ? { ...prev, likes: response.likes } : prev));
+        setFeedback({ type: "success", text: "Post liked." });
       }
     } catch {
-      window.alert("We couldn't update your like right now.");
+      setFeedback({ type: "error", text: "We couldn't update your like right now." });
+    } finally {
+      setIsLikePending(false);
     }
   }
 
   async function handleToggleBookmark() {
     if (!interactivePost?.id) {
-      window.alert("This post is still loading. Please try again in a moment.");
+      setFeedback({ type: "info", text: "This post is still loading. Please try again in a moment." });
       return;
     }
 
@@ -274,15 +352,21 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
     }
 
     try {
+      setIsBookmarkPending(true);
+
       if (bookmarked) {
         const response = await unbookmarkInteractiveBlogPost(interactivePost.id);
         setBookmarked(response.bookmarked);
+        setFeedback({ type: "success", text: "Removed from saved posts." });
       } else {
         const response = await bookmarkInteractiveBlogPost(interactivePost.id);
         setBookmarked(response.bookmarked);
+        setFeedback({ type: "success", text: "Saved for later." });
       }
     } catch {
-      window.alert("We couldn't update your saved state right now.");
+      setFeedback({ type: "error", text: "We couldn't update your saved state right now." });
+    } finally {
+      setIsBookmarkPending(false);
     }
   }
 
@@ -290,7 +374,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
     event.preventDefault();
 
     if (!interactivePost?.id) {
-      window.alert("Comments are still loading. Please try again in a moment.");
+      setFeedback({ type: "info", text: "Comments are still loading. Please try again in a moment." });
       return;
     }
 
@@ -301,7 +385,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
     const trimmedGuestName = guestName.trim();
 
     if (!isSignedIn && !trimmedGuestName) {
-      window.alert("Please enter your name to post as a guest.");
+      setFeedback({ type: "info", text: "Please enter your name to post as a guest." });
       return;
     }
 
@@ -317,8 +401,9 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
       if (!isSignedIn) {
         setGuestName("");
       }
+      setFeedback({ type: "success", text: "Comment posted successfully." });
     } catch {
-      window.alert("We couldn't post your comment right now.");
+      setFeedback({ type: "error", text: "We couldn't post your comment right now." });
     } finally {
       setCommentSubmitting(false);
     }
@@ -344,27 +429,53 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
       setComments((prev) => prev.map((comment) => (comment.id === commentId ? updated : comment)));
       setEditingCommentId(null);
       setEditingContent("");
+      setFeedback({ type: "success", text: "Comment updated." });
     } catch {
-      window.alert("We couldn't update your comment right now.");
+      setFeedback({ type: "error", text: "We couldn't update your comment right now." });
     }
   }
 
   async function handleDeleteComment(commentId: string) {
+    if (typeof window !== "undefined" && !window.confirm("Delete this comment?")) {
+      return;
+    }
+
     try {
       await deleteInteractiveBlogComment(commentId);
       setComments((prev) => prev.filter((comment) => comment.id !== commentId));
+      setFeedback({ type: "success", text: "Comment deleted." });
     } catch {
-      window.alert("We couldn't delete your comment right now.");
+      setFeedback({ type: "error", text: "We couldn't delete your comment right now." });
     }
   }
 
   async function handleCopyLink() {
     try {
       await navigator.clipboard.writeText(`${window.location.origin}/blog/${displayPost.slug}`);
-      window.alert("Link copied to clipboard.");
+      setFeedback({ type: "success", text: "Link copied to clipboard." });
     } catch {
-      window.alert("We couldn't copy the link right now.");
+      setFeedback({ type: "error", text: "We couldn't copy the link right now." });
     }
+  }
+
+  async function handleShare() {
+    const shareUrl = `${window.location.origin}/blog/${displayPost.slug}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: displayPost.title,
+          text: displayPost.excerpt,
+          url: shareUrl
+        });
+        setFeedback({ type: "success", text: "Article shared." });
+        return;
+      } catch {
+        return;
+      }
+    }
+
+    await handleCopyLink();
   }
 
   return (
@@ -449,35 +560,104 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
         </div>
 
         <div className="lg:col-span-2">
+          <div className="mb-8 rounded-3xl border border-gray-100 bg-gray-50 p-4 md:p-5">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                    liked ? "bg-red-50 text-red-500" : "bg-white text-gray-600 hover:text-red-500"
+                  }`}
+                  onClick={handleToggleLike}
+                  disabled={isLikePending}
+                >
+                  {isLikePending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Heart className="h-4 w-4" />}
+                  <span>{displayPost.likes} Likes</span>
+                </button>
+                <button
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-gray-600 transition-colors hover:text-[#005555]"
+                  onClick={scrollToComments}
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  <span>{commentCount} Comments</span>
+                </button>
+                <button
+                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                    bookmarked ? "bg-[#d8eeee] text-[#005555]" : "bg-white text-gray-600 hover:text-[#005555]"
+                  }`}
+                  onClick={handleToggleBookmark}
+                  disabled={isBookmarkPending}
+                >
+                  {isBookmarkPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bookmark className="h-4 w-4" />}
+                  <span>{bookmarked ? "Saved" : "Save"}</span>
+                </button>
+              </div>
+
+              <button
+                className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-gray-600 transition-colors hover:text-[#005555]"
+                onClick={handleShare}
+              >
+                <Share2 className="h-4 w-4" />
+                <span>Share</span>
+              </button>
+            </div>
+
+            {feedback && (
+              <div
+                className={`mt-4 inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wider ${
+                  feedback.type === "success"
+                    ? "bg-[#d8eeee] text-[#005555]"
+                    : feedback.type === "error"
+                      ? "bg-red-50 text-red-600"
+                      : "bg-slate-100 text-slate-700"
+                }`}
+              >
+                {feedback.type === "success" ? <Check className="h-3.5 w-3.5" /> : null}
+                <span>{feedback.text}</span>
+              </div>
+            )}
+          </div>
+
           <article className="wp-content prose prose-lg prose-slate max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-strong:text-gray-900 prose-a:text-[#005555] hover:prose-a:text-[#005555]">
             <div dangerouslySetInnerHTML={{ __html: displayPost.content || displayPost.excerpt }} />
           </article>
 
-          <div className="mt-8 flex flex-wrap items-center gap-4">
-            <button
-              className={`flex items-center space-x-2 transition-colors ${liked ? "text-red-500" : "text-gray-600 hover:text-red-500"}`}
-              onClick={handleToggleLike}
-            >
-              <Heart className="w-4 h-4" />
-              <span>{displayPost.likes} Likes</span>
-            </button>
-            <div className="flex items-center space-x-2 text-gray-600">
-              <MessageCircle className="w-4 h-4" />
-              <span>{commentCount} Comments</span>
+          {displayPost.tags.length > 0 && (
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Topics</span>
+              {displayPost.tags.map((tag) => (
+                <span key={tag} className="rounded-full bg-[#d8eeee] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#005555]">
+                  {tag}
+                </span>
+              ))}
             </div>
-            <button
-              className={`flex items-center space-x-2 transition-colors ${bookmarked ? "text-[#005555]" : "text-gray-600 hover:text-[#005555]"}`}
-              onClick={handleToggleBookmark}
-            >
-              <Bookmark className="w-4 h-4" />
-              <span>{bookmarked ? "Saved" : "Save"}</span>
-            </button>
-          </div>
+          )}
 
-          <div className="mt-12">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-900">Comments</h3>
-              {!currentUser && <span className="text-xs text-gray-500">Post as guest without signing in.</span>}
+          <div ref={commentsRef} className="mt-12">
+            <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">Comments</h3>
+                {!currentUser && <span className="text-xs text-gray-500">Post as guest without signing in.</span>}
+              </div>
+              <div className="inline-flex w-fit rounded-full bg-gray-100 p-1">
+                <button
+                  type="button"
+                  onClick={() => setCommentSort("newest")}
+                  className={`rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors ${
+                    commentSort === "newest" ? "bg-white text-[#005555] shadow-sm" : "text-gray-500"
+                  }`}
+                >
+                  Newest
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCommentSort("oldest")}
+                  className={`rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors ${
+                    commentSort === "oldest" ? "bg-white text-[#005555] shadow-sm" : "text-gray-500"
+                  }`}
+                >
+                  Oldest
+                </button>
+              </div>
             </div>
 
             <form onSubmit={handleSubmitComment} className="mb-8">
@@ -498,8 +678,10 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                 placeholder="Write a thoughtful comment..."
                 className="w-full min-h-[120px] rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#005555] focus:border-[#005555]"
                 disabled={commentSubmitting}
+                maxLength={800}
               />
-              <div className="mt-3 flex items-center justify-end">
+              <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-xs text-gray-400">{commentText.trim().length}/800 characters</p>
                 <button
                   type="submit"
                   className="bg-[#005555] text-white px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm disabled:opacity-60"
@@ -520,7 +702,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
               <div className="text-sm text-gray-500">Be the first to comment.</div>
             ) : (
               <div className="space-y-6">
-                {comments.map((comment) => {
+                {visibleComments.map((comment) => {
                   const isOwner = comment.user?.id === currentUserId;
                   const isEditing = editingCommentId === comment.id;
 
@@ -566,6 +748,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                               value={editingContent}
                               onChange={(event) => setEditingContent(event.target.value)}
                               className="w-full min-h-[100px] rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#005555] focus:border-[#005555]"
+                              maxLength={800}
                             />
                             <div className="flex items-center justify-end gap-2">
                               <button type="button" className="px-4 py-2 text-xs font-bold uppercase tracking-widest text-gray-500" onClick={handleCancelEdit}>
@@ -613,7 +796,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
 
         <div className="lg:col-span-1">
           <div className="sticky top-32">
-            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-8">Related Articles</h4>
+            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-8">You May Also Like</h4>
             <div className="space-y-8">
               {displayRelatedPosts.map((relatedPost) => (
                 <Link key={`${relatedPost.slug}-${relatedPost.id}`} href={`/blog/${relatedPost.slug}`} className="group block">
@@ -629,6 +812,13 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                   <h5 className="font-bold text-gray-900 text-sm leading-snug group-hover:text-[#005555] transition-colors">
                     {relatedPost.title}
                   </h5>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {(relatedPost.category ? [relatedPost.category] : relatedPost.tags?.slice(0, 2) || []).slice(0, 2).map((label) => (
+                      <span key={label} className="rounded-full bg-gray-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#005555]">
+                        {label}
+                      </span>
+                    ))}
+                  </div>
                   <p className="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-wider">{relatedPost.date}</p>
                 </Link>
               ))}
