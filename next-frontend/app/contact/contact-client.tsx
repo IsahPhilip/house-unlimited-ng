@@ -321,9 +321,6 @@ export function ContactClient({ settings, initialTopic = "general", initialRole 
                         className="w-full bg-gray-50 border-none rounded-xl px-6 py-4 text-sm focus:ring-2 focus:ring-[#005555] outline-none file:mr-4 file:rounded-full file:border-0 file:bg-[#d8eeee] file:px-4 file:py-2 file:text-xs file:font-bold file:text-[#005555]"
                         disabled={isSubmitting}
                       />
-                      <p className="text-xs text-gray-500">
-                        Upload up to 3 files. Accepted formats: PDF, DOC, DOCX, JPG, PNG, WEBP. Max 5MB each.
-                      </p>
                       {attachments.length > 0 && (
                         <div className="flex flex-wrap gap-2 pt-1">
                           {attachments.map((file) => (
@@ -348,7 +345,7 @@ export function ContactClient({ settings, initialTopic = "general", initialRole 
                         {isSubmitting ? "Sending..." : "Send Message"}
                       </button>
                       <p className="text-xs text-gray-500 mt-3">
-                        Your message goes directly to official@houseunlimitednigeria.com. We typically respond within 24 hours.
+                        We typically respond within 24 hours.
                       </p>
                     </div>
                   </form>

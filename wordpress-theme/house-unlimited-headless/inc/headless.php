@@ -211,6 +211,30 @@ if ( ! function_exists( 'hun_prepare_testimonial_payload' ) ) {
 	}
 }
 
+if ( ! function_exists( 'hun_prepare_job_role_payload' ) ) {
+	/**
+	 * Build a frontend-friendly job role payload.
+	 *
+	 * @param WP_Post $post Job role post object.
+	 */
+	function hun_prepare_job_role_payload( WP_Post $post ): array {
+		$employment_type = (string) hun_get_property_meta_value( $post->ID, 'employment_type' );
+		$location        = (string) hun_get_property_meta_value( $post->ID, 'job_location' );
+		$apply_label     = (string) hun_get_property_meta_value( $post->ID, 'apply_label' );
+
+		return array(
+			'id'             => $post->ID,
+			'slug'           => $post->post_name,
+			'title'          => get_the_title( $post ),
+			'summary'        => has_excerpt( $post ) ? get_the_excerpt( $post ) : wp_trim_words( wp_strip_all_tags( $post->post_content ), 30 ),
+			'content'        => apply_filters( 'the_content', $post->post_content ),
+			'employmentType' => $employment_type ?: __( 'Full-time', 'house-unlimited-headless' ),
+			'location'       => $location ?: __( 'Abuja, Nigeria', 'house-unlimited-headless' ),
+			'applyLabel'     => $apply_label ?: __( 'Apply for this role', 'house-unlimited-headless' ),
+		);
+	}
+}
+
 add_action(
 	'admin_init',
 	static function () {
@@ -507,6 +531,35 @@ add_action(
 					return rest_ensure_response(
 						array(
 							'items' => array_map( 'hun_prepare_testimonial_payload', $posts ),
+						)
+					);
+				},
+			)
+		);
+
+		register_rest_route(
+			'hun/v1',
+			'/job-roles',
+			array(
+				'methods'             => 'GET',
+				'permission_callback' => '__return_true',
+				'callback'            => static function ( WP_REST_Request $request ) {
+					$per_page = max( 1, min( 24, (int) $request->get_param( 'per_page' ) ?: 12 ) );
+					$posts    = get_posts(
+						array(
+							'post_type'      => 'job_role',
+							'post_status'    => 'publish',
+							'posts_per_page' => $per_page,
+							'orderby'        => array(
+								'menu_order' => 'ASC',
+								'date'       => 'DESC',
+							),
+						)
+					);
+
+					return rest_ensure_response(
+						array(
+							'items' => array_map( 'hun_prepare_job_role_payload', $posts ),
 						)
 					);
 				},

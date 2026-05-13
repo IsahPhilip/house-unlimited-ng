@@ -117,6 +117,37 @@ add_action(
 				'rewrite'             => false,
 			)
 		);
+
+		register_post_type(
+			'job_role',
+			array(
+				'labels'              => array(
+					'name'               => __( 'Job Roles', 'house-unlimited-headless' ),
+					'singular_name'      => __( 'Job Role', 'house-unlimited-headless' ),
+					'add_new_item'       => __( 'Add New Job Role', 'house-unlimited-headless' ),
+					'edit_item'          => __( 'Edit Job Role', 'house-unlimited-headless' ),
+					'new_item'           => __( 'New Job Role', 'house-unlimited-headless' ),
+					'view_item'          => __( 'View Job Role', 'house-unlimited-headless' ),
+					'search_items'       => __( 'Search Job Roles', 'house-unlimited-headless' ),
+					'not_found'          => __( 'No job roles found', 'house-unlimited-headless' ),
+					'not_found_in_trash' => __( 'No job roles found in trash', 'house-unlimited-headless' ),
+				),
+				'public'              => true,
+				'publicly_queryable'  => true,
+				'exclude_from_search' => true,
+				'has_archive'         => false,
+				'show_ui'             => true,
+				'show_in_menu'        => true,
+				'show_in_nav_menus'   => false,
+				'show_in_rest'        => true,
+				'show_in_graphql'     => true,
+				'graphql_single_name' => 'JobRole',
+				'graphql_plural_name' => 'JobRoles',
+				'supports'            => array( 'title', 'editor', 'excerpt', 'page-attributes' ),
+				'menu_icon'           => 'dashicons-businessperson',
+				'rewrite'             => false,
+			)
+		);
 	}
 );
 
@@ -188,6 +219,42 @@ add_action(
 				),
 				'show_in_graphql'       => true,
 				'graphql_field_name'    => 'propertyFields',
+			) );
+
+			acf_add_local_field_group( array(
+				'key'                => 'group_job_role_fields',
+				'title'              => 'Job Role Fields',
+				'fields'             => array(
+					array(
+						'key'   => 'field_job_role_type',
+						'label' => 'Employment Type',
+						'name'  => 'employment_type',
+						'type'  => 'text',
+					),
+					array(
+						'key'   => 'field_job_role_location',
+						'label' => 'Location',
+						'name'  => 'job_location',
+						'type'  => 'text',
+					),
+					array(
+						'key'   => 'field_job_role_apply_label',
+						'label' => 'Apply Button Label',
+						'name'  => 'apply_label',
+						'type'  => 'text',
+					),
+				),
+				'location'           => array(
+					array(
+						array(
+							'param'    => 'post_type',
+							'operator' => '==',
+							'value'    => 'job_role',
+						),
+					),
+				),
+				'show_in_graphql'    => true,
+				'graphql_field_name' => 'jobRoleFields',
 			) );
 		}
 	}

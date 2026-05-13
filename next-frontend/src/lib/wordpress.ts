@@ -124,6 +124,16 @@ export type Testimonial = {
   image?: string;
 };
 
+export type JobRole = {
+  slug: string;
+  title: string;
+  summary: string;
+  content: string;
+  employmentType: string;
+  location: string;
+  applyLabel: string;
+};
+
 async function fetchGraphQL<T>(query: string, variables?: Record<string, unknown>): Promise<T | null> {
   try {
     const response = await fetch(endpoint, {
@@ -606,6 +616,32 @@ export async function getTestimonials(limit = 6): Promise<Testimonial[]> {
       role: item.role || "Customer",
       text: item.text || "",
       image: item.image || ""
+    })) || []
+  );
+}
+
+export async function getJobRoles(limit = 12): Promise<JobRole[]> {
+  const restData = await fetchRest<{
+    items?: Array<{
+      slug?: string;
+      title?: string;
+      summary?: string;
+      content?: string;
+      employmentType?: string;
+      location?: string;
+      applyLabel?: string;
+    }>;
+  }>(`/job-roles?per_page=${limit}`, { suppressNotFound: true });
+
+  return (
+    restData?.items?.map((item) => ({
+      slug: item.slug || "",
+      title: item.title || "Untitled role",
+      summary: item.summary || "",
+      content: item.content || "",
+      employmentType: item.employmentType || "Full-time",
+      location: item.location || "Abuja, Nigeria",
+      applyLabel: item.applyLabel || "Apply for this role"
     })) || []
   );
 }

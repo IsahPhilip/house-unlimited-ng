@@ -1,49 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Briefcase, CheckCircle2, Clock3, MapPin, Users2 } from "lucide-react";
-import { getSiteSettings } from "@/lib/wordpress";
-
-const openRoles = [
-  {
-    slug: "sales-and-client-advisor",
-    title: "Sales and Client Advisor",
-    type: "Full-time",
-    location: "Abuja, Nigeria",
-    summary:
-      "Guide prospects from first enquiry to property decision with a warm, high-trust advisory approach.",
-    responsibilities: [
-      "Respond to inbound property enquiries and follow up on qualified leads",
-      "Coordinate inspections, walkthroughs, and buyer updates",
-      "Maintain strong CRM notes and handoff quality across the sales process"
-    ]
-  },
-  {
-    slug: "digital-marketing-and-content-executive",
-    title: "Digital Marketing and Content Executive",
-    type: "Full-time",
-    location: "Abuja, Nigeria",
-    summary:
-      "Create campaigns, property content, and social storytelling that attract serious buyers and investors.",
-    responsibilities: [
-      "Manage content calendars across web, email, and social channels",
-      "Write listing copy, campaign copy, and brand storytelling pieces",
-      "Track campaign performance and propose improvements"
-    ]
-  },
-  {
-    slug: "property-investment-analyst",
-    title: "Property Investment Analyst",
-    type: "Hybrid",
-    location: "Abuja, Nigeria",
-    summary:
-      "Support clients with market research, pricing insight, and investment-ready opportunity analysis.",
-    responsibilities: [
-      "Review market comparables and location trends",
-      "Prepare concise investment briefs for client-facing teams",
-      "Work with leadership on feasibility and demand signals"
-    ]
-  }
-];
+import { getJobRoles, getSiteSettings } from "@/lib/wordpress";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -55,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CareersPage() {
-  const settings = await getSiteSettings();
+  const [settings, openRoles] = await Promise.all([getSiteSettings(), getJobRoles(12)]);
 
   return (
     <div className="animate-in fade-in duration-500 bg-white">
@@ -119,13 +77,14 @@ export default async function CareersPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {openRoles.map((role) => (
+          {openRoles.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {openRoles.map((role) => (
               <article key={role.slug} className="rounded-3xl border border-gray-100 bg-gray-50 p-8 shadow-sm">
                 <div className="flex flex-wrap gap-3 mb-5">
                   <span className="inline-flex items-center rounded-full bg-[#d8eeee] px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-[#005555]">
                     <Clock3 className="w-3.5 h-3.5 mr-2" />
-                    {role.type}
+                    {role.employmentType}
                   </span>
                   <span className="inline-flex items-center rounded-full bg-white px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-600 border border-gray-100">
                     <MapPin className="w-3.5 h-3.5 mr-2" />
@@ -136,24 +95,35 @@ export default async function CareersPage() {
                 <h3 className="text-2xl font-bold text-gray-900 mb-3">{role.title}</h3>
                 <p className="text-sm text-gray-600 leading-relaxed mb-6">{role.summary}</p>
 
-                <div className="space-y-3 mb-8">
-                  {role.responsibilities.map((item) => (
-                    <div key={item} className="flex items-start gap-3">
-                      <CheckCircle2 className="w-4 h-4 text-[#005555] mt-0.5 shrink-0" />
-                      <p className="text-sm text-gray-600 leading-relaxed">{item}</p>
-                    </div>
-                  ))}
-                </div>
+                {role.content && (
+                  <div className="wp-content prose prose-sm prose-slate max-w-none mb-8 prose-p:text-gray-600 prose-li:text-gray-600 prose-strong:text-gray-900 prose-ul:my-0">
+                    <div dangerouslySetInnerHTML={{ __html: role.content }} />
+                  </div>
+                )}
 
                 <Link
                   href={`/contact?topic=careers&role=${encodeURIComponent(role.title)}`}
                   className="inline-flex items-center rounded-full bg-[#005555] px-6 py-3 text-xs font-bold uppercase tracking-widest text-white hover:bg-[#004242] transition-all shadow-lg shadow-[#d8eeee]"
                 >
-                  Apply for this role <ArrowRight className="ml-2 w-4 h-4" />
+                  {role.applyLabel} <ArrowRight className="ml-2 w-4 h-4" />
                 </Link>
               </article>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-3xl border border-dashed border-gray-200 bg-gray-50 p-10 text-center">
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">No roles published yet</h3>
+              <p className="text-gray-600 max-w-2xl mx-auto mb-6">
+                Open roles will appear here once they are added and published from WordPress `wp-admin`.
+              </p>
+              <Link
+                href="/contact?topic=careers"
+                className="inline-flex items-center rounded-full bg-[#005555] px-7 py-3 text-sm font-bold text-white hover:bg-[#004242] transition-all shadow-lg shadow-[#d8eeee]"
+              >
+                Send Career Enquiry
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
