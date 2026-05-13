@@ -51,20 +51,16 @@ if ( ! function_exists( 'hun_is_rest_like_request' ) ) {
 	}
 }
 
-if ( ! function_exists( 'hun_get_current_request_origin' ) ) {
+if ( ! function_exists( 'hun_wordpress_backend_url' ) ) {
 	/**
-	 * Resolve the current request origin from the incoming host.
+	 * Resolve the canonical WordPress backend origin used for wp-admin and REST.
 	 */
-	function hun_get_current_request_origin(): string {
-		$host = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
-
-		if ( '' === $host ) {
-			return '';
+	function hun_wordpress_backend_url(): string {
+		if ( defined( 'HUN_WORDPRESS_BACKEND_URL' ) && HUN_WORDPRESS_BACKEND_URL ) {
+			return untrailingslashit( HUN_WORDPRESS_BACKEND_URL );
 		}
 
-		$scheme = is_ssl() ? 'https' : 'http';
-
-		return $scheme . '://' . $host;
+		return untrailingslashit( site_url() );
 	}
 }
 
@@ -250,9 +246,14 @@ add_filter(
 	'allowed_redirect_hosts',
 	static function ( array $hosts ): array {
 		$host = wp_parse_url( hun_headless_frontend_url(), PHP_URL_HOST );
+		$backend_host = wp_parse_url( hun_wordpress_backend_url(), PHP_URL_HOST );
 
 		if ( $host && ! in_array( $host, $hosts, true ) ) {
 			$hosts[] = $host;
+		}
+
+		if ( $backend_host && ! in_array( $backend_host, $hosts, true ) ) {
+			$hosts[] = $backend_host;
 		}
 
 		return $hosts;
@@ -266,13 +267,13 @@ add_filter(
 			return $url;
 		}
 
-		$current_origin = hun_get_current_request_origin();
+		$backend_origin = hun_wordpress_backend_url();
 
-		if ( '' === $current_origin ) {
+		if ( '' === $backend_origin ) {
 			return $url;
 		}
 
-		$current_host = wp_parse_url( $current_origin, PHP_URL_HOST );
+		$current_host = wp_parse_url( $backend_origin, PHP_URL_HOST );
 		$rest_host    = wp_parse_url( $url, PHP_URL_HOST );
 
 		if ( ! $current_host || ! $rest_host || $current_host === $rest_host ) {
@@ -283,7 +284,7 @@ add_filter(
 		$rest_query = wp_parse_url( $url, PHP_URL_QUERY );
 		$rest_query = is_string( $rest_query ) && '' !== $rest_query ? '?' . $rest_query : '';
 
-		return untrailingslashit( $current_origin ) . $rest_path . $rest_query;
+		return untrailingslashit( $backend_origin ) . $rest_path . $rest_query;
 	},
 	10,
 	4

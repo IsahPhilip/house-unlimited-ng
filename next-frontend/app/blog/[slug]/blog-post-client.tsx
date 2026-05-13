@@ -449,7 +449,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
         </div>
 
         <div className="lg:col-span-2">
-          <article className="prose prose-lg prose-slate max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-strong:text-gray-900 prose-a:text-[#005555] hover:prose-a:text-[#005555]">
+          <article className="wp-content prose prose-lg prose-slate max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-strong:text-gray-900 prose-a:text-[#005555] hover:prose-a:text-[#005555]">
             <div dangerouslySetInnerHTML={{ __html: displayPost.content || displayPost.excerpt }} />
           </article>
 

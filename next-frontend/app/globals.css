@@ -326,6 +326,202 @@ img {
   padding: 1.5rem;
 }
 
+.wp-content {
+  color: #4b5563;
+}
+
+.wp-content > *:first-child {
+  margin-top: 0;
+}
+
+.wp-content > *:last-child {
+  margin-bottom: 0;
+}
+
+.wp-content .wp-block-group,
+.wp-content .wp-block-columns,
+.wp-content .wp-block-cover,
+.wp-content .wp-block-media-text {
+  margin: 2rem 0;
+}
+
+.wp-content .wp-block-columns {
+  display: grid;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.wp-content .wp-block-column {
+  min-width: 0;
+}
+
+.wp-content .wp-block-image,
+.wp-content .wp-block-gallery,
+.wp-content .wp-block-quote,
+.wp-content .wp-block-pullquote,
+.wp-content .wp-block-table,
+.wp-content .wp-block-buttons,
+.wp-content .wp-block-embed,
+.wp-content .wp-block-separator,
+.wp-content .wp-block-code,
+.wp-content .wp-block-preformatted {
+  margin: 2rem 0;
+}
+
+.wp-content .wp-block-image img,
+.wp-content .wp-block-gallery img {
+  border-radius: 1.25rem;
+}
+
+.wp-content .wp-block-image figcaption,
+.wp-content .wp-block-gallery figcaption,
+.wp-content .wp-block-table figcaption {
+  margin-top: 0.75rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.wp-content .wp-block-image.alignleft {
+  float: left;
+  max-width: min(320px, 45%);
+  margin: 0.25rem 1.5rem 1rem 0;
+}
+
+.wp-content .wp-block-image.alignright {
+  float: right;
+  max-width: min(320px, 45%);
+  margin: 0.25rem 0 1rem 1.5rem;
+}
+
+.wp-content .wp-block-image.aligncenter,
+.wp-content .wp-block-image .aligncenter {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.wp-content .alignwide {
+  width: min(100vw - 2rem, 72rem);
+  max-width: none;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+.wp-content .alignfull {
+  width: 100vw;
+  max-width: none;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+.wp-content .wp-block-quote,
+.wp-content .wp-block-pullquote blockquote {
+  margin-left: 0;
+  margin-right: 0;
+  padding: 1.5rem 1.5rem 1.5rem 1.25rem;
+  border-left: 4px solid var(--brand);
+  background: #f8fafc;
+  border-radius: 0 1rem 1rem 0;
+}
+
+.wp-content .wp-block-quote p:last-child,
+.wp-content .wp-block-pullquote p:last-child {
+  margin-bottom: 0;
+}
+
+.wp-content .wp-block-pullquote {
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  padding: 1rem 0;
+}
+
+.wp-content .wp-block-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.wp-content .wp-block-button__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.9rem;
+  padding: 0.85rem 1.3rem;
+  background: var(--brand);
+  color: #fff;
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 160ms ease;
+}
+
+.wp-content .wp-block-button__link:hover {
+  background: var(--brand-dark);
+  color: #fff;
+}
+
+.wp-content .wp-block-separator {
+  border: 0;
+  border-top: 1px solid rgba(15, 23, 42, 0.12);
+}
+
+.wp-content .wp-block-table table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.wp-content .wp-block-table th,
+.wp-content .wp-block-table td {
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  text-align: left;
+}
+
+.wp-content .wp-block-table th {
+  background: #f8fafc;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.wp-content .wp-block-code,
+.wp-content pre.wp-block-code,
+.wp-content .wp-block-preformatted {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  overflow-x: auto;
+}
+
+.wp-content .wp-block-cover {
+  overflow: hidden;
+  border-radius: 1.5rem;
+}
+
+.wp-content .wp-block-cover__inner-container {
+  padding: 2rem;
+}
+
+.wp-content .wp-block-media-text {
+  display: grid;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.wp-content .wp-block-gallery {
+  display: grid;
+  gap: 1rem;
+}
+
+.wp-content::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
 @media (max-width: 900px) {
   .hero-grid,
   .section-grid,
@@ -341,5 +537,24 @@ img {
   .nav {
     justify-content: flex-start;
     flex-wrap: wrap;
+  }
+
+  .wp-content .alignwide,
+  .wp-content .alignfull {
+    width: 100%;
+    margin-left: 0;
+    transform: none;
+  }
+
+  .wp-content .wp-block-columns,
+  .wp-content .wp-block-media-text {
+    grid-template-columns: 1fr;
+  }
+
+  .wp-content .wp-block-image.alignleft,
+  .wp-content .wp-block-image.alignright {
+    float: none;
+    max-width: 100%;
+    margin: 1.5rem 0;
   }
 }
