@@ -83,8 +83,18 @@ function buildShareUrl(platform: "facebook" | "twitter" | "linkedin", slug: stri
   }
 }
 
+function estimateReadTime(content: string) {
+  const plainText = content.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  const words = plainText ? plainText.split(" ").length : 0;
+  const minutes = Math.max(1, Math.ceil(words / 200));
+
+  return `${minutes} min read`;
+}
+
 export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogPostClientProps) {
   const [interactivePost, setInteractivePost] = useState<InteractiveBlogPost | null>(null);
+  const [isInteractiveLoading, setIsInteractiveLoading] = useState(true);
+  const [interactiveUnavailable, setInteractiveUnavailable] = useState(false);
   const [relatedPosts, setRelatedPosts] = useState<InteractiveBlogPost[]>([]);
   const [comments, setComments] = useState<BlogComment[]>([]);
   const [liked, setLiked] = useState(false);
@@ -134,6 +144,9 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
     let isMounted = true;
 
     async function hydrateInteractiveData() {
+      setIsInteractiveLoading(true);
+      setInteractiveUnavailable(false);
+
       try {
         const post = await getInteractiveBlogPostBySlug(slug);
 
@@ -185,7 +198,12 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
         }
       } catch {
         if (isMounted) {
+          setInteractiveUnavailable(true);
           setIsCommentsLoading(false);
+        }
+      } finally {
+        if (isMounted) {
+          setIsInteractiveLoading(false);
         }
       }
     }
@@ -232,7 +250,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
       authorRole: "",
       authorBio: "",
       authorImage: "",
-      readTime: "5 min read",
+      readTime: estimateReadTime(initialPost.content || initialPost.excerpt),
       views: 0,
       likes: 0,
       id: ""
@@ -275,7 +293,13 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
 
   const currentUserId = currentUser?.id || currentUser?._id || "";
   const isSignedIn = Boolean(currentUserId);
-  const commentCount = comments.length || interactivePost?.commentsCount || 0;
+  const hasInteractivePost = Boolean(interactivePost?.id);
+  const metricViews = hasInteractivePost ? displayPost.views : null;
+  const metricLikes = hasInteractivePost ? displayPost.likes : null;
+  const commentCount =
+    comments.length > 0 || (!isCommentsLoading && hasInteractivePost)
+      ? comments.length
+      : interactivePost?.commentsCount ?? null;
   const visibleComments = useMemo(() => {
     const sorted = [...comments];
     sorted.sort((left, right) => {
@@ -310,11 +334,26 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
     commentsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  function ensureInteractiveAvailable(actionLabel: string) {
+    if (isInteractiveLoading) {
+      setFeedback({ type: "info", text: "Loading post engagement details..." });
+      return false;
+    }
+
+    if (!interactivePost?.id || interactiveUnavailable) {
+      setFeedback({ type: "info", text: `${actionLabel} isn't available for this article yet.` });
+      return false;
+    }
+
+    return true;
+  }
+
   async function handleToggleLike() {
-    if (!interactivePost?.id) {
-      setFeedback({ type: "info", text: "This post is still loading. Please try again in a moment." });
+    if (!ensureInteractiveAvailable("Likes")) {
       return;
     }
+
+    const postId = interactivePost!.id;
 
     if (!requireAuth("Please sign in to like this post.")) {
       return;
@@ -324,12 +363,12 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
       setIsLikePending(true);
 
       if (liked) {
-        const response = await unlikeInteractiveBlogPost(interactivePost.id);
+        const response = await unlikeInteractiveBlogPost(postId);
         setLiked(response.liked);
         setInteractivePost((prev) => (prev ? { ...prev, likes: response.likes } : prev));
         setFeedback({ type: "success", text: "Like removed." });
       } else {
-        const response = await likeInteractiveBlogPost(interactivePost.id);
+        const response = await likeInteractiveBlogPost(postId);
         setLiked(response.liked);
         setInteractivePost((prev) => (prev ? { ...prev, likes: response.likes } : prev));
         setFeedback({ type: "success", text: "Post liked." });
@@ -342,10 +381,11 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
   }
 
   async function handleToggleBookmark() {
-    if (!interactivePost?.id) {
-      setFeedback({ type: "info", text: "This post is still loading. Please try again in a moment." });
+    if (!ensureInteractiveAvailable("Saved posts")) {
       return;
     }
+
+    const postId = interactivePost!.id;
 
     if (!requireAuth("Please sign in to save this post.")) {
       return;
@@ -355,11 +395,11 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
       setIsBookmarkPending(true);
 
       if (bookmarked) {
-        const response = await unbookmarkInteractiveBlogPost(interactivePost.id);
+        const response = await unbookmarkInteractiveBlogPost(postId);
         setBookmarked(response.bookmarked);
         setFeedback({ type: "success", text: "Removed from saved posts." });
       } else {
-        const response = await bookmarkInteractiveBlogPost(interactivePost.id);
+        const response = await bookmarkInteractiveBlogPost(postId);
         setBookmarked(response.bookmarked);
         setFeedback({ type: "success", text: "Saved for later." });
       }
@@ -373,10 +413,11 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
   async function handleSubmitComment(event: React.FormEvent) {
     event.preventDefault();
 
-    if (!interactivePost?.id) {
-      setFeedback({ type: "info", text: "Comments are still loading. Please try again in a moment." });
+    if (!ensureInteractiveAvailable("Comments")) {
       return;
     }
+
+    const postId = interactivePost!.id;
 
     if (!commentText.trim()) {
       return;
@@ -392,7 +433,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
     try {
       setCommentSubmitting(true);
       const created = await addInteractiveBlogComment(
-        interactivePost.id,
+        postId,
         commentText.trim(),
         isSignedIn ? undefined : trimmedGuestName
       );
@@ -522,7 +563,9 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
               <span className="hidden md:inline text-white/40">•</span>
               <span className="text-sm font-medium">{displayPost.readTime}</span>
               <span className="hidden md:inline text-white/40">•</span>
-              <span className="text-sm font-medium">{displayPost.views} views</span>
+              <span className="text-sm font-medium">
+                {metricViews === null ? (isInteractiveLoading ? "..." : "Views unavailable") : `${metricViews} views`}
+              </span>
             </div>
           </div>
         </div>
@@ -564,24 +607,24 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                     liked ? "bg-red-50 text-red-500" : "bg-white text-gray-600 hover:text-red-500"
                   }`}
                   onClick={handleToggleLike}
-                  disabled={isLikePending}
+                  disabled={isLikePending || isInteractiveLoading}
                 >
                   {isLikePending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Heart className="h-4 w-4" />}
-                  <span>{displayPost.likes} Likes</span>
+                  <span>{metricLikes === null ? (isInteractiveLoading ? "..." : "Likes unavailable") : `${metricLikes} Likes`}</span>
                 </button>
                 <button
                   className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-gray-600 transition-colors hover:text-[#005555]"
                   onClick={scrollToComments}
                 >
                   <MessageCircle className="h-4 w-4" />
-                  <span>{commentCount} Comments</span>
+                  <span>{commentCount === null ? (isInteractiveLoading ? "..." : "Comments unavailable") : `${commentCount} Comments`}</span>
                 </button>
                 <button
                   className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
                     bookmarked ? "bg-[#d8eeee] text-[#005555]" : "bg-white text-gray-600 hover:text-[#005555]"
                   }`}
                   onClick={handleToggleBookmark}
-                  disabled={isBookmarkPending}
+                  disabled={isBookmarkPending || isInteractiveLoading}
                 >
                   {isBookmarkPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bookmark className="h-4 w-4" />}
                   <span>{bookmarked ? "Saved" : "Save"}</span>
@@ -703,6 +746,8 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                   <div key={idx} className="h-20 bg-gray-100 rounded-2xl animate-pulse"></div>
                 ))}
               </div>
+            ) : interactiveUnavailable ? (
+              <div className="text-sm text-gray-500">Comments are not enabled for this article yet.</div>
             ) : comments.length === 0 ? (
               <div className="text-sm text-gray-500">Be the first to comment.</div>
             ) : (
