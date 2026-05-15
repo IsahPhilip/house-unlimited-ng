@@ -480,16 +480,12 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
 
   return (
     <div className="bg-white min-h-screen animate-in fade-in duration-500">
-      <div className="relative h-[400px] md:h-[500px]">
-        {displayPost.featuredImage ? (
-          <img src={displayPost.featuredImage} alt={displayPost.title} className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs uppercase tracking-widest">
-            No Image
-          </div>
-        )}
-        <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"></div>
-        <div className="absolute inset-0 flex items-center justify-center">
+      <div className="relative overflow-hidden bg-slate-950">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(0,85,85,0.34),transparent_32rem),linear-gradient(135deg,#031314_0%,#052628_55%,#0b1727_100%)]"></div>
+        <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:32px_32px]"></div>
+        <div className="absolute -left-20 top-12 h-56 w-56 rounded-full bg-[#005555]/25 blur-3xl"></div>
+        <div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-cyan-300/10 blur-3xl"></div>
+        <div className="relative flex min-h-[400px] items-center justify-center px-4 py-24 md:min-h-[500px]">
           <div className="max-w-4xl px-4 text-center">
             <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
               {displayPost.categories.length > 0 ? (
@@ -617,6 +613,16 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
             )}
           </div>
 
+          {displayPost.featuredImage && (
+            <figure className="mb-10 overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
+              <img
+                src={displayPost.featuredImage}
+                alt={displayPost.title}
+                className="h-auto w-full object-cover"
+              />
+            </figure>
+          )}
+
           <article className="wp-content prose prose-lg prose-slate max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-strong:text-gray-900 prose-a:text-[#005555] hover:prose-a:text-[#005555]">
             <div dangerouslySetInnerHTML={{ __html: displayPost.content || displayPost.excerpt }} />
           </article>
@@ -636,7 +642,6 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
             <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <h3 className="text-xl font-bold text-gray-900">Comments</h3>
-                {!currentUser && <span className="text-xs text-gray-500">Post as guest without signing in.</span>}
               </div>
               <div className="inline-flex w-fit rounded-full bg-gray-100 p-1">
                 <button

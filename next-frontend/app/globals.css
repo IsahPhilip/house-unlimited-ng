@@ -328,6 +328,8 @@ img {
 
 .wp-content {
   color: #4b5563;
+  font-size: 1.05rem;
+  line-height: 1.8;
 }
 
 .wp-content > *:first-child {
@@ -336,6 +338,117 @@ img {
 
 .wp-content > *:last-child {
   margin-bottom: 0;
+}
+
+/* Headings */
+.wp-content h1,
+.wp-content h2,
+.wp-content h3,
+.wp-content h4,
+.wp-content h5,
+.wp-content h6 {
+  color: #0f172a;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.wp-content h1 { font-size: 2.25rem; }
+.wp-content h2 { font-size: 1.75rem; }
+.wp-content h3 { font-size: 1.375rem; }
+.wp-content h4 { font-size: 1.125rem; }
+.wp-content h5 { font-size: 1rem; }
+.wp-content h6 { font-size: 0.875rem; }
+
+/* Paragraphs */
+.wp-content p {
+  margin: 0 0 1.25rem;
+  color: #4b5563;
+}
+
+/* Links */
+.wp-content a {
+  color: #005555;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 160ms ease;
+}
+
+.wp-content a:hover {
+  color: #004242;
+}
+
+/* Lists */
+.wp-content ul,
+.wp-content ol {
+  margin: 0 0 1.25rem;
+  padding-left: 1.75rem;
+}
+
+.wp-content ul {
+  list-style-type: disc;
+}
+
+.wp-content ol {
+  list-style-type: decimal;
+}
+
+.wp-content li {
+  margin-bottom: 0.5rem;
+  color: #4b5563;
+}
+
+.wp-content li > ul,
+.wp-content li > ol {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+/* Inline elements */
+.wp-content strong,
+.wp-content b {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.wp-content em,
+.wp-content i {
+  font-style: italic;
+}
+
+.wp-content hr {
+  margin: 2rem 0;
+  border: 0;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+/* Spacer block */
+.wp-content .wp-block-spacer {
+  height: 1px;
+  clear: both;
+}
+
+/* Images outside wp-block-image */
+.wp-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 1.25rem;
+  margin: 1.5rem auto;
+  display: block;
+}
+
+/* Responsive iframes / embeds */
+.wp-content iframe,
+.wp-content embed,
+.wp-content object {
+  max-width: 100%;
+  border-radius: 1.25rem;
+  margin: 2rem 0;
+}
+
+.wp-content .wp-block-embed iframe {
+  margin: 0;
 }
 
 .wp-content .wp-block-group,
