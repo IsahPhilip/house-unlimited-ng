@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PropertyPreviewCard } from "@/components/property-preview-card";
 import { PostPreviewCard } from "@/components/post-preview-card";
-import { getFeaturedProperties, getRecentPosts, getSiteSettings, getTestimonials } from "@/lib/wordpress";
+import { getFeaturedProperties, getFeaturedVideos, getRecentPosts, getSiteSettings, getTestimonials } from "@/lib/wordpress";
 import maitamaHero from "../../frontend/src/img/maitama-ii.jpeg";
 import {
   ArrowRight,
@@ -10,6 +10,7 @@ import {
   DollarSign,
   Home as HomeIcon,
   MapPin,
+  Play,
   Phone,
   Search,
   Smartphone,
@@ -18,11 +19,12 @@ import {
 } from "lucide-react";
 
 export default async function HomePage() {
-  const [settings, properties, posts, testimonialItems] = await Promise.all([
+  const [settings, properties, posts, testimonialItems, featuredVideos] = await Promise.all([
     getSiteSettings(),
     getFeaturedProperties(),
     getRecentPosts(),
-    getTestimonials(6)
+    getTestimonials(6),
+    getFeaturedVideos(4)
   ]);
 
   const services = [
@@ -190,6 +192,86 @@ export default async function HomePage() {
           )}
         </div>
       </section>
+
+      {featuredVideos.length > 0 ? (
+        <section className="py-24 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="flex flex-wrap items-end justify-between gap-6 mb-8">
+              <div>
+                <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Media</p>
+                <h2 className="text-4xl font-bold text-gray-900">Featured <span className="text-gray-400 italic font-light">Videos</span></h2>
+                <p className="text-gray-600 mt-3 max-w-2xl">
+                  Watch property walkthroughs, neighborhood highlights, and fresh media uploaded from the admin gallery.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-6 overflow-x-auto pb-2 [scrollbar-width:thin]">
+              {featuredVideos.map((video) => (
+                <article
+                  key={`${video.title}-${video.url}`}
+                  className="min-w-[320px] max-w-[420px] flex-1 overflow-hidden rounded-[28px] border border-gray-100 bg-white shadow-sm"
+                >
+                  <div className="relative aspect-video bg-[#003c3c]">
+                    {video.embedUrl ? (
+                      <iframe
+                        src={video.embedUrl}
+                        title={video.title}
+                        className="h-full w-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : video.isDirectVideo ? (
+                      <video
+                        src={video.url}
+                        className="h-full w-full object-cover"
+                        controls
+                        preload="metadata"
+                      />
+                    ) : (
+                      <a
+                        href={video.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="group flex h-full w-full items-center justify-center overflow-hidden"
+                      >
+                        {video.thumbnailUrl ? (
+                          <img src={video.thumbnailUrl} alt={video.title} className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]" />
+                        ) : (
+                          <div className="absolute inset-0 bg-gradient-to-br from-[#005555] via-[#0f6b6b] to-[#003c3c]" />
+                        )}
+                        <span className="absolute inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-[#005555] shadow-lg">
+                          <Play className="ml-1 h-7 w-7 fill-current" />
+                        </span>
+                      </a>
+                    )}
+
+                    <div className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-[#005555] backdrop-blur">
+                      {video.sourceLabel}
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-lg font-bold text-gray-900">{video.title}</h3>
+                    <p className="mt-2 text-sm text-gray-600">
+                      A quick watch from the latest media gallery updates.
+                    </p>
+                    {!video.embedUrl && !video.isDirectVideo ? (
+                      <a
+                        href={video.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-4 inline-flex items-center text-sm font-bold text-[#005555] hover:text-[#004242]"
+                      >
+                        Watch video <ArrowRight className="ml-2 h-4 w-4" />
+                      </a>
+                    ) : null}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-4">

@@ -16,6 +16,7 @@ const restEndpoint =
   `${process.env.NEXT_PUBLIC_WORDPRESS_URL || "http://localhost/wordpress"}/wp-json/hun/v1`;
 const wpRestEndpoint =
   `${process.env.NEXT_PUBLIC_WORDPRESS_URL || "http://localhost/wordpress"}/wp-json/wp/v2`;
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
 
 const fallbackSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 const fallbackWordPressUrl = process.env.NEXT_PUBLIC_WORDPRESS_URL || "http://localhost/wordpress";
@@ -132,6 +133,15 @@ export type JobRole = {
   employmentType: string;
   location: string;
   applyLabel: string;
+};
+
+export type FeaturedVideo = {
+  title: string;
+  url: string;
+  embedUrl?: string;
+  thumbnailUrl?: string;
+  isDirectVideo: boolean;
+  sourceLabel: string;
 };
 
 async function fetchGraphQL<T>(query: string, variables?: Record<string, unknown>): Promise<T | null> {
@@ -644,6 +654,83 @@ export async function getJobRoles(limit = 12): Promise<JobRole[]> {
       applyLabel: item.applyLabel || "Apply for this role"
     })) || []
   );
+}
+
+function getYoutubeVideoId(url: string): string | null {
+  const patterns = [
+    /youtube\.com\/watch\?v=([^&]+)/i,
+    /youtube\.com\/embed\/([^?&/]+)/i,
+    /youtu\.be\/([^?&/]+)/i
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+
+    if (match?.[1]) {
+      return match[1];
+    }
+  }
+
+  return null;
+}
+
+function getVimeoVideoId(url: string): string | null {
+  const match = url.match(/vimeo\.com\/(?:video\/)?(\d+)/i);
+  return match?.[1] || null;
+}
+
+function isDirectVideoUrl(url: string): boolean {
+  return /\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(url);
+}
+
+export async function getFeaturedVideos(limit = 4): Promise<FeaturedVideo[]> {
+  try {
+    const response = await fetch(`${apiBaseUrl}/public/media`, {
+      next: { revalidate: revalidateSeconds }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Public media request failed with status ${response.status}`);
+    }
+
+    const result = (await response.json()) as {
+      data?: Array<{
+        type?: string;
+        title?: string;
+        url?: string;
+      }>;
+    };
+
+    return (
+      result.data
+        ?.filter((item) => item.type === "video" && item.url)
+        .slice(0, limit)
+        .map((item, index) => {
+          const url = item.url as string;
+          const youtubeId = getYoutubeVideoId(url);
+          const vimeoId = getVimeoVideoId(url);
+          const directVideo = isDirectVideoUrl(url);
+
+          return {
+            title: item.title?.trim() || `Featured video ${index + 1}`,
+            url,
+            embedUrl: youtubeId
+              ? `https://www.youtube.com/embed/${youtubeId}`
+              : vimeoId
+                ? `https://player.vimeo.com/video/${vimeoId}`
+                : undefined,
+            thumbnailUrl: youtubeId
+              ? `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`
+              : undefined,
+            isDirectVideo: directVideo,
+            sourceLabel: youtubeId ? "YouTube" : vimeoId ? "Vimeo" : "Video"
+          };
+        }) || []
+    );
+  } catch (error) {
+    console.error("Featured videos fetch error:", error);
+    return [];
+  }
 }
 
 function normalizeWpPath(path: string): string {
