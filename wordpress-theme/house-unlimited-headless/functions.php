@@ -148,6 +148,37 @@ add_action(
 				'rewrite'             => false,
 			)
 		);
+
+		register_post_type(
+			'featured_video',
+			array(
+				'labels'              => array(
+					'name'               => __( 'Featured Videos', 'house-unlimited-headless' ),
+					'singular_name'      => __( 'Featured Video', 'house-unlimited-headless' ),
+					'add_new_item'       => __( 'Add New Featured Video', 'house-unlimited-headless' ),
+					'edit_item'          => __( 'Edit Featured Video', 'house-unlimited-headless' ),
+					'new_item'           => __( 'New Featured Video', 'house-unlimited-headless' ),
+					'view_item'          => __( 'View Featured Video', 'house-unlimited-headless' ),
+					'search_items'       => __( 'Search Featured Videos', 'house-unlimited-headless' ),
+					'not_found'          => __( 'No featured videos found', 'house-unlimited-headless' ),
+					'not_found_in_trash' => __( 'No featured videos found in trash', 'house-unlimited-headless' ),
+				),
+				'public'              => true,
+				'publicly_queryable'  => true,
+				'exclude_from_search' => true,
+				'has_archive'         => false,
+				'show_ui'             => true,
+				'show_in_menu'        => true,
+				'show_in_nav_menus'   => false,
+				'show_in_rest'        => true,
+				'show_in_graphql'     => true,
+				'graphql_single_name' => 'FeaturedVideo',
+				'graphql_plural_name' => 'FeaturedVideos',
+				'supports'            => array( 'title', 'editor', 'thumbnail', 'excerpt', 'page-attributes' ),
+				'menu_icon'           => 'dashicons-video-alt3',
+				'rewrite'             => false,
+			)
+		);
 	}
 );
 
@@ -155,6 +186,32 @@ add_action(
 	'init',
 	static function () {
 		if ( function_exists( 'acf_add_local_field_group' ) ) {
+			acf_add_local_field_group( array(
+				'key'                   => 'group_featured_video_fields',
+				'title'                 => 'Featured Video Fields',
+				'fields'                => array(
+					array(
+						'key'               => 'field_video_url',
+						'label'             => 'Video URL',
+						'name'              => 'video_url',
+						'type'              => 'url',
+						'instructions'      => 'Enter the YouTube, Vimeo URL, or direct video file URL (.mp4, .webm, etc.)',
+						'required'          => true,
+					),
+				),
+				'location'              => array(
+					array(
+						array(
+							'param'    => 'post_type',
+							'operator' => '==',
+							'value'    => 'featured_video',
+						),
+					),
+				),
+				'show_in_graphql'       => true,
+				'graphql_field_name'    => 'featuredVideoFields',
+			) );
+
 			acf_add_local_field_group( array(
 				'key'                   => 'group_property_fields',
 				'title'                 => 'Property Fields',

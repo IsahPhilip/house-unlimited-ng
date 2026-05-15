@@ -235,6 +235,25 @@ if ( ! function_exists( 'hun_prepare_job_role_payload' ) ) {
 	}
 }
 
+if ( ! function_exists( 'hun_prepare_featured_video_payload' ) ) {
+	/**
+	 * Build a frontend-friendly featured video payload.
+	 *
+	 * @param WP_Post $post Featured video post object.
+	 */
+	function hun_prepare_featured_video_payload( WP_Post $post ): array {
+		$video_url = (string) hun_get_property_meta_value( $post->ID, 'video_url' );
+
+		return array(
+			'id'       => $post->ID,
+			'slug'     => $post->post_name,
+			'title'    => get_the_title( $post ),
+			'url'      => $video_url,
+			'image'    => get_the_post_thumbnail_url( $post, 'large' ) ?: '',
+		);
+	}
+}
+
 add_action(
 	'admin_init',
 	static function () {
@@ -560,6 +579,35 @@ add_action(
 					return rest_ensure_response(
 						array(
 							'items' => array_map( 'hun_prepare_job_role_payload', $posts ),
+						)
+					);
+				},
+			)
+		);
+
+		register_rest_route(
+			'hun/v1',
+			'/featured-videos',
+			array(
+				'methods'             => 'GET',
+				'permission_callback' => '__return_true',
+				'callback'            => static function ( WP_REST_Request $request ) {
+					$per_page = max( 1, min( 24, (int) $request->get_param( 'per_page' ) ?: 4 ) );
+					$posts    = get_posts(
+						array(
+							'post_type'      => 'featured_video',
+							'post_status'    => 'publish',
+							'posts_per_page' => $per_page,
+							'orderby'        => array(
+								'menu_order' => 'ASC',
+								'date'       => 'DESC',
+							),
+						)
+					);
+
+					return rest_ensure_response(
+						array(
+							'items' => array_map( 'hun_prepare_featured_video_payload', $posts ),
 						)
 					);
 				},
