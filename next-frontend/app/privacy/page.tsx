@@ -5,8 +5,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
 
   return {
-    title: "Privacy Policy",
-    description: `Read the privacy policy for ${settings.title}.`
+    title: "Privacy Policy | House Unlimited Nigeria",
+    description: `Read the privacy policy for ${settings.title}. Learn how we collect, use, and protect your personal information across our website and client services.`,
+    openGraph: {
+      title: "Privacy Policy | House Unlimited Nigeria",
+      description: `Read the privacy policy for ${settings.title}. Learn how we protect your personal information.`
+    }
   };
 }
 

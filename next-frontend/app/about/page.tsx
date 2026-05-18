@@ -13,8 +13,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
 
   return {
-    title: "About",
-    description: `Learn more about ${settings.title} and our mission.`
+    title: "About Us | House Unlimited Nigeria - Abuja Real Estate Experts Since 1995",
+    description: `Learn about ${settings.title} — Abuja's trusted real estate developer since 1995. Meet our leadership team, mission, and commitment to verified property solutions.`,
+    openGraph: {
+      title: "About Us | House Unlimited Nigeria - Abuja Real Estate Experts",
+      description: `Learn about ${settings.title} — Abuja's trusted real estate developer since 1995. Meet our leadership team, mission, and commitment to verified property solutions.`
+    }
   };
 }
 

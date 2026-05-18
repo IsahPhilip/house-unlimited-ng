@@ -56,7 +56,7 @@ export default async function RootLayout({
 
         <div className="shell">
           <SiteHeader menu={menu} settings={settings} />
-          {children}
+          <main>{children}</main>
           <SiteFooter settings={settings} />
         </div>
       </body>

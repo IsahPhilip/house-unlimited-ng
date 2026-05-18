@@ -6,8 +6,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
 
   return {
-    title: "Contact",
-    description: `Contact ${settings.title} through our headless frontend.`
+    title: "Contact Us | House Unlimited Nigeria - Get in Touch",
+    description: `Contact ${settings.title} for property enquiries, inspections, and investment opportunities. Reach our team in Abuja via phone, email, or our contact form.`,
+    openGraph: {
+      title: "Contact Us | House Unlimited Nigeria - Get in Touch",
+      description: `Contact ${settings.title} for property enquiries, inspections, and investment opportunities in Abuja.`
+    }
   };
 }
 

@@ -80,7 +80,7 @@ export function SiteHeader({ menu, settings }: SiteHeaderProps) {
       </div>
 
       {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100 animate-in slide-in-from-top duration-300 shadow-xl overflow-hidden">
+        <div className="md:hidden bg-white border-t border-gray-100 shadow-xl overflow-hidden">
           <div className="px-4 py-6 space-y-6">
             <div className="flex flex-col space-y-4">
               {navItems.map((item) => (

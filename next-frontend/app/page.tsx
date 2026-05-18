@@ -1,9 +1,24 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { PropertyPreviewCard } from "@/components/property-preview-card";
 import { PostPreviewCard } from "@/components/post-preview-card";
 import { IMAGE_SIZES, OptimizedImage } from "@/components/optimized-image";
 import { getFeaturedProperties, getFeaturedVideos, getRecentPosts, getSiteSettings, getTestimonials } from "@/lib/wordpress";
 import maitamaHero from "../../frontend/src/img/maitama-ii.jpeg";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+
+  return {
+    title: "House Unlimited Nigeria | Luxury Homes & Investment Properties in Abuja",
+    description: "Discover verified luxury homes, lands, and investment properties in Abuja. House Unlimited Nigeria offers expert real estate services with verified listings, on-site inspections, and trusted guidance for buyers and investors.",
+    openGraph: {
+      title: `${settings.title} | Luxury Homes & Investment Properties in Abuja`,
+      description: "Discover verified luxury homes, lands, and investment properties in Abuja. Expert real estate services with verified listings and trusted guidance.",
+      type: "website"
+    }
+  };
+}
 import {
   ArrowRight,
   Briefcase,
@@ -83,15 +98,15 @@ export default async function HomePage() {
                   />
                 </div>
                 <div className="border-l border-gray-100 pl-4">
-                  <p className="text-xs font-bold text-gray-400 uppercase mb-1">Type</p>
-                  <select className="text-gray-900 font-bold text-sm bg-transparent border-none p-0 focus:ring-0 outline-none w-full cursor-pointer">
+                  <label htmlFor="property-type" className="text-xs font-bold text-gray-400 uppercase mb-1">Type</label>
+                  <select id="property-type" className="text-gray-900 font-bold text-sm bg-transparent border-none p-0 focus:ring-0 outline-none w-full cursor-pointer">
                     <option>House</option>
                     <option>Land</option>
                   </select>
                 </div>
                 <div className="border-l border-gray-100 pl-4">
-                  <p className="text-xs font-bold text-gray-400 uppercase mb-1">Price Range</p>
-                  <select className="text-gray-900 font-bold text-sm bg-transparent border-none p-0 focus:ring-0 outline-none w-full cursor-pointer">
+                  <label htmlFor="price-range" className="text-xs font-bold text-gray-400 uppercase mb-1">Price Range</label>
+                  <select id="price-range" className="text-gray-900 font-bold text-sm bg-transparent border-none p-0 focus:ring-0 outline-none w-full cursor-pointer">
                     <option>N50,000,000 - 100,000,000</option>
                     <option>N150,000,000 - 300,000,000</option>
                     <option>N300,000,000+</option>

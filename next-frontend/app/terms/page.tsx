@@ -5,8 +5,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
 
   return {
-    title: "Terms and Conditions",
-    description: `Review the user terms and conditions for ${settings.title}.`
+    title: "Terms and Conditions | House Unlimited Nigeria",
+    description: `Review the user terms and conditions for ${settings.title}. Understand the legal terms governing access to and use of our website, content, and services.`,
+    openGraph: {
+      title: "Terms and Conditions | House Unlimited Nigeria",
+      description: `Review the terms and conditions for ${settings.title}. Legal information about website use and services.`
+    }
   };
 }
 

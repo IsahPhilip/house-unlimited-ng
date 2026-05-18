@@ -6,8 +6,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
 
   return {
-    title: "Blog",
-    description: `Insights, property news, and editorial updates from ${settings.title}.`
+    title: "Real Estate Blog & Property Insights | House Unlimited Nigeria",
+    description: `Read expert real estate insights, property buying guides, market updates, and investment tips from ${settings.title}. Stay informed about Abuja property trends.`,
+    openGraph: {
+      title: "Real Estate Blog & Property Insights | House Unlimited Nigeria",
+      description: `Expert real estate insights, property buying guides, market updates, and investment tips from ${settings.title}.`
+    }
   };
 }
 

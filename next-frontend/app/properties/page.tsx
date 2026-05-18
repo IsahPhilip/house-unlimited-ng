@@ -7,8 +7,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
 
   return {
-    title: "Properties",
-    description: `Featured houses and listings from ${settings.title}.`
+    title: "Properties for Sale in Abuja | Verified Real Estate Listings",
+    description: `Browse verified properties for sale in Abuja. Find luxury homes, land, and investment properties at ${settings.title}. Detailed listings with photos, prices, and location info.`,
+    openGraph: {
+      title: "Properties for Sale in Abuja | Verified Real Estate Listings",
+      description: `Browse verified properties for sale in Abuja. Find luxury homes, land, and investment properties at ${settings.title}.`
+    }
   };
 }
 

@@ -7,8 +7,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
 
   return {
-    title: "Careers",
-    description: `Explore career opportunities at ${settings.title}.`
+    title: "Careers at House Unlimited Nigeria | Real Estate Jobs in Abuja",
+    description: `Explore career opportunities at ${settings.title}. Join a leading real estate development company in Abuja and build meaningful work shaping smarter property decisions.`,
+    openGraph: {
+      title: "Careers at House Unlimited Nigeria | Real Estate Jobs in Abuja",
+      description: `Explore career opportunities at ${settings.title}. Join a leading real estate development company in Abuja.`
+    }
   };
 }
 
