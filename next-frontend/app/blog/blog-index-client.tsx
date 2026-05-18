@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { PostPreview } from "@/lib/wordpress";
+import { IMAGE_SIZES, OptimizedImage } from "@/components/optimized-image";
 
 type BlogIndexClientProps = {
   posts: PostPreview[];
@@ -53,7 +54,12 @@ export function BlogIndexClient({ posts, categories }: BlogIndexClientProps) {
               <div key={post.slug} className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 group hover:shadow-xl transition-all">
                 <div className="relative aspect-video overflow-hidden">
                   {post.featuredImage ? (
-                    <img src={post.featuredImage} alt={post.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <OptimizedImage
+                      src={post.featuredImage}
+                      alt={post.title}
+                      sizes={IMAGE_SIZES.gridCard}
+                      className="object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
                   ) : (
                     <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs uppercase tracking-widest">
                       No Image

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { IMAGE_SIZES, OptimizedImage } from "@/components/optimized-image";
 import { getSiteSettings, getTeamMembers } from "@/lib/wordpress";
 import {
   ArrowRight,
@@ -60,7 +61,14 @@ export default async function AboutPage() {
              <button className="bg-[#005555] text-white px-10 py-4 rounded-full font-bold shadow-lg shadow-[#d8eeee] hover:bg-[#004242] transition-all text-sm uppercase tracking-widest">Download Brochure</button>
           </div>
           <div className="relative">
-            <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80" className="rounded-3xl shadow-2xl relative z-10 w-full object-cover h-[500px]" alt="Maitama Extension" />
+            <div className="relative z-10 h-[500px] w-full overflow-hidden rounded-3xl shadow-2xl">
+              <OptimizedImage
+                src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80"
+                alt="Maitama Extension"
+                sizes={IMAGE_SIZES.halfViewport}
+                className="object-cover"
+              />
+            </div>
             <div className="absolute -top-10 -right-10 w-48 h-48 bg-[#d8eeee] rounded-full -z-0"></div>
             <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-[#005555]/10 rounded-3xl -z-0"></div>
             <div className="absolute bottom-10 right-10 bg-white p-6 rounded-2xl shadow-xl z-20">
@@ -127,7 +135,18 @@ export default async function AboutPage() {
             {team.map((member, idx) => (
               <div key={member.slug || idx} className="group cursor-pointer">
                 <div className="relative overflow-hidden rounded-3xl aspect-[4/5] mb-6">
-                  <img src={member.image} alt={member.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" />
+                  {member.image ? (
+                    <OptimizedImage
+                      src={member.image}
+                      alt={member.name}
+                      sizes={IMAGE_SIZES.teamCard}
+                      className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-gray-100 text-xs font-bold uppercase tracking-widest text-gray-400">
+                      No Photo
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#005555]/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </div>
                 <h4 className="text-xl font-bold text-gray-900 group-hover:text-[#005555] transition-colors">{member.name}</h4>

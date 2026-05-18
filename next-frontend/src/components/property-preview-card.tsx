@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { PropertyPreview } from "@/lib/wordpress";
+import { IMAGE_SIZES, OptimizedImage } from "@/components/optimized-image";
 import { MapPin, Bed, Bath, Square } from "lucide-react";
 
 export function PropertyPreviewCard({ property }: { property: PropertyPreview }) {
@@ -8,7 +9,12 @@ export function PropertyPreviewCard({ property }: { property: PropertyPreview })
       <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all group">
         <div className="relative aspect-[4/3] overflow-hidden">
           {property.image ? (
-            <img src={property.image} alt={property.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+            <OptimizedImage
+              src={property.image}
+              alt={property.title}
+              sizes={IMAGE_SIZES.gridCard}
+              className="object-cover group-hover:scale-110 transition-transform duration-700"
+            />
           ) : (
             <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs uppercase tracking-widest">
               No Image

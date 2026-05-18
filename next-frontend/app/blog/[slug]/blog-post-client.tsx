@@ -18,6 +18,7 @@ import {
   Twitter
 } from "lucide-react";
 import type { PostPreview } from "@/lib/wordpress";
+import { IMAGE_SIZES, OptimizedImage } from "@/components/optimized-image";
 import type { BlogComment, InteractiveBlogPost } from "@/lib/blog-api";
 import {
   addInteractiveBlogComment,
@@ -550,7 +551,15 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-white/90">
               <div className="flex items-center space-x-2">
                 {displayPost.authorImage ? (
-                  <img src={displayPost.authorImage} alt={displayPost.author} className="w-8 h-8 rounded-full border-2 border-white/20 object-cover" />
+                  <OptimizedImage
+                    src={displayPost.authorImage}
+                    alt={displayPost.author}
+                    fill={false}
+                    width={32}
+                    height={32}
+                    sizes={IMAGE_SIZES.avatarSm}
+                    className="h-8 w-8 rounded-full border-2 border-white/20 object-cover"
+                  />
                 ) : (
                   <div className="w-8 h-8 rounded-full border-2 border-white/20 bg-white/20 flex items-center justify-center text-[10px] font-bold uppercase">
                     {authorInitials}
@@ -657,11 +666,12 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
           </div>
 
           {displayPost.featuredImage && (
-            <figure className="mb-10 overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
-              <img
+            <figure className="relative mb-10 aspect-video overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
+              <OptimizedImage
                 src={displayPost.featuredImage}
                 alt={displayPost.title}
-                className="h-auto w-full object-cover"
+                sizes={IMAGE_SIZES.articleFeatured}
+                className="object-cover"
               />
             </figure>
           )}
@@ -761,7 +771,15 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex items-center gap-3">
                           {comment.user?.avatar ? (
-                            <img src={comment.user.avatar} alt={comment.user.name} className="w-10 h-10 rounded-full object-cover" />
+                            <OptimizedImage
+                              src={comment.user.avatar}
+                              alt={comment.user.name}
+                              fill={false}
+                              width={40}
+                              height={40}
+                              sizes={IMAGE_SIZES.avatarSm}
+                              className="h-10 w-10 rounded-full object-cover"
+                            />
                           ) : (
                             <div className="w-10 h-10 rounded-full bg-[#005555] text-[#005555] flex items-center justify-center text-xs font-bold">
                               {comment.user?.name?.split(" ").map((part) => part[0]).join("").slice(0, 2) || "NA"}
@@ -823,7 +841,15 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
           <div className="mt-16 pt-12 border-t border-gray-100">
             <div className="bg-gray-50 p-8 rounded-3xl flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-8">
               {displayPost.authorImage ? (
-                <img src={displayPost.authorImage} alt={displayPost.author} className="w-24 h-24 rounded-3xl object-cover shadow-xl" />
+                <OptimizedImage
+                  src={displayPost.authorImage}
+                  alt={displayPost.author}
+                  fill={false}
+                  width={96}
+                  height={96}
+                  sizes={IMAGE_SIZES.avatarLg}
+                  className="h-24 w-24 rounded-3xl object-cover shadow-xl"
+                />
               ) : (
                 <div className="w-24 h-24 rounded-3xl bg-gray-200 flex items-center justify-center text-lg font-bold text-gray-600">
                   {authorInitials}
@@ -852,7 +878,12 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                 <Link key={`${relatedPost.slug}-${relatedPost.id}`} href={`/blog/${relatedPost.slug}`} className="group block">
                   <div className="aspect-video rounded-2xl overflow-hidden mb-4 shadow-sm">
                     {relatedPost.image ? (
-                      <img src={relatedPost.image} alt={relatedPost.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                      <OptimizedImage
+                        src={relatedPost.image}
+                        alt={relatedPost.title}
+                        sizes={IMAGE_SIZES.gridCard}
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
                     ) : (
                       <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-[10px] uppercase tracking-widest">
                         No Image

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { SiteSettings } from "@/lib/wordpress";
-import hunLogo from "../../../frontend/src/img/hun_logo.png";
+import { SiteLogo } from "@/components/site-logo";
 import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Send, Youtube } from "lucide-react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
@@ -54,9 +54,9 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12">
         <div className="space-y-4">
           <Link className="inline-flex items-center" href="/">
-            <img
-              src={hunLogo.src}
+            <SiteLogo
               alt={settings.title}
+              variant="footer"
               className="h-8 w-auto"
             />
           </Link>
@@ -126,9 +126,9 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
       </div>
       <div className="max-w-7xl mx-auto px-4 mt-16 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between text-gray-500 text-xs text-center md:text-left gap-4">
         <div className="flex items-center justify-center md:justify-start gap-3">
-          <img
-            src={hunLogo.src}
+          <SiteLogo
             alt={settings.title}
+            variant="compact"
             className="h-5 w-auto opacity-70"
           />
           <span>&copy; 2026 houseunlimitednigeria.com. All rights reserved.</span>

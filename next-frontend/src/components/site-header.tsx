@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { MenuItem, SiteSettings } from "@/lib/wordpress";
-import hunLogo from "../../../frontend/src/img/hun_logo.png";
+import { SiteLogo } from "@/components/site-logo";
 
 type SiteHeaderProps = {
   menu: MenuItem[];
@@ -33,9 +33,10 @@ export function SiteHeader({ menu, settings }: SiteHeaderProps) {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-20 gap-8">
           <Link className="flex items-center shrink-0" href="/" onClick={closeMenu}>
-            <img
-              src={hunLogo.src}
+            <SiteLogo
               alt={settings.title}
+              variant="header"
+              priority
               className="h-10 w-auto"
             />
           </Link>

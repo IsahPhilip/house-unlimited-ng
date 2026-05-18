@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PropertyPreviewCard } from "@/components/property-preview-card";
 import { PostPreviewCard } from "@/components/post-preview-card";
+import { IMAGE_SIZES, OptimizedImage } from "@/components/optimized-image";
 import { getFeaturedProperties, getFeaturedVideos, getRecentPosts, getSiteSettings, getTestimonials } from "@/lib/wordpress";
 import maitamaHero from "../../frontend/src/img/maitama-ii.jpeg";
 import {
@@ -50,7 +51,13 @@ export default async function HomePage() {
     <div className="animate-in fade-in duration-500">
       <section className="relative h-[650px] flex items-center">
         <div className="absolute inset-0 z-0">
-          <img src={maitamaHero.src} alt="Hero" className="w-full h-full object-cover" />
+          <OptimizedImage
+            src={maitamaHero}
+            alt="Luxury homes and investment properties in Abuja"
+            sizes={IMAGE_SIZES.hero}
+            priority
+            className="object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/40 to-transparent"></div>
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 w-full">
@@ -236,7 +243,12 @@ export default async function HomePage() {
                         className="group flex h-full w-full items-center justify-center overflow-hidden"
                       >
                         {video.thumbnailUrl ? (
-                          <img src={video.thumbnailUrl} alt={video.title} className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]" />
+                          <OptimizedImage
+                            src={video.thumbnailUrl}
+                            alt={video.title}
+                            sizes={IMAGE_SIZES.videoCard}
+                            className="object-cover transition duration-300 group-hover:scale-[1.03]"
+                          />
                         ) : (
                           <div className="absolute inset-0 bg-gradient-to-br from-[#005555] via-[#0f6b6b] to-[#003c3c]" />
                         )}
@@ -305,7 +317,12 @@ export default async function HomePage() {
 
             <div className="relative bg-[#005555] rounded-3xl p-8 md:p-12 text-white overflow-hidden">
               <div className="absolute inset-0 opacity-20">
-                <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&q=80&w=800" alt="Happy family" className="w-full h-full object-cover" />
+                <OptimizedImage
+                  src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&q=80&w=800"
+                  alt="Happy family"
+                  sizes={IMAGE_SIZES.halfViewport}
+                  className="object-cover"
+                />
               </div>
               <div className="relative z-10">
                 <h3 className="text-3xl font-bold mb-4">A Partner, Not Just a Platform</h3>
@@ -367,7 +384,15 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-8">
           {testimonials.map((testimonial, idx) => (
             <div key={idx} className="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 flex items-start space-x-6">
-              <img src={testimonial.img} alt={testimonial.name} className="w-20 h-20 rounded-full border-4 border-[#d8eeee] object-cover" />
+              <OptimizedImage
+                src={testimonial.img}
+                alt={testimonial.name}
+                fill={false}
+                width={80}
+                height={80}
+                sizes={IMAGE_SIZES.avatarMd}
+                className="w-20 h-20 rounded-full border-4 border-[#d8eeee] object-cover shrink-0"
+              />
               <div>
                 <div className="flex justify-between items-center mb-4">
                   <div>
@@ -413,7 +438,12 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="bg-[#004242] rounded-3xl p-8 md:p-12 relative overflow-hidden">
             <div className="absolute inset-0 opacity-10">
-              <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1920" alt="Background" className="w-full h-full object-cover" />
+              <OptimizedImage
+                src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1920"
+                alt=""
+                sizes={IMAGE_SIZES.ctaBackground}
+                className="object-cover"
+              />
             </div>
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
               <div>

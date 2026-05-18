@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { IMAGE_SIZES, OptimizedImage } from "@/components/optimized-image";
 import { getPropertyBySlug, getPropertySlugs } from "@/lib/wordpress";
 import { Bed, Bath, Square, MapPin, Phone, Mail } from "lucide-react";
 
@@ -87,11 +88,12 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           <div className="lg:col-span-2 space-y-8">
             {/* Featured Image */}
             {property.image && (
-              <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100">
-                <img
+              <div className="relative h-96 overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
+                <OptimizedImage
                   src={property.image}
                   alt={property.title}
-                  className="w-full h-96 object-cover"
+                  sizes={IMAGE_SIZES.propertyMain}
+                  className="object-cover"
                 />
               </div>
             )}
@@ -100,11 +102,12 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             {property.gallery && property.gallery.length > 0 && (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {property.gallery.map((image, index) => (
-                  <div key={index} className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
-                    <img
+                  <div key={index} className="relative h-32 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
+                    <OptimizedImage
                       src={image}
                       alt={`${property.title} ${index + 1}`}
-                      className="w-full h-32 object-cover hover:scale-105 transition-transform"
+                      sizes={IMAGE_SIZES.propertyThumb}
+                      className="object-cover transition-transform hover:scale-105"
                     />
                   </div>
                 ))}
