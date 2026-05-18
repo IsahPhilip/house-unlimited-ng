@@ -3,6 +3,9 @@ const graphqlEndpoint = (process.env.NEXT_PUBLIC_WORDPRESS_GRAPHQL_ENDPOINT || `
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    optimizeCss: true
+  },
   images: {
     remotePatterns: [
       {
