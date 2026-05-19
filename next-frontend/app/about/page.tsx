@@ -13,11 +13,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
 
   return {
-    title: "About Us | House Unlimited Nigeria - Abuja Real Estate Experts Since 1995",
-    description: `Learn about ${settings.title} — Abuja's trusted real estate developer since 1995. Meet our leadership team, mission, and commitment to verified property solutions.`,
+    title: "About Us | House Unlimited Nigeria - Abuja Real Estate Experts Since 2019",
+    description: `Learn about ${settings.title} — Abuja's trusted real estate developer since 2019. Meet our leadership team, mission, and commitment to verified property solutions.`,
     openGraph: {
       title: "About Us | House Unlimited Nigeria - Abuja Real Estate Experts",
-      description: `Learn about ${settings.title} — Abuja's trusted real estate developer since 1995. Meet our leadership team, mission, and commitment to verified property solutions.`
+      description: `Learn about ${settings.title} — Abuja's trusted real estate developer since 2019. Meet our leadership team, mission, and commitment to verified property solutions.`
     }
   };
 }
@@ -43,25 +43,11 @@ export default async function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
              <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Our Story</p>
-             <h1 className="text-5xl font-bold text-gray-900 mb-8 leading-tight">We help you find your <span className="text-[#005555]">Perfect Home</span> since 1995.</h1>
+             <h1 className="text-5xl font-bold text-gray-900 mb-8 leading-tight">We help you find your <span className="text-[#005555]">Perfect Home</span> since 2019.</h1>
              <p className="text-gray-600 mb-8 leading-relaxed text-sm">House Unlimited & Land Services Nigeria Ltd with RC 1600988 (brand name House Unlimited Nigeria) is a premier real estate development company committed to delivering high-quality, value-driven properties in Abuja. Founded on the principles of integrity, reliability, and excellence, we specialize in off-plan luxury developments, estate plots, and investment properties tailored for discerning clients.</p>
              <p className="text-gray-600 mb-8 leading-relaxed text-sm">At the helm of House Unlimited Nigeria is Julia Abege, our CEO—an ex-banker with over 11 years of experience in the financial sector. A passionate real estate enthusiast, she brings a wealth of knowledge in investment strategies, ensuring that every client enjoys exceptional returns on their property investments.</p>
              <p className="text-gray-600 mb-8 leading-relaxed text-sm">Our Chairman, ARC Terzungwe Abege, is a seasoned architect with a keen eye for construction and development. With a deep understanding of design, functionality, and sustainable building practices, he ensures that every House Unlimited project meets the highest standards of quality and craftsmanship.</p>
              <p className="text-gray-600 mb-8 leading-relaxed text-sm">Together, we lead a dedicated team focused on redefining real estate in Abuja. Whether you are an investor, a first-time homeowner, or looking for a luxurious residence, House Unlimited Nigeria guarantees properties that combine security, comfort, and long-term value.</p>
-             <div className="grid grid-cols-3 gap-8 mb-10">
-                <div className="text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-                  <p className="text-3xl font-bold text-[#005555] mb-1">25+</p>
-                  <p className="text-gray-500 text-[10px] font-bold uppercase">Years Exp</p>
-                </div>
-                <div className="text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-                  <p className="text-3xl font-bold text-[#005555] mb-1">10k+</p>
-                  <p className="text-gray-500 text-[10px] font-bold uppercase">Sales</p>
-                </div>
-                <div className="text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-                  <p className="text-3xl font-bold text-[#005555] mb-1">500+</p>
-                  <p className="text-gray-500 text-[10px] font-bold uppercase">Agents</p>
-                </div>
-             </div>
              <button className="bg-[#005555] text-white px-10 py-4 rounded-full font-bold shadow-lg shadow-[#d8eeee] hover:bg-[#004242] transition-all text-sm uppercase tracking-widest">Download Brochure</button>
           </div>
           <div className="relative">
@@ -95,17 +81,17 @@ export default async function AboutPage() {
             {[
               {
                 title: 'Mission',
-                desc: 'Deliver secure, high‑quality real estate opportunities that create measurable value for clients and communities across Abuja.',
+                desc: 'To simplify real estate transactions through honesty, innovation, and service excellence — helping people achieve their dream of homeownership.',
                 icon: Target
               },
               {
                 title: 'Vision',
-                desc: 'To be Abuja\'s most trusted real estate development brand, known for craftsmanship, transparency, and lasting investment returns.',
+                desc: 'To be Nigeria\’s most trusted and innovative real estate partner.',
                 icon: Eye
               },
               {
                 title: 'Core Goals',
-                desc: 'Build premium estates, provide investment‑ready properties, and uphold integrity, reliability, and excellence in every transaction.',
+                desc: 'Every task you complete — from replying to an email to showing a client a property — helps us deliver trust and value. You’re part of something bigger than just a job.',
                 icon: Trophy
               }
             ].map((item, idx) => {
