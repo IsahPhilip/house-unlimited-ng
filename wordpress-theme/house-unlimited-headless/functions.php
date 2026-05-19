@@ -328,3 +328,40 @@ add_action(
 		);
 	}
 );
+
+/**
+ * Increase the image size threshold for WordPress image processing.
+ * WordPress automatically scales down images larger than 2560px.
+ * This raises the threshold to allow larger uploads without "server cannot process" errors.
+ */
+add_filter(
+	'big_image_size_threshold',
+	static function ( int $threshold ): int {
+		return 3840; // Allow images up to 3840px (4K)
+	}
+);
+
+
+/**
+ * Increase PHP memory limit for image processing during uploads.
+ */
+add_filter(
+	'wp_handle_upload_prefilter',
+	static function ( array $file ): array {
+		$image_info = getimagesize( $file['tmp_name'] );
+
+		if ( false !== $image_info ) {
+			$width  = $image_info[0];
+			$height = $image_info[1];
+
+			// If the image is very large, increase memory limit for processing
+			if ( $width > 4000 || $height > 4000 ) {
+				if ( function_exists( 'wp_raise_memory_limit' ) ) {
+					wp_raise_memory_limit( 'image' );
+				}
+			}
+		}
+
+		return $file;
+	}
+);
