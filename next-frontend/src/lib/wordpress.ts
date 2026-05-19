@@ -79,6 +79,10 @@ export type SiteSettings = {
   heroTitle: string;
   heroDescription: string;
   heroImage: string;
+  facebook: string;
+  instagram: string;
+  linkedin: string;
+  youtube: string;
 };
 
 export type PostPreview = {
@@ -259,6 +263,10 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       phone?: string;
       email?: string;
       address?: string;
+      facebook?: string;
+      instagram?: string;
+      linkedin?: string;
+      youtube?: string;
     }>("/settings", { suppressNotFound: true })
   ]);
 
@@ -274,7 +282,11 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     heroTitle: "Modern editorial and listing workflows, without giving up WordPress.",
     heroDescription:
       "House Unlimited Nigeria is a leading real estate company dedicated to helping you find your dream home. With a wide range of properties, expert guidance, and personalized service, we make the home buying process seamless and enjoyable. Whether you're looking for a cozy apartment or a spacious family home, House Unlimited Nigeria is here to turn your vision into reality.",
-    heroImage: ""
+    heroImage: "",
+    facebook: restSettings?.facebook || "",
+    instagram: restSettings?.instagram || "",
+    linkedin: restSettings?.linkedin || "",
+    youtube: restSettings?.youtube || ""
   };
 }
 

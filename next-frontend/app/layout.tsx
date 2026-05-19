@@ -46,10 +46,26 @@ export default async function RootLayout({
               <span className="flex items-center"><Mail className="w-4 h-4 mr-2 text-[#005555]" /> {settings.email}</span>
             </div>
             <div className="flex items-center space-x-4 text-slate-300">
-              <Facebook className="w-4 h-4 hover:text-[#5fc0c0] cursor-pointer transition-colors" />
-              <Instagram className="w-4 h-4 hover:text-[#5fc0c0] cursor-pointer transition-colors" />
-              <Linkedin className="w-4 h-4 hover:text-[#5fc0c0] cursor-pointer transition-colors" />
-              <Youtube className="w-4 h-4 hover:text-[#5fc0c0] cursor-pointer transition-colors" />
+              {settings.facebook && (
+                <a href={settings.facebook} target="_blank" rel="noreferrer" aria-label="Facebook">
+                  <Facebook className="w-4 h-4 hover:text-[#5fc0c0] cursor-pointer transition-colors" />
+                </a>
+              )}
+              {settings.instagram && (
+                <a href={settings.instagram} target="_blank" rel="noreferrer" aria-label="Instagram">
+                  <Instagram className="w-4 h-4 hover:text-[#5fc0c0] cursor-pointer transition-colors" />
+                </a>
+              )}
+              {settings.linkedin && (
+                <a href={settings.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn">
+                  <Linkedin className="w-4 h-4 hover:text-[#5fc0c0] cursor-pointer transition-colors" />
+                </a>
+              )}
+              {settings.youtube && (
+                <a href={settings.youtube} target="_blank" rel="noreferrer" aria-label="YouTube">
+                  <Youtube className="w-4 h-4 hover:text-[#5fc0c0] cursor-pointer transition-colors" />
+                </a>
+              )}
             </div>
           </div>
         </div>

@@ -400,6 +400,10 @@ add_action(
 							'phone'       => '+234 904 375 2708',
 							'email'       => 'official@houseunlimitednigeria.com',
 							'address'     => 'Abuja, Nigeria',
+							'facebook'    => 'https://facebook.com/houseunlimitednigeria',
+							'instagram'   => 'https://instagram.com/houseunlimitednigeria',
+							'linkedin'    => 'https://linkedin.com/company/houseunlimitednigeria',
+							'youtube'     => 'https://youtube.com/@houseunlimitednigeria',
 						)
 					);
 				},
