@@ -223,7 +223,7 @@ export default async function HomePage() {
                 <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Media</p>
                 <h2 className="text-4xl font-bold text-gray-900">Featured <span className="text-gray-400 italic font-light">Videos</span></h2>
                 <p className="text-gray-600 mt-3 max-w-2xl">
-                  Watch property walkthroughs, neighborhood highlights, and fresh media uploaded from the admin gallery.
+                  Watch property walkthroughs, neighborhood highlights, and curated video updates managed from wp-admin.
                 </p>
               </div>
             </div>
@@ -232,7 +232,7 @@ export default async function HomePage() {
               {featuredVideos.map((video) => (
                 <article
                   key={`${video.title}-${video.url}`}
-                  className="min-w-[320px] max-w-[420px] flex-1 overflow-hidden rounded-[28px] border border-gray-100 bg-white shadow-sm"
+                  className="w-[320px] shrink-0 overflow-hidden rounded-[28px] border border-gray-100 bg-white shadow-sm md:w-[380px] lg:w-[420px]"
                 >
                   <div className="relative aspect-video bg-[#003c3c]">
                     {video.embedUrl ? (
@@ -240,6 +240,8 @@ export default async function HomePage() {
                         src={video.embedUrl}
                         title={video.title}
                         className="h-full w-full"
+                        loading="lazy"
+                        referrerPolicy="strict-origin-when-cross-origin"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
                       />
@@ -255,6 +257,7 @@ export default async function HomePage() {
                         href={video.url}
                         target="_blank"
                         rel="noreferrer"
+                        aria-label={`Watch ${video.title}`}
                         className="group flex h-full w-full items-center justify-center overflow-hidden"
                       >
                         {video.thumbnailUrl ? (
@@ -287,6 +290,7 @@ export default async function HomePage() {
                         href={video.url}
                         target="_blank"
                         rel="noreferrer"
+                        aria-label={`Watch ${video.title}`}
                         className="mt-4 inline-flex items-center text-sm font-bold text-[#005555] hover:text-[#004242]"
                       >
                         Watch video <ArrowRight className="ml-2 h-4 w-4" />
