@@ -697,6 +697,28 @@ function isDirectVideoUrl(url: string): boolean {
 
 export async function getFeaturedVideos(limit = 4): Promise<FeaturedVideo[]> {
   try {
+    const mapVideoItem = (item: { title?: string; url?: string; image?: string }, index: number): FeaturedVideo => {
+      const url = item.url || "";
+      const youtubeId = getYoutubeVideoId(url);
+      const vimeoId = getVimeoVideoId(url);
+      const directVideo = isDirectVideoUrl(url);
+
+      return {
+        title: item.title?.trim() || `Featured video ${index + 1}`,
+        url,
+        embedUrl: youtubeId
+          ? `https://www.youtube.com/embed/${youtubeId}`
+          : vimeoId
+            ? `https://player.vimeo.com/video/${vimeoId}`
+            : undefined,
+        thumbnailUrl: youtubeId
+          ? `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`
+          : item.image || undefined,
+        isDirectVideo: directVideo,
+        sourceLabel: youtubeId ? "YouTube" : vimeoId ? "Vimeo" : "Video"
+      };
+    };
+
     const restData = await fetchRest<{
       items?: Array<{
         slug?: string;
@@ -707,30 +729,32 @@ export async function getFeaturedVideos(limit = 4): Promise<FeaturedVideo[]> {
     }>(`/featured-videos?per_page=${limit}`, { suppressNotFound: true });
 
     if (restData?.items?.length) {
-      return restData.items.map((item) => {
-        const url = item.url || "";
-        const youtubeId = getYoutubeVideoId(url);
-        const vimeoId = getVimeoVideoId(url);
-        const directVideo = isDirectVideoUrl(url);
-
-        return {
-          title: item.title?.trim() || "Featured video",
-          url,
-          embedUrl: youtubeId
-            ? `https://www.youtube.com/embed/${youtubeId}`
-            : vimeoId
-              ? `https://player.vimeo.com/video/${vimeoId}`
-              : undefined,
-          thumbnailUrl: youtubeId
-            ? `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`
-            : item.image || undefined,
-          isDirectVideo: directVideo,
-          sourceLabel: youtubeId ? "YouTube" : vimeoId ? "Vimeo" : "Video"
-        };
-      });
+      return restData.items.map(mapVideoItem);
     }
 
-    return [];
+    const response = await fetch(`${apiBaseUrl}/public/media`, {
+      next: { revalidate: revalidateSeconds }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Public media request failed with status ${response.status}`);
+    }
+
+    const publicMedia = (await response.json()) as {
+      data?: Array<{
+        type?: string;
+        title?: string;
+        url?: string;
+      }>;
+    };
+
+    return (
+      publicMedia.data
+        ?.filter((item) => item.type === "video" && item.url)
+        .slice(0, limit)
+        .map((item, index) => mapVideoItem(item, index)) || []
+    );
+
   } catch (error) {
     console.error("Featured videos fetch error:", error);
     return [];
