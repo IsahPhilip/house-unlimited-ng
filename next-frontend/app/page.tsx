@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PropertyPreviewCard } from "@/components/property-preview-card";
-import { PostPreviewCard } from "@/components/post-preview-card";
 import { IMAGE_SIZES, OptimizedImage } from "@/components/optimized-image";
-import { getFeaturedProperties, getFeaturedVideos, getRecentPosts, getSiteSettings, getTestimonials } from "@/lib/wordpress";
+import { getFeaturedProperties, getFeaturedVideos, getSiteSettings, getTestimonials } from "@/lib/wordpress";
 import maitamaHero from "../../frontend/src/img/maitama-ii.jpeg";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -35,10 +34,9 @@ import {
 } from "lucide-react";
 
 export default async function HomePage() {
-  const [settings, properties, posts, testimonialItems, featuredVideos] = await Promise.all([
+  const [settings, properties, testimonialItems, featuredVideos] = await Promise.all([
     getSiteSettings(),
     getFeaturedProperties(),
-    getRecentPosts(),
     getTestimonials(6),
     getFeaturedVideos(4)
   ]);
@@ -428,28 +426,6 @@ export default async function HomePage() {
               </div>
             </div>
           ))}
-        </div>
-      </section>
-
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-wrap items-end justify-between gap-6 mb-8">
-            <div>
-              <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Editorial</p>
-              <h2 className="text-4xl font-bold text-gray-900">From Our <span className="text-gray-400 italic font-light">Blog</span></h2>
-              <p className="text-gray-600 mt-3 max-w-2xl">Stay informed with market updates, property advice, and investment insights from the WordPress backend.</p>
-            </div>
-            <Link className="bg-[#005555] text-white px-8 py-3 rounded-full flex items-center group font-bold text-sm shadow-lg shadow-[#d8eeee]" href="/blog">
-              See all posts <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.length > 0 ? (
-              posts.map((post) => <PostPreviewCard key={post.slug} post={post} />)
-            ) : (
-              <div className="col-span-full text-center text-gray-500">No blog posts available at the moment.</div>
-            )}
-          </div>
         </div>
       </section>
 
