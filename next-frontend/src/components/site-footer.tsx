@@ -64,13 +64,21 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
             {"Empowering home seekers with expert human guidance since 1995."}
           </p>
           <div className="flex space-x-4">
-            {[Facebook, Instagram, Linkedin, Youtube].map((Icon, index) => (
-              <span
+            {[
+              { Icon: Facebook, url: settings.facebook },
+              { Icon: Instagram, url: settings.instagram },
+              { Icon: Linkedin, url: settings.linkedin },
+              { Icon: Youtube, url: settings.youtube },
+            ].map(({ Icon, url }, index) => (
+              <a
                 key={index}
-                className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center cursor-pointer hover:bg-[#005555] transition-colors"
+                href={url || "#"}
+                target={url ? "_blank" : undefined}
+                rel={url ? "noopener noreferrer" : undefined}
+                className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center hover:bg-[#005555] transition-colors"
               >
                 <Icon className="w-4 h-4" />
-              </span>
+              </a>
             ))}
           </div>
         </div>

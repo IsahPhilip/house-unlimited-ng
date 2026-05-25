@@ -399,7 +399,7 @@ add_action(
 							'siteUrl'     => home_url( '/' ),
 							'phone'       => '+234 904 375 2708',
 							'email'       => 'official@houseunlimitednigeria.com',
-							'address'     => 'Abuja, Nigeria',
+							'address'     => 'Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria',
 							'facebook'    => 'https://facebook.com/houseunlimitednigeria',
 							'instagram'   => 'https://instagram.com/houseunlimitednigeria',
 							'linkedin'    => 'https://linkedin.com/company/houseunlimitednigeria',

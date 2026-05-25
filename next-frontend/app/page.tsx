@@ -221,7 +221,7 @@ export default async function HomePage() {
                 <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Media</p>
                 <h2 className="text-4xl font-bold text-gray-900">Featured <span className="text-gray-400 italic font-light">Videos</span></h2>
                 <p className="text-gray-600 mt-3 max-w-2xl">
-                  Watch property walkthroughs, neighborhood highlights, and curated video updates managed from wp-admin.
+                  Watch property walkthroughs, neighborhood highlights, and curated video updates.
                 </p>
               </div>
             </div>
