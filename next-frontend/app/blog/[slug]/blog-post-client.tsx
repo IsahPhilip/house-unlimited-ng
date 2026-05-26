@@ -781,7 +781,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                               className="h-10 w-10 rounded-full object-cover"
                             />
                           ) : (
-                            <div className="w-10 h-10 rounded-full bg-[#005555] text-[#005555] flex items-center justify-center text-xs font-bold">
+                            <div className="w-10 h-10 rounded-full bg-[#005555] text-white flex items-center justify-center text-xs font-bold">
                               {comment.user?.name?.split(" ").map((part) => part[0]).join("").slice(0, 2) || "NA"}
                             </div>
                           )}
@@ -876,7 +876,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
             <div className="space-y-8">
               {displayRelatedPosts.map((relatedPost) => (
                 <Link key={`${relatedPost.slug}-${relatedPost.id}`} href={`/blog/${relatedPost.slug}`} className="group block">
-                  <div className="aspect-video rounded-2xl overflow-hidden mb-4 shadow-sm">
+                  <div className="relative aspect-video rounded-2xl overflow-hidden mb-4 shadow-sm">
                     {relatedPost.image ? (
                       <OptimizedImage
                         src={relatedPost.image}
@@ -907,7 +907,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
 
             <div className="mt-12 bg-[#005555] rounded-3xl p-8 text-white">
               <h4 className="text-lg font-bold mb-4">Want more insights?</h4>
-              <p className="text-[#005555] text-xs leading-relaxed mb-6">Join the conversation, ask questions, and get practical guidance from our property team.</p>
+              <p className="text-white/80 text-xs leading-relaxed mb-6">Join the conversation, ask questions, and get practical guidance from our property team.</p>
               <Link href="/contact" className="block w-full bg-white text-[#005555] py-3 rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg text-center">
                 Talk to Our Team
               </Link>

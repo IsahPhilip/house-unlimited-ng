@@ -74,7 +74,7 @@ export default async function CareersPage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="max-w-3xl mb-14">
             <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Open Roles</p>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Current opportunities at {settings.title}</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Current opportunities at House Unlimited Nigeria</h2>
             <p className="text-gray-600">
               These roles reflect the kind of talent we&apos;re actively looking for. If your background overlaps, you can
               apply directly from each card below.
