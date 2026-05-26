@@ -607,7 +607,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
           </div>
         </div>
 
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-3">
           <div className="mb-8 rounded-3xl border border-gray-100 bg-gray-50 p-4 md:p-5">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex flex-wrap items-center gap-3">
