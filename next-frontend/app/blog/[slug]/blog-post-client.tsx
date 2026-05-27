@@ -580,7 +580,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-16 grid grid-cols-1 lg:grid-cols-4 gap-16">
+      <div className="max-w-7xl mx-auto px-4 py-16 grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div className="hidden lg:block lg:col-span-1">
           <div className="sticky top-32 space-y-8">
             <div>
@@ -607,7 +607,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
           </div>
         </div>
 
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-2">
           <div className="mb-8 rounded-3xl border border-gray-100 bg-gray-50 p-4 md:p-5">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex flex-wrap items-center gap-3">
