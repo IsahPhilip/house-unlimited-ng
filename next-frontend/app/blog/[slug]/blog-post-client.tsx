@@ -584,19 +584,19 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
         <div className="hidden lg:block lg:col-span-1">
           <div className="sticky top-32 space-y-8">
             <div>
-              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-6">Share Article</h4>
-              <div className="flex flex-col space-y-4">
-                <a href={buildShareUrl("facebook", displayPost.slug, displayPost.title)} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#005555] hover:text-white transition-all shadow-sm">
-                  <Facebook className="w-5 h-5" />
+              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-4">Share Article</h4>
+              <div className="flex flex-row flex-wrap gap-3">
+                <a href={buildShareUrl("facebook", displayPost.slug, displayPost.title)} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#005555] hover:text-white transition-all shadow-sm">
+                  <Facebook className="w-4 h-4" />
                 </a>
-                <a href={buildShareUrl("twitter", displayPost.slug, displayPost.title)} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#005555] hover:text-white transition-all shadow-sm">
-                  <Twitter className="w-5 h-5" />
+                <a href={buildShareUrl("twitter", displayPost.slug, displayPost.title)} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#005555] hover:text-white transition-all shadow-sm">
+                  <Twitter className="w-4 h-4" />
                 </a>
-                <a href={buildShareUrl("linkedin", displayPost.slug, displayPost.title)} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#005555] hover:text-white transition-all shadow-sm">
-                  <Linkedin className="w-5 h-5" />
+                <a href={buildShareUrl("linkedin", displayPost.slug, displayPost.title)} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#005555] hover:text-white transition-all shadow-sm">
+                  <Linkedin className="w-4 h-4" />
                 </a>
-                <button onClick={handleCopyLink} className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#005555] hover:text-white transition-all shadow-sm">
-                  <Link2 className="w-5 h-5" />
+                <button onClick={handleCopyLink} className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#005555] hover:text-white transition-all shadow-sm">
+                  <Link2 className="w-4 h-4" />
                 </button>
               </div>
             </div>
