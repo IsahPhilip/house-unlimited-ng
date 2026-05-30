@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { GoogleAnalytics } from "@/components/google-analytics";
 import { getPrimaryMenu, getSiteSettings } from "@/lib/wordpress";
 import { Phone, Mail, Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
+
+const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 const inter = Inter({
   subsets: ["latin"],
@@ -39,6 +43,24 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} text-gray-900 bg-white antialiased`}>
+        {gaMeasurementId && (
+          <>
+            <Script id="google-analytics-init" strategy="beforeInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){window.dataLayer.push(arguments);}
+                window.gtag = gtag;
+                gtag('js', new Date());
+                gtag('config', '${gaMeasurementId}', { send_page_view: false });
+              `}
+            </Script>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
+              strategy="afterInteractive"
+            />
+          </>
+        )}
+        <GoogleAnalytics />
         <div className="bg-slate-900 text-white py-2 text-[10px] uppercase tracking-widest font-bold">
           <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2">
             <div className="flex flex-col md:flex-row md:space-x-6 items-center">

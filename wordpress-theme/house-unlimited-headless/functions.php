@@ -6,6 +6,7 @@
  */
 
 define( 'HUN_HEADLESS_THEME_VERSION', '0.1.0' );
+define( 'HUN_GA_MEASUREMENT_ID', 'G-LHRMPQ3Y12' );
 
 require_once get_template_directory() . '/inc/headless.php';
 
@@ -327,6 +328,25 @@ add_action(
 			HUN_HEADLESS_THEME_VERSION
 		);
 	}
+);
+
+add_action(
+	'wp_head',
+	static function () {
+		if ( empty( HUN_GA_MEASUREMENT_ID ) ) {
+			return;
+		}
+		?>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr( HUN_GA_MEASUREMENT_ID ); ?>"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){window.dataLayer.push(arguments);}
+			gtag('js', new Date());
+			gtag('config', '<?php echo esc_js( HUN_GA_MEASUREMENT_ID ); ?>');
+		</script>
+		<?php
+	},
+	20
 );
 
 /**

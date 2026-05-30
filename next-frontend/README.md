@@ -19,8 +19,9 @@ This folder contains the new SSR-ready frontend for the headless WordPress setup
 
 1. Copy `.env.example` to `.env.local`.
 2. Point `NEXT_PUBLIC_WORDPRESS_GRAPHQL_ENDPOINT` to your WordPress `/graphql` endpoint.
-3. Install dependencies in this folder.
-4. Run `npm run dev:next` from the repo root.
+3. Set `NEXT_PUBLIC_GA_MEASUREMENT_ID=G-LHRMPQ3Y12` so Google Analytics loads on the live site.
+4. Install dependencies in this folder.
+5. Run `npm run dev:next` from the repo root.
 
 ## Mapping notes
 
