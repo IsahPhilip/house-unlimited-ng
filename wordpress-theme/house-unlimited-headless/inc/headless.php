@@ -254,6 +254,268 @@ if ( ! function_exists( 'hun_prepare_featured_video_payload' ) ) {
 	}
 }
 
+if ( ! function_exists( 'hun_blog_normalize_visitor_id' ) ) {
+	/**
+	 * Normalize a visitor identifier used for blog interactions.
+	 */
+	function hun_blog_normalize_visitor_id( string $visitor_id ): string {
+		$visitor_id = sanitize_text_field( $visitor_id );
+		$visitor_id = preg_replace( '/[^a-zA-Z0-9_-]/', '', $visitor_id );
+
+		return is_string( $visitor_id ) ? $visitor_id : '';
+	}
+}
+
+if ( ! function_exists( 'hun_blog_get_visitor_id_from_request' ) ) {
+	/**
+	 * Read the frontend visitor identifier from the request.
+	 */
+	function hun_blog_get_visitor_id_from_request( WP_REST_Request $request ): string {
+		return hun_blog_normalize_visitor_id( (string) $request->get_param( 'visitorId' ) );
+	}
+}
+
+if ( ! function_exists( 'hun_blog_get_visitor_list' ) ) {
+	/**
+	 * Read an array of visitor identifiers from post meta.
+	 *
+	 * @return string[]
+	 */
+	function hun_blog_get_visitor_list( int $post_id, string $meta_key ): array {
+		$value = get_post_meta( $post_id, $meta_key, true );
+
+		if ( ! is_array( $value ) ) {
+			return array();
+		}
+
+		$values = array_map(
+			static function ( $item ): string {
+				return hun_blog_normalize_visitor_id( (string) $item );
+			},
+			$value
+		);
+
+		return array_values( array_unique( array_filter( $values ) ) );
+	}
+}
+
+if ( ! function_exists( 'hun_blog_set_visitor_list' ) ) {
+	/**
+	 * Persist an array of visitor identifiers to post meta.
+	 *
+	 * @param string[] $visitor_ids
+	 */
+	function hun_blog_set_visitor_list( int $post_id, string $meta_key, array $visitor_ids ): void {
+		update_post_meta( $post_id, $meta_key, array_values( array_unique( array_filter( $visitor_ids ) ) ) );
+	}
+}
+
+if ( ! function_exists( 'hun_blog_increment_counter' ) ) {
+	/**
+	 * Increment a numeric post meta counter.
+	 */
+	function hun_blog_increment_counter( int $post_id, string $meta_key ): int {
+		$current = (int) get_post_meta( $post_id, $meta_key, true );
+		$current++;
+		update_post_meta( $post_id, $meta_key, $current );
+
+		return $current;
+	}
+}
+
+if ( ! function_exists( 'hun_blog_get_counter' ) ) {
+	/**
+	 * Read a numeric post meta counter.
+	 */
+	function hun_blog_get_counter( int $post_id, string $meta_key ): int {
+		return max( 0, (int) get_post_meta( $post_id, $meta_key, true ) );
+	}
+}
+
+if ( ! function_exists( 'hun_blog_estimate_read_time' ) ) {
+	/**
+	 * Estimate a post read time from plain-text content.
+	 */
+	function hun_blog_estimate_read_time( string $content ): string {
+		$words = str_word_count( wp_strip_all_tags( $content ) );
+		$minutes = max( 1, (int) ceil( $words / 200 ) );
+
+		return sprintf( '%d min read', $minutes );
+	}
+}
+
+if ( ! function_exists( 'hun_blog_prepare_author_payload' ) ) {
+	/**
+	 * Prepare author details for the blog payload.
+	 */
+	function hun_blog_prepare_author_payload( WP_Post $post ): array {
+		$user = get_user_by( 'id', (int) $post->post_author );
+		$roles = array();
+
+		if ( $user instanceof WP_User && ! empty( $user->roles ) ) {
+			$roles = array_map(
+				static function ( string $role ): string {
+					return ucwords( str_replace( array( '_', '-' ), ' ', $role ) );
+				},
+				$user->roles
+			);
+		}
+
+		return array(
+			'name' => $user instanceof WP_User ? $user->display_name : get_the_author_meta( 'display_name', (int) $post->post_author ),
+			'role' => ! empty( $roles ) ? implode( ', ', $roles ) : '',
+			'image' => get_avatar_url( (int) $post->post_author, array( 'size' => 128 ) ) ?: '',
+			'bio'  => $user instanceof WP_User ? (string) ( get_user_meta( $user->ID, 'hun_author_bio', true ) ?: $user->description ) : '',
+		);
+	}
+}
+
+if ( ! function_exists( 'hun_blog_prepare_post_payload' ) ) {
+	/**
+	 * Prepare an interactive blog post payload.
+	 */
+	function hun_blog_prepare_post_payload( WP_Post $post ): array {
+		$content = apply_filters( 'the_content', $post->post_content );
+		$categories = wp_get_post_terms( $post->ID, 'category', array( 'fields' => 'names' ) );
+		$primary_category = ! empty( $categories ) ? (string) $categories[0] : 'Blog';
+		$featured_image = get_the_post_thumbnail_url( $post, 'full' ) ?: '';
+
+		return array(
+			'id' => (string) $post->ID,
+			'slug' => $post->post_name,
+			'createdAt' => mysql_to_rfc3339( $post->post_date_gmt ?: $post->post_date ),
+			'category' => $primary_category,
+			'title' => get_the_title( $post ),
+			'excerpt' => wp_strip_all_tags( get_the_excerpt( $post ) ),
+			'content' => $content,
+			'author' => hun_blog_prepare_author_payload( $post ),
+			'image' => $featured_image ?: null,
+			'readTime' => hun_blog_estimate_read_time( $content ),
+			'views' => hun_blog_get_counter( $post->ID, '_hun_blog_views' ),
+			'likes' => count( hun_blog_get_visitor_list( $post->ID, '_hun_blog_likes' ) ),
+			'commentsCount' => (int) get_comments_number( $post->ID ),
+		);
+	}
+}
+
+if ( ! function_exists( 'hun_blog_prepare_comment_payload' ) ) {
+	/**
+	 * Prepare a public comment payload.
+	 */
+	function hun_blog_prepare_comment_payload( WP_Comment $comment ): array {
+		$visitor_id = hun_blog_normalize_visitor_id( (string) get_comment_meta( $comment->comment_ID, 'hun_visitor_id', true ) );
+		$created_at = mysql_to_rfc3339( $comment->comment_date_gmt ?: $comment->comment_date );
+		$avatar = get_avatar_url( $comment->comment_author_email, array( 'size' => 96 ) );
+
+		return array(
+			'id' => (string) $comment->comment_ID,
+			'content' => wp_strip_all_tags( $comment->comment_content ),
+			'user' => array(
+				'id' => $visitor_id ?: (string) $comment->user_id ?: (string) $comment->comment_ID,
+				'name' => $comment->comment_author ? $comment->comment_author : __( 'Anonymous', 'house-unlimited-headless' ),
+				'avatar' => $avatar ? $avatar : null,
+				'role' => $comment->user_id ? 'Member' : '',
+			),
+			'createdAt' => $created_at,
+			'updatedAt' => $created_at,
+		);
+	}
+}
+
+if ( ! function_exists( 'hun_blog_can_manage_comment' ) ) {
+	/**
+	 * Determine whether a visitor may edit or delete a comment.
+	 */
+	function hun_blog_can_manage_comment( WP_Comment $comment, string $visitor_id ): bool {
+		if ( current_user_can( 'edit_comment', $comment->comment_ID ) ) {
+			return true;
+		}
+
+		$comment_visitor_id = hun_blog_normalize_visitor_id( (string) get_comment_meta( $comment->comment_ID, 'hun_visitor_id', true ) );
+
+		return $comment_visitor_id && $comment_visitor_id === $visitor_id;
+	}
+}
+
+if ( ! function_exists( 'hun_blog_toggle_visitor_meta' ) ) {
+	/**
+	 * Toggle a visitor identifier in a post meta array.
+	 *
+	 * @return array{0: bool, 1: int}
+	 */
+	function hun_blog_toggle_visitor_meta( int $post_id, string $meta_key, string $visitor_id ): array {
+		$visitor_list = hun_blog_get_visitor_list( $post_id, $meta_key );
+		$is_present = in_array( $visitor_id, $visitor_list, true );
+
+		if ( $is_present ) {
+			$visitor_list = array_values( array_filter( $visitor_list, static function ( string $item ) use ( $visitor_id ): bool {
+				return $item !== $visitor_id;
+			} ) );
+		} else {
+			$visitor_list[] = $visitor_id;
+		}
+
+		hun_blog_set_visitor_list( $post_id, $meta_key, $visitor_list );
+
+		return array( ! $is_present, count( $visitor_list ) );
+	}
+}
+
+if ( ! function_exists( 'hun_blog_get_related_posts' ) ) {
+	/**
+	 * Fetch related blog posts by shared categories and tags.
+	 *
+	 * @return WP_Post[]
+	 */
+	function hun_blog_get_related_posts( int $post_id, int $limit = 3 ): array {
+		$source_categories = wp_get_post_terms( $post_id, 'category', array( 'fields' => 'ids' ) );
+		$source_tags = wp_get_post_terms( $post_id, 'post_tag', array( 'fields' => 'ids' ) );
+		$posts = get_posts(
+			array(
+				'post_type'      => 'post',
+				'post_status'    => 'publish',
+				'posts_per_page' => 24,
+				'post__not_in'   => array( $post_id ),
+				'orderby'        => 'date',
+				'order'          => 'DESC',
+			)
+		);
+
+		$scored_posts = array_map(
+			static function ( WP_Post $post ) use ( $source_categories, $source_tags ): array {
+				$categories = wp_get_post_terms( $post->ID, 'category', array( 'fields' => 'ids' ) );
+				$tags = wp_get_post_terms( $post->ID, 'post_tag', array( 'fields' => 'ids' ) );
+				$category_matches = count( array_intersect( $source_categories, $categories ) );
+				$tag_matches = count( array_intersect( $source_tags, $tags ) );
+
+				return array(
+					'post'  => $post,
+					'score' => ( $category_matches * 3 ) + ( $tag_matches * 2 ),
+				);
+			},
+			$posts
+		);
+
+		usort(
+			$scored_posts,
+			static function ( array $left, array $right ): int {
+				return $right['score'] <=> $left['score'];
+			}
+		);
+
+		return array_slice(
+			array_map(
+				static function ( array $item ): WP_Post {
+					return $item['post'];
+				},
+				$scored_posts
+			),
+			0,
+			$limit
+		);
+	}
+}
+
 add_action(
 	'admin_init',
 	static function () {
@@ -385,6 +647,343 @@ add_filter(
 add_action(
 	'rest_api_init',
 	static function () {
+		register_rest_route(
+			'hun/v1',
+			'/blog/public/slug/(?P<slug>[a-zA-Z0-9-_]+)',
+			array(
+				'methods'             => 'GET',
+				'permission_callback' => '__return_true',
+				'callback'            => static function ( WP_REST_Request $request ) {
+					$posts = get_posts(
+						array(
+							'post_type'      => 'post',
+							'name'           => sanitize_title( (string) $request['slug'] ),
+							'post_status'    => 'publish',
+							'posts_per_page' => 1,
+						)
+					);
+
+					if ( empty( $posts[0] ) ) {
+						return new WP_Error( 'hun_blog_post_not_found', __( 'Blog post not found.', 'house-unlimited-headless' ), array( 'status' => 404 ) );
+					}
+
+					return rest_ensure_response( hun_blog_prepare_post_payload( $posts[0] ) );
+				},
+			)
+		);
+
+		register_rest_route(
+			'hun/v1',
+			'/blog/public/(?P<id>\d+)/related',
+			array(
+				'methods'             => 'GET',
+				'permission_callback' => '__return_true',
+				'callback'            => static function ( WP_REST_Request $request ) {
+					$post_id = absint( $request['id'] );
+					$limit   = max( 1, min( 12, (int) $request->get_param( 'limit' ) ?: 3 ) );
+					$posts   = hun_blog_get_related_posts( $post_id, $limit );
+
+					return rest_ensure_response(
+						array_map(
+							static function ( WP_Post $post ): array {
+								return hun_blog_prepare_post_payload( $post );
+							},
+							$posts
+						)
+					);
+				},
+			)
+		);
+
+		register_rest_route(
+			'hun/v1',
+			'/blog/public/(?P<id>\d+)/views',
+			array(
+				'methods'             => 'PATCH',
+				'permission_callback' => '__return_true',
+				'callback'            => static function ( WP_REST_Request $request ) {
+					$post_id = absint( $request['id'] );
+
+					if ( 'post' !== get_post_type( $post_id ) ) {
+						return new WP_Error( 'hun_blog_post_not_found', __( 'Blog post not found.', 'house-unlimited-headless' ), array( 'status' => 404 ) );
+					}
+
+					$views = hun_blog_increment_counter( $post_id, '_hun_blog_views' );
+
+					return rest_ensure_response(
+						array(
+							'views' => $views,
+						)
+					);
+				},
+			)
+		);
+
+		register_rest_route(
+			'hun/v1',
+			'/blog/public/(?P<id>\d+)/interaction',
+			array(
+				'methods'             => 'GET',
+				'permission_callback' => '__return_true',
+				'callback'            => static function ( WP_REST_Request $request ) {
+					$post_id = absint( $request['id'] );
+					$visitor_id = hun_blog_get_visitor_id_from_request( $request );
+
+					return rest_ensure_response(
+						array(
+							'liked'      => $visitor_id ? in_array( $visitor_id, hun_blog_get_visitor_list( $post_id, '_hun_blog_likes' ), true ) : false,
+							'bookmarked' => $visitor_id ? in_array( $visitor_id, hun_blog_get_visitor_list( $post_id, '_hun_blog_bookmarks' ), true ) : false,
+						)
+					);
+				},
+			)
+		);
+
+		register_rest_route(
+			'hun/v1',
+			'/blog/public/(?P<id>\d+)/like',
+			array(
+				'methods'             => array( 'POST', 'DELETE' ),
+				'permission_callback' => '__return_true',
+				'callback'            => static function ( WP_REST_Request $request ) {
+					$post_id = absint( $request['id'] );
+					$visitor_id = hun_blog_get_visitor_id_from_request( $request );
+
+					if ( ! $visitor_id ) {
+						return new WP_Error( 'hun_blog_missing_visitor', __( 'A visitor identifier is required.', 'house-unlimited-headless' ), array( 'status' => 400 ) );
+					}
+
+					if ( 'post' !== get_post_type( $post_id ) ) {
+						return new WP_Error( 'hun_blog_post_not_found', __( 'Blog post not found.', 'house-unlimited-headless' ), array( 'status' => 404 ) );
+					}
+
+					$likes = hun_blog_get_visitor_list( $post_id, '_hun_blog_likes' );
+					$is_liked = in_array( $visitor_id, $likes, true );
+
+					if ( 'DELETE' === $request->get_method() ) {
+						$likes = array_values( array_filter( $likes, static function ( string $item ) use ( $visitor_id ): bool {
+							return $item !== $visitor_id;
+						} ) );
+						hun_blog_set_visitor_list( $post_id, '_hun_blog_likes', $likes );
+						$is_liked = false;
+					} elseif ( ! $is_liked ) {
+						$likes[] = $visitor_id;
+						hun_blog_set_visitor_list( $post_id, '_hun_blog_likes', $likes );
+						$is_liked = true;
+					}
+
+					return rest_ensure_response(
+						array(
+							'liked' => $is_liked,
+							'likes' => count( $likes ),
+						)
+					);
+				},
+			)
+		);
+
+		register_rest_route(
+			'hun/v1',
+			'/blog/public/(?P<id>\d+)/bookmark',
+			array(
+				'methods'             => array( 'POST', 'DELETE' ),
+				'permission_callback' => '__return_true',
+				'callback'            => static function ( WP_REST_Request $request ) {
+					$post_id = absint( $request['id'] );
+					$visitor_id = hun_blog_get_visitor_id_from_request( $request );
+
+					if ( ! $visitor_id ) {
+						return new WP_Error( 'hun_blog_missing_visitor', __( 'A visitor identifier is required.', 'house-unlimited-headless' ), array( 'status' => 400 ) );
+					}
+
+					if ( 'post' !== get_post_type( $post_id ) ) {
+						return new WP_Error( 'hun_blog_post_not_found', __( 'Blog post not found.', 'house-unlimited-headless' ), array( 'status' => 404 ) );
+					}
+
+					$bookmarks = hun_blog_get_visitor_list( $post_id, '_hun_blog_bookmarks' );
+					$is_bookmarked = in_array( $visitor_id, $bookmarks, true );
+
+					if ( 'DELETE' === $request->get_method() ) {
+						$bookmarks = array_values( array_filter( $bookmarks, static function ( string $item ) use ( $visitor_id ): bool {
+							return $item !== $visitor_id;
+						} ) );
+						hun_blog_set_visitor_list( $post_id, '_hun_blog_bookmarks', $bookmarks );
+						$is_bookmarked = false;
+					} elseif ( ! $is_bookmarked ) {
+						$bookmarks[] = $visitor_id;
+						hun_blog_set_visitor_list( $post_id, '_hun_blog_bookmarks', $bookmarks );
+						$is_bookmarked = true;
+					}
+
+					return rest_ensure_response(
+						array(
+							'bookmarked' => $is_bookmarked,
+						)
+					);
+				},
+			)
+		);
+
+		register_rest_route(
+			'hun/v1',
+			'/blog/public/(?P<id>\d+)/comments',
+			array(
+				array(
+					'methods'             => 'GET',
+					'permission_callback' => '__return_true',
+					'callback'            => static function ( WP_REST_Request $request ) {
+						$post_id = absint( $request['id'] );
+
+						if ( 'post' !== get_post_type( $post_id ) ) {
+							return new WP_Error( 'hun_blog_post_not_found', __( 'Blog post not found.', 'house-unlimited-headless' ), array( 'status' => 404 ) );
+						}
+
+						$comments = get_comments(
+							array(
+								'post_id' => $post_id,
+								'status'  => 'approve',
+								'orderby' => 'comment_date_gmt',
+								'order'   => 'DESC',
+								'number'  => 100,
+							)
+						);
+
+						return rest_ensure_response(
+							array_map(
+								static function ( WP_Comment $comment ): array {
+									return hun_blog_prepare_comment_payload( $comment );
+								},
+								$comments
+							)
+						);
+					},
+				),
+				array(
+					'methods'             => 'POST',
+					'permission_callback' => '__return_true',
+					'callback'            => static function ( WP_REST_Request $request ) {
+						$post_id = absint( $request['id'] );
+						$visitor_id = hun_blog_get_visitor_id_from_request( $request );
+						$content = sanitize_textarea_field( (string) $request->get_param( 'content' ) );
+						$guest_name = sanitize_text_field( (string) $request->get_param( 'guestName' ) );
+						$user_name = sanitize_text_field( (string) $request->get_param( 'userName' ) );
+
+						if ( 'post' !== get_post_type( $post_id ) ) {
+							return new WP_Error( 'hun_blog_post_not_found', __( 'Blog post not found.', 'house-unlimited-headless' ), array( 'status' => 404 ) );
+						}
+
+						if ( '' === trim( $content ) ) {
+							return new WP_Error( 'hun_blog_empty_comment', __( 'Comment content is required.', 'house-unlimited-headless' ), array( 'status' => 400 ) );
+						}
+
+						if ( '' === $visitor_id ) {
+							return new WP_Error( 'hun_blog_missing_visitor', __( 'A visitor identifier is required.', 'house-unlimited-headless' ), array( 'status' => 400 ) );
+						}
+
+						$author_name = $user_name ?: ( $guest_name ?: __( 'Anonymous', 'house-unlimited-headless' ) );
+						$author_email = sprintf( '%s@hun-comments.local', $visitor_id );
+
+						$comment_id = wp_insert_comment(
+							array(
+								'comment_post_ID'      => $post_id,
+								'comment_author'       => $author_name,
+								'comment_author_email' => $author_email,
+								'comment_content'      => $content,
+								'comment_approved'     => 1,
+							)
+						);
+
+						if ( ! $comment_id || is_wp_error( $comment_id ) ) {
+							return new WP_Error( 'hun_blog_comment_failed', __( 'Unable to save the comment.', 'house-unlimited-headless' ), array( 'status' => 500 ) );
+						}
+
+						update_comment_meta( $comment_id, 'hun_visitor_id', $visitor_id );
+
+						$comment = get_comment( $comment_id );
+
+						if ( ! $comment instanceof WP_Comment ) {
+							return new WP_Error( 'hun_blog_comment_missing', __( 'Unable to load the saved comment.', 'house-unlimited-headless' ), array( 'status' => 500 ) );
+						}
+
+						return rest_ensure_response( hun_blog_prepare_comment_payload( $comment ) );
+					},
+				),
+			)
+		);
+
+		register_rest_route(
+			'hun/v1',
+			'/blog/public/comments/(?P<comment_id>\d+)',
+			array(
+				array(
+					'methods'             => 'PUT',
+					'permission_callback' => '__return_true',
+					'callback'            => static function ( WP_REST_Request $request ) {
+						$comment_id = absint( $request['comment_id'] );
+						$visitor_id = hun_blog_get_visitor_id_from_request( $request );
+						$content = sanitize_textarea_field( (string) $request->get_param( 'content' ) );
+						$comment = get_comment( $comment_id );
+
+						if ( ! $comment instanceof WP_Comment ) {
+							return new WP_Error( 'hun_blog_comment_not_found', __( 'Comment not found.', 'house-unlimited-headless' ), array( 'status' => 404 ) );
+						}
+
+						if ( ! hun_blog_can_manage_comment( $comment, $visitor_id ) ) {
+							return new WP_Error( 'hun_blog_comment_forbidden', __( 'You do not have permission to update this comment.', 'house-unlimited-headless' ), array( 'status' => 403 ) );
+						}
+
+						if ( '' === trim( $content ) ) {
+							return new WP_Error( 'hun_blog_empty_comment', __( 'Comment content is required.', 'house-unlimited-headless' ), array( 'status' => 400 ) );
+						}
+
+						$updated = wp_update_comment(
+							array(
+								'comment_ID'      => $comment_id,
+								'comment_content' => $content,
+							)
+						);
+
+						if ( ! $updated ) {
+							return new WP_Error( 'hun_blog_comment_update_failed', __( 'Unable to update the comment.', 'house-unlimited-headless' ), array( 'status' => 500 ) );
+						}
+
+						$comment = get_comment( $comment_id );
+
+						return rest_ensure_response( hun_blog_prepare_comment_payload( $comment ) );
+					},
+				),
+				array(
+					'methods'             => 'DELETE',
+					'permission_callback' => '__return_true',
+					'callback'            => static function ( WP_REST_Request $request ) {
+						$comment_id = absint( $request['comment_id'] );
+						$visitor_id = hun_blog_get_visitor_id_from_request( $request );
+						$comment = get_comment( $comment_id );
+
+						if ( ! $comment instanceof WP_Comment ) {
+							return new WP_Error( 'hun_blog_comment_not_found', __( 'Comment not found.', 'house-unlimited-headless' ), array( 'status' => 404 ) );
+						}
+
+						if ( ! hun_blog_can_manage_comment( $comment, $visitor_id ) ) {
+							return new WP_Error( 'hun_blog_comment_forbidden', __( 'You do not have permission to delete this comment.', 'house-unlimited-headless' ), array( 'status' => 403 ) );
+						}
+
+						$deleted = wp_delete_comment( $comment_id, true );
+
+						if ( ! $deleted ) {
+							return new WP_Error( 'hun_blog_comment_delete_failed', __( 'Unable to delete the comment.', 'house-unlimited-headless' ), array( 'status' => 500 ) );
+						}
+
+						return rest_ensure_response(
+							array(
+								'deleted' => true,
+							)
+						);
+					},
+				),
+			)
+		);
+
 		register_rest_route(
 			'hun/v1',
 			'/settings',

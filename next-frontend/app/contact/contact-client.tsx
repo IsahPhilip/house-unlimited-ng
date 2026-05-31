@@ -137,7 +137,7 @@ export function ContactClient({ settings, initialTopic = "general", initialRole 
             Contact <span className="text-gray-400 font-light italic">Us</span>
           </h1>
           <p className="text-gray-500 mt-4 max-w-2xl mx-auto">
-            Have questions about a property or want to list your own? Our team is here to help you every step of the way.
+            Have questions about a property? Our team is here to help you every step of the way.
           </p>
           {initialTopic === "careers" && (
             <p className="text-[#005555] mt-4 max-w-2xl mx-auto text-sm font-medium">

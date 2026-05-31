@@ -29,6 +29,7 @@ import {
   getInteractiveBlogPostBySlug,
   getRelatedInteractiveBlogPosts,
   incrementInteractiveBlogViews,
+  getBlogVisitorId,
   likeInteractiveBlogPost,
   unbookmarkInteractiveBlogPost,
   unlikeInteractiveBlogPost,
@@ -109,6 +110,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState("");
   const [currentUser, setCurrentUser] = useState<StoredUser | null>(null);
+  const [visitorId, setVisitorId] = useState("");
   const [commentSort, setCommentSort] = useState<"newest" | "oldest">("newest");
   const [feedback, setFeedback] = useState<{ type: "success" | "error" | "info"; text: string } | null>(null);
   const commentsRef = useRef<HTMLDivElement | null>(null);
@@ -139,6 +141,10 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
         setCurrentUser(null);
       }
     }
+  }, []);
+
+  useEffect(() => {
+    setVisitorId(getBlogVisitorId());
   }, []);
 
   useEffect(() => {
@@ -180,21 +186,17 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
         setComments(loadedComments);
         setIsCommentsLoading(false);
 
-        const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+        try {
+          const interaction = await getInteractiveBlogInteraction(post.id);
 
-        if (token) {
-          try {
-            const interaction = await getInteractiveBlogInteraction(post.id);
-
-            if (isMounted) {
-              setLiked(interaction.liked);
-              setBookmarked(interaction.bookmarked);
-            }
-          } catch {
-            if (isMounted) {
-              setLiked(false);
-              setBookmarked(false);
-            }
+          if (isMounted) {
+            setLiked(interaction.liked);
+            setBookmarked(interaction.bookmarked);
+          }
+        } catch {
+          if (isMounted) {
+            setLiked(false);
+            setBookmarked(false);
           }
         }
       } catch {
@@ -292,8 +294,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
         commentsCount: 0
       }));
 
-  const currentUserId = currentUser?.id || currentUser?._id || "";
-  const isSignedIn = Boolean(currentUserId);
+  const isSignedIn = Boolean(currentUser?.id || currentUser?._id);
   const hasInteractivePost = Boolean(interactivePost?.id);
   const metricViews = hasInteractivePost ? displayPost.views : null;
   const metricLikes = hasInteractivePost ? displayPost.likes : null;
@@ -320,17 +321,6 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
       .slice(0, 2)
       .toUpperCase() || "NA";
 
-  function requireAuth(message: string) {
-    const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
-
-    if (!token) {
-      setFeedback({ type: "info", text: message });
-      return false;
-    }
-
-    return true;
-  }
-
   function scrollToComments() {
     commentsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -355,10 +345,6 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
     }
 
     const postId = interactivePost!.id;
-
-    if (!requireAuth("Please sign in to like this post.")) {
-      return;
-    }
 
     try {
       setIsLikePending(true);
@@ -387,10 +373,6 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
     }
 
     const postId = interactivePost!.id;
-
-    if (!requireAuth("Please sign in to save this post.")) {
-      return;
-    }
 
     try {
       setIsBookmarkPending(true);
@@ -436,7 +418,8 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
       const created = await addInteractiveBlogComment(
         postId,
         commentText.trim(),
-        isSignedIn ? undefined : trimmedGuestName
+        isSignedIn ? undefined : trimmedGuestName,
+        currentUser?.name
       );
       setComments((prev) => [created, ...prev]);
       setCommentText("");
@@ -763,7 +746,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
             ) : (
               <div className="space-y-6">
                 {visibleComments.map((comment) => {
-                  const isOwner = comment.user?.id === currentUserId;
+                  const isOwner = Boolean(visitorId && comment.user?.id === visitorId);
                   const isEditing = editingCommentId === comment.id;
 
                   return (

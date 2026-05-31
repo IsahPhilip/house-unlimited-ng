@@ -61,7 +61,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
             />
           </Link>
           <p className="text-gray-400 text-sm">
-            {"Empowering home seekers with expert human guidance since 1995."}
+            {"Discover your dream home with House Unlimited Nigeria. We offer a wide range of properties across Abuja, tailored to your needs."}
           </p>
           <div className="flex space-x-4">
             {[

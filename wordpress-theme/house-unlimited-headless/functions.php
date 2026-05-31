@@ -183,6 +183,51 @@ add_action(
 	}
 );
 
+if ( ! function_exists( 'hun_render_author_bio_field' ) ) {
+	/**
+	 * Render the custom author bio field on the user profile screen.
+	 */
+	function hun_render_author_bio_field( WP_User $user ): void {
+		$author_bio = (string) get_user_meta( $user->ID, 'hun_author_bio', true );
+		?>
+		<h2><?php esc_html_e( 'House Unlimited Author Bio', 'house-unlimited-headless' ); ?></h2>
+		<table class="form-table" role="presentation">
+			<tr>
+				<th scope="row">
+					<label for="hun_author_bio"><?php esc_html_e( 'Custom Author Bio', 'house-unlimited-headless' ); ?></label>
+				</th>
+				<td>
+					<textarea name="hun_author_bio" id="hun_author_bio" rows="5" cols="50" class="large-text"><?php echo esc_textarea( $author_bio ); ?></textarea>
+					<p class="description"><?php esc_html_e( 'This bio is used on blog posts instead of the default WordPress profile bio when available.', 'house-unlimited-headless' ); ?></p>
+				</td>
+			</tr>
+		</table>
+		<?php
+	}
+}
+
+if ( ! function_exists( 'hun_save_author_bio_field' ) ) {
+	/**
+	 * Save the custom author bio field from the user profile screen.
+	 */
+	function hun_save_author_bio_field( int $user_id ): void {
+		if ( ! current_user_can( 'edit_user', $user_id ) ) {
+			return;
+		}
+
+		if ( ! isset( $_POST['hun_author_bio'] ) ) {
+			return;
+		}
+
+		update_user_meta( $user_id, 'hun_author_bio', sanitize_textarea_field( wp_unslash( $_POST['hun_author_bio'] ) ) );
+	}
+}
+
+add_action( 'show_user_profile', 'hun_render_author_bio_field' );
+add_action( 'edit_user_profile', 'hun_render_author_bio_field' );
+add_action( 'personal_options_update', 'hun_save_author_bio_field' );
+add_action( 'edit_user_profile_update', 'hun_save_author_bio_field' );
+
 add_action(
 	'init',
 	static function () {
