@@ -6,10 +6,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: "Terms and Conditions | House Unlimited Nigeria",
-    description: `Review the user terms and conditions for ${settings.title}. Understand the legal terms governing access to and use of our website, content, and services.`,
+    description: `Review the user terms and conditions for House Unlimited Nigeria. Understand the legal terms governing access to and use of our website, content, and services.`,
     openGraph: {
       title: "Terms and Conditions | House Unlimited Nigeria",
-      description: `Review the terms and conditions for ${settings.title}. Legal information about website use and services.`
+      description: `Review the terms and conditions for House Unlimited Nigeria. Legal information about website use and services.`
     }
   };
 }

@@ -180,6 +180,62 @@ add_action(
 				'rewrite'             => false,
 			)
 		);
+
+		register_post_type(
+			'newsletter_issue',
+			array(
+				'labels'              => array(
+					'name'               => __( 'Newsletter Issues', 'house-unlimited-headless' ),
+					'singular_name'      => __( 'Newsletter Issue', 'house-unlimited-headless' ),
+					'add_new_item'       => __( 'Add New Newsletter Issue', 'house-unlimited-headless' ),
+					'edit_item'          => __( 'Edit Newsletter Issue', 'house-unlimited-headless' ),
+					'new_item'           => __( 'New Newsletter Issue', 'house-unlimited-headless' ),
+					'view_item'          => __( 'View Newsletter Issue', 'house-unlimited-headless' ),
+					'search_items'       => __( 'Search Newsletter Issues', 'house-unlimited-headless' ),
+					'not_found'          => __( 'No newsletter issues found', 'house-unlimited-headless' ),
+					'not_found_in_trash' => __( 'No newsletter issues found in trash', 'house-unlimited-headless' ),
+				),
+				'public'              => false,
+				'publicly_queryable'  => false,
+				'exclude_from_search' => true,
+				'has_archive'         => false,
+				'show_ui'             => true,
+				'show_in_menu'        => true,
+				'show_in_nav_menus'   => false,
+				'show_in_rest'        => true,
+				'show_in_graphql'     => true,
+				'graphql_single_name' => 'NewsletterIssue',
+				'graphql_plural_name' => 'NewsletterIssues',
+				'supports'            => array( 'title', 'editor', 'excerpt', 'thumbnail' ),
+				'menu_icon'           => 'dashicons-email-alt',
+				'rewrite'             => false,
+			)
+		);
+
+		register_post_type(
+			'newsletter_subscriber',
+			array(
+				'labels'              => array(
+					'name'               => __( 'Newsletter Subscribers', 'house-unlimited-headless' ),
+					'singular_name'      => __( 'Newsletter Subscriber', 'house-unlimited-headless' ),
+					'search_items'       => __( 'Search Newsletter Subscribers', 'house-unlimited-headless' ),
+					'not_found'          => __( 'No newsletter subscribers found', 'house-unlimited-headless' ),
+					'not_found_in_trash' => __( 'No newsletter subscribers found in trash', 'house-unlimited-headless' ),
+				),
+				'public'              => false,
+				'publicly_queryable'  => false,
+				'exclude_from_search' => true,
+				'has_archive'         => false,
+				'show_ui'             => true,
+				'show_in_menu'        => true,
+				'show_in_nav_menus'   => false,
+				'show_in_rest'        => false,
+				'show_in_graphql'     => false,
+				'supports'            => array( 'title' ),
+				'menu_icon'           => 'dashicons-schedule',
+				'rewrite'             => false,
+			)
+		);
 	}
 );
 

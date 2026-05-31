@@ -100,6 +100,205 @@ if ( ! function_exists( 'hun_get_property_meta_value' ) ) {
 	}
 }
 
+if ( ! function_exists( 'hun_newsletter_issue_post_type' ) ) {
+	/**
+	 * Newsletter issue post type slug.
+	 */
+	function hun_newsletter_issue_post_type(): string {
+		return 'newsletter_issue';
+	}
+}
+
+if ( ! function_exists( 'hun_newsletter_subscriber_post_type' ) ) {
+	/**
+	 * Newsletter subscriber post type slug.
+	 */
+	function hun_newsletter_subscriber_post_type(): string {
+		return 'newsletter_subscriber';
+	}
+}
+
+if ( ! function_exists( 'hun_newsletter_normalize_email' ) ) {
+	/**
+	 * Normalize an email address for storage and lookup.
+	 */
+	function hun_newsletter_normalize_email( string $email ): string {
+		$email = sanitize_email( strtolower( trim( $email ) ) );
+
+		return is_string( $email ) ? $email : '';
+	}
+}
+
+if ( ! function_exists( 'hun_newsletter_get_subscriber_post' ) ) {
+	/**
+	 * Find an existing subscriber record by email address.
+	 */
+	function hun_newsletter_get_subscriber_post( string $email ): ?WP_Post {
+		$email = hun_newsletter_normalize_email( $email );
+
+		if ( '' === $email ) {
+			return null;
+		}
+
+		$subscribers = get_posts(
+			array(
+				'post_type'      => hun_newsletter_subscriber_post_type(),
+				'post_status'    => array( 'publish', 'private' ),
+				'posts_per_page' => 1,
+				'meta_key'       => 'hun_newsletter_email',
+				'meta_value'     => $email,
+			)
+		);
+
+		return empty( $subscribers ) ? null : $subscribers[0];
+	}
+}
+
+if ( ! function_exists( 'hun_newsletter_get_latest_issue' ) ) {
+	/**
+	 * Get the most recent published newsletter issue.
+	 */
+	function hun_newsletter_get_latest_issue(): ?WP_Post {
+		$issues = get_posts(
+			array(
+				'post_type'      => hun_newsletter_issue_post_type(),
+				'post_status'    => 'publish',
+				'posts_per_page' => 1,
+				'orderby'        => 'date',
+				'order'          => 'DESC',
+			)
+		);
+
+		return empty( $issues ) ? null : $issues[0];
+	}
+}
+
+if ( ! function_exists( 'hun_newsletter_send_issue_email' ) ) {
+	/**
+	 * Send a newsletter issue to one subscriber.
+	 */
+	function hun_newsletter_send_issue_email( WP_Post $issue, string $email ): bool {
+		$subject = wp_strip_all_tags( get_the_title( $issue ) );
+		$issue_url = hun_headless_frontend_url() . '/blog';
+		$message = sprintf(
+			'<html><body style="font-family:Arial,sans-serif;color:#1f2937;line-height:1.6">%1$s%2$s<p>Read more on the website: <a href="%3$s">%3$s</a></p></body></html>',
+			'<h2 style="color:#005555;margin:0 0 16px;">' . esc_html( $subject ) . '</h2>',
+			wp_kses_post( apply_filters( 'the_content', $issue->post_content ) ),
+			esc_url( $issue_url )
+		);
+
+		return (bool) wp_mail(
+			$email,
+			$subject,
+			$message,
+			array( 'Content-Type: text/html; charset=UTF-8' )
+		);
+	}
+}
+
+if ( ! function_exists( 'hun_newsletter_send_latest_issue_to_subscriber' ) ) {
+	/**
+	 * Send the latest issue to a newly subscribed email address.
+	 */
+	function hun_newsletter_send_latest_issue_to_subscriber( string $email ): bool {
+		$latest_issue = hun_newsletter_get_latest_issue();
+
+		if ( ! $latest_issue instanceof WP_Post ) {
+			return wp_mail(
+				$email,
+				__( 'Welcome to House Unlimited Nigeria', 'house-unlimited-headless' ),
+				'<html><body style="font-family:Arial,sans-serif;color:#1f2937;line-height:1.6"><h2 style="color:#005555;margin:0 0 16px;">' . esc_html__( 'Welcome to House Unlimited Nigeria', 'house-unlimited-headless' ) . '</h2><p>' . esc_html__( 'You are now subscribed to our updates. We will email you the latest listings, market insights, and future newsletter issues.', 'house-unlimited-headless' ) . '</p></body></html>',
+				array( 'Content-Type: text/html; charset=UTF-8' )
+			);
+		}
+
+		return hun_newsletter_send_issue_email( $latest_issue, $email );
+	}
+}
+
+if ( ! function_exists( 'hun_newsletter_store_subscriber' ) ) {
+	/**
+	 * Insert or update a subscriber record.
+	 */
+	function hun_newsletter_store_subscriber( string $email, string $source = 'footer' ) {
+		$email = hun_newsletter_normalize_email( $email );
+
+		if ( '' === $email || ! is_email( $email ) ) {
+			return new WP_Error( 'hun_newsletter_invalid_email', __( 'Please enter a valid email address.', 'house-unlimited-headless' ), array( 'status' => 400 ) );
+		}
+
+		$subscriber = hun_newsletter_get_subscriber_post( $email );
+		$subscriber_id = $subscriber ? $subscriber->ID : wp_insert_post(
+			array(
+				'post_type'   => hun_newsletter_subscriber_post_type(),
+				'post_status' => 'publish',
+				'post_title'  => $email,
+				'post_name'   => sanitize_title( $email ),
+			),
+			true
+		);
+
+		if ( is_wp_error( $subscriber_id ) ) {
+			return $subscriber_id;
+		}
+
+		update_post_meta( $subscriber_id, 'hun_newsletter_email', $email );
+		update_post_meta( $subscriber_id, 'hun_newsletter_source', sanitize_text_field( $source ) );
+		update_post_meta( $subscriber_id, 'hun_newsletter_status', 'subscribed' );
+
+		if ( ! get_post_meta( $subscriber_id, 'hun_newsletter_subscribed_at', true ) ) {
+			update_post_meta( $subscriber_id, 'hun_newsletter_subscribed_at', current_time( 'mysql' ) );
+		}
+
+		return get_post( $subscriber_id );
+	}
+}
+
+if ( ! function_exists( 'hun_newsletter_dispatch_issue_to_subscribers' ) ) {
+	/**
+	 * Send a published newsletter issue to all subscribers.
+	 */
+	function hun_newsletter_dispatch_issue_to_subscribers( WP_Post $issue ): array {
+		if ( get_post_meta( $issue->ID, '_hun_newsletter_dispatched_at', true ) ) {
+			return array(
+				'sent' => 0,
+				'skipped' => true,
+			);
+		}
+
+		$subscriber_ids = get_posts(
+			array(
+				'post_type'      => hun_newsletter_subscriber_post_type(),
+				'post_status'    => 'publish',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+			)
+		);
+
+		$sent = 0;
+
+		foreach ( $subscriber_ids as $subscriber_id ) {
+			$email = hun_newsletter_normalize_email( (string) get_post_meta( $subscriber_id, 'hun_newsletter_email', true ) );
+
+			if ( ! is_email( $email ) ) {
+				continue;
+			}
+
+			if ( hun_newsletter_send_issue_email( $issue, $email ) ) {
+				update_post_meta( $subscriber_id, 'hun_newsletter_last_issue_id', $issue->ID );
+				$sent++;
+			}
+		}
+
+		update_post_meta( $issue->ID, '_hun_newsletter_dispatched_at', current_time( 'mysql' ) );
+
+		return array(
+			'sent' => $sent,
+			'skipped' => false,
+		);
+	}
+}
+
 if ( ! function_exists( 'hun_prepare_property_payload' ) ) {
 	/**
 	 * Normalize numeric meta values while preserving decimals.
@@ -1216,7 +1415,72 @@ add_action(
 				},
 			)
 		);
+
+		register_rest_route(
+			'hun/v1',
+			'/newsletter/subscribe',
+			array(
+				'methods'             => 'POST',
+				'permission_callback' => '__return_true',
+				'callback'            => static function ( WP_REST_Request $request ) {
+					$email  = hun_newsletter_normalize_email( (string) $request->get_param( 'email' ) );
+					$source = sanitize_text_field( (string) $request->get_param( 'source' ) ?: 'footer' );
+					$result = hun_newsletter_store_subscriber( $email, $source );
+
+					if ( is_wp_error( $result ) ) {
+						return $result;
+					}
+
+					$latest_issue = hun_newsletter_get_latest_issue();
+					$delivered    = false;
+
+					if ( $latest_issue instanceof WP_Post ) {
+						$subscriber_last_issue = (int) get_post_meta( $result->ID, 'hun_newsletter_last_issue_id', true );
+
+						if ( $subscriber_last_issue !== $latest_issue->ID ) {
+							$delivered = hun_newsletter_send_issue_email( $latest_issue, $email );
+
+							if ( $delivered ) {
+								update_post_meta( $result->ID, 'hun_newsletter_last_issue_id', $latest_issue->ID );
+							}
+						}
+					}
+
+					if ( ! $delivered && ! $latest_issue instanceof WP_Post ) {
+						$delivered = hun_newsletter_send_latest_issue_to_subscriber( $email );
+					}
+
+					return rest_ensure_response(
+						array(
+							'email'      => $email,
+							'status'     => 'subscribed',
+							'delivered'  => $delivered,
+							'message'    => $delivered
+								? __( 'You are subscribed and will receive our latest newsletter by email.', 'house-unlimited-headless' )
+								: __( 'You are subscribed, but we could not send the latest issue automatically just now.', 'house-unlimited-headless' ),
+						)
+					);
+				},
+			)
+		);
 	}
+);
+
+add_action(
+	'transition_post_status',
+	static function ( string $new_status, string $old_status, WP_Post $post ): void {
+		if ( 'publish' !== $new_status || 'publish' === $old_status ) {
+			return;
+		}
+
+		if ( hun_newsletter_issue_post_type() !== get_post_type( $post ) ) {
+			return;
+		}
+
+		hun_newsletter_dispatch_issue_to_subscribers( $post );
+	},
+	10,
+	3
 );
 
 add_action(

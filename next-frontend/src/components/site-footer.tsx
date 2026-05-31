@@ -39,7 +39,8 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
         setIsSubscribed(true);
         setEmail("");
       } else {
-        setError("Failed to subscribe. Please try again.");
+        const data = await response.json().catch(() => null);
+        setError(data?.message || "Failed to subscribe. Please try again.");
       }
     } catch (signupError) {
       console.error("Newsletter signup error:", signupError);

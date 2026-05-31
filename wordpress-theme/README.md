@@ -9,6 +9,7 @@
 - Redirects anonymous frontend traffic from WordPress to the Next.js site.
 - Exposes the frontend URL through both REST and WPGraphQL.
 - Generates preview links that point to the decoupled frontend.
+- Stores newsletter subscribers and sends newsletter emails from WordPress.
 
 ## Install
 
@@ -17,6 +18,7 @@
 3. Install and activate `WPGraphQL`.
 4. Set the `Headless Frontend URL` under `Settings > Reading`.
 5. Create a WordPress menu and assign it to the `Primary Menu` location.
+6. Create newsletter issues from the WordPress admin and publish them to email subscribers.
 
 If saving `Settings > Reading` fails on the host, you can hard-code the frontend URL in `wp-config.php` instead:
 

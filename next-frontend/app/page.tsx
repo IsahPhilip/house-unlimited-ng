@@ -170,7 +170,7 @@ export default async function HomePage() {
           <div className="text-center mb-16">
             <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Services</p>
             <h2 className="text-4xl font-bold text-gray-900">Who We <span className="text-gray-400 italic font-light">Serve</span></h2>
-            <p className="text-gray-600 mt-3">Expert support for buying and selling properties.</p>
+            <p className="text-gray-600 mt-3">Expert support for buying or investing in luxury properties.</p>
           </div>
           <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.map((service, index) => {

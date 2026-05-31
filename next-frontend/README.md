@@ -28,3 +28,5 @@ This folder contains the new SSR-ready frontend for the headless WordPress setup
 - Blog content is already modeled around WordPress posts and should migrate first.
 - Property data still assumes a `properties` GraphQL type with `propertyFields`.
 - If your real schema differs, only `src/lib/graphql/queries.ts` and the property mapper in `src/lib/wordpress.ts` should need changes.
+- Newsletter subscriptions POST through `app/api/newsletter/route.ts`, which proxies to the WordPress backend route at `/wp-json/hun/v1/newsletter/subscribe`.
+- WordPress stores subscribers as a dedicated private post type and sends the latest published newsletter issue to each new subscriber when available.
