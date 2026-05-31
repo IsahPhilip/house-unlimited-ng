@@ -1,10 +1,9 @@
 import Image from "next/image";
-import hunLogo from "../../../frontend/src/img/hun_logo.png";
 
 const LOGO_SIZES = {
-  header: "260px",
-  footer: "160px",
-  compact: "100px"
+  header: { width: 320, height: 96 },
+  footer: { width: 240, height: 72 },
+  compact: { width: 160, height: 48 }
 } as const;
 
 type SiteLogoProps = {
@@ -22,11 +21,10 @@ export function SiteLogo({
 }: SiteLogoProps) {
   return (
     <Image
-      src={hunLogo}
+      src="/hun_logo.png"
       alt={alt}
-      width={hunLogo.width}
-      height={hunLogo.height}
-      sizes={LOGO_SIZES[variant]}
+      width={LOGO_SIZES[variant].width}
+      height={LOGO_SIZES[variant].height}
       priority={priority}
       className={className}
     />

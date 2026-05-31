@@ -3,7 +3,6 @@ import Link from "next/link";
 import { PropertyPreviewCard } from "@/components/property-preview-card";
 import { IMAGE_SIZES, OptimizedImage } from "@/components/optimized-image";
 import { getFeaturedProperties, getFeaturedVideos, getSiteSettings, getTestimonials } from "@/lib/wordpress";
-import maitamaHero from "../../frontend/src/img/maitama-ii.jpeg";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -65,7 +64,7 @@ export default async function HomePage() {
       <section className="relative h-[650px] flex items-center">
         <div className="absolute inset-0 z-0">
           <OptimizedImage
-            src={maitamaHero}
+            src="/maitama-ii.jpeg"
             alt="Luxury homes and investment properties in Abuja"
             sizes={IMAGE_SIZES.hero}
             priority
