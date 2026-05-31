@@ -1,6 +1,43 @@
 {
-  "name": "Real Estate Platform",
-  "description": "A high-end real estate platform with Gemini-powered dream home visualization and property assistance.",
+  "name": "House Unlimited Nigeria",
+  "short_name": "House Unlimited",
+  "description": "Luxury homes, land, and investment properties in Abuja, with verified listings, trusted guidance, and a polished headless web experience.",
+  "url": "https://houseunlimitednigeria.com",
+  "locale": "en_NG",
+  "language": "en",
+  "category": "Real Estate",
+  "keywords": [
+    "Abuja real estate",
+    "luxury homes",
+    "land for sale",
+    "investment properties",
+    "verified listings",
+    "House Unlimited Nigeria"
+  ],
+  "brand": {
+    "primaryColor": "#005555",
+    "secondaryColor": "#0f172a",
+    "accentColor": "#9fd1d1",
+    "theme": "dark-on-light"
+  },
+  "contact": {
+    "email": "official@houseunlimitednigeria.com",
+    "phone": "+234 904 375 2708",
+    "address": "Suite S23, Febson Mall, Wuse Zone 4, Abuja, Nigeria"
+  },
+  "seo": {
+    "titleTemplate": "%s | House Unlimited Nigeria",
+    "defaultTitle": "House Unlimited Nigeria | Luxury Homes & Investment Properties in Abuja",
+    "defaultDescription": "Discover verified luxury homes, lands, and investment properties in Abuja. House Unlimited Nigeria helps buyers and investors move with confidence.",
+    "openGraph": {
+      "type": "website",
+      "siteName": "House Unlimited Nigeria",
+      "image": "/maitama-ii.jpeg"
+    },
+    "twitter": {
+      "card": "summary_large_image"
+    }
+  },
   "requestFramePermissions": [
     "geolocation"
   ]

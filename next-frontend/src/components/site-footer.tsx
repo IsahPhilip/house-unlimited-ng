@@ -6,8 +6,6 @@ import type { SiteSettings } from "@/lib/wordpress";
 import { SiteLogo } from "@/components/site-logo";
 import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Send, Youtube } from "lucide-react";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
-
 export function SiteFooter({ settings }: { settings: SiteSettings }) {
   const [email, setEmail] = useState("");
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -19,7 +17,9 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
     setError("");
     setIsSubscribed(false);
 
-    if (!email || !email.includes("@")) {
+    const normalizedEmail = email.trim();
+
+    if (!normalizedEmail || !normalizedEmail.includes("@")) {
       setError("Please enter a valid email address");
       return;
     }
@@ -27,12 +27,12 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/newsletter`, {
+      const response = await fetch("/api/newsletter", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email: normalizedEmail })
       });
 
       if (response.ok) {
@@ -106,10 +106,15 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setError("");
+                  setIsSubscribed(false);
+                }}
                 placeholder="Email address"
                 className="w-full bg-slate-800 border-none rounded-lg px-4 py-3 pr-14 text-sm focus:ring-2 focus:ring-[#005555] outline-none"
                 disabled={isLoading}
+                aria-label="Email address for updates"
               />
               <button
                 type="submit"
@@ -119,11 +124,15 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
                     ? "bg-gray-600 cursor-wait"
                     : "bg-[#005555] hover:bg-[#004242]"
                 }`}
+                aria-label="Subscribe to updates"
               >
                 {isLoading ? "..." : <Send className="w-4 h-4" />}
               </button>
             </form>
           </div>
+          <p className="text-xs text-gray-500 mt-2">
+            Monthly market updates, new listings, and property insights.
+          </p>
           {error && (
             <p className="text-red-400 text-xs mt-2">{error}</p>
           )}
