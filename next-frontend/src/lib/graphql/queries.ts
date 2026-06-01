@@ -158,3 +158,31 @@ export const PROPERTY_BY_SLUG_QUERY = `
     }
   }
 `;
+
+export const PAGE_BY_SLUG_QUERY = `
+  query PageBySlug($slug: String!) {
+    page(id: $slug, idType: URI) {
+      slug
+      title
+      content
+      date
+      modified
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+        }
+      }
+    }
+  }
+`;
+
+export const PAGE_SLUGS_QUERY = `
+  query PageSlugs {
+    pages(first: 100) {
+      nodes {
+        slug
+      }
+    }
+  }
+`;

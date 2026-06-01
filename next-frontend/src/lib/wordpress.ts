@@ -1,5 +1,7 @@
 import {
   FEATURED_PROPERTIES_QUERY,
+  PAGE_BY_SLUG_QUERY,
+  PAGE_SLUGS_QUERY,
   POST_BY_SLUG_QUERY,
   POST_SLUGS_QUERY,
   PRIMARY_MENU_QUERY,
@@ -146,6 +148,19 @@ export type FeaturedVideo = {
   thumbnailUrl?: string;
   isDirectVideo: boolean;
   sourceLabel: string;
+};
+
+export type PageContent = {
+  slug: string;
+  title: string;
+  content: string;
+  excerpt: string;
+  date: string;
+  modified: string;
+  featuredImage?: {
+    sourceUrl: string;
+    altText?: string;
+  };
 };
 
 async function fetchGraphQL<T>(query: string, variables?: Record<string, unknown>): Promise<T | null> {
@@ -772,4 +787,49 @@ function normalizeWpPath(path: string): string {
   }
 
   return path;
+}
+
+export async function getPageSlugs(): Promise<string[]> {
+  const data = await fetchGraphQL<{
+    pages?: {
+      nodes?: Array<{ slug?: string }>;
+    };
+  }>(PAGE_SLUGS_QUERY);
+
+  return data?.pages?.nodes?.map((node) => node.slug || "").filter(Boolean) || [];
+}
+
+export async function getPageBySlug(slug: string): Promise<PageContent | null> {
+  // Build the URI-style slug for the query
+  const uriSlug = `/${slug}/`;
+  
+  const data = await fetchGraphQL<{
+    page?: {
+      slug?: string;
+      title?: string;
+      content?: string;
+      date?: string;
+      modified?: string;
+      featuredImage?: { node?: { sourceUrl?: string; altText?: string } };
+    };
+  }>(PAGE_BY_SLUG_QUERY, { slug: uriSlug });
+
+  if (!data?.page) {
+    return null;
+  }
+
+  return {
+    slug: data.page.slug || slug,
+    title: data.page.title || "Untitled page",
+    content: data.page.content || "",
+    excerpt: "",
+    date: formatDate(data.page.date),
+    modified: formatDate(data.page.modified),
+    featuredImage: data.page.featuredImage?.node
+      ? {
+          sourceUrl: data.page.featuredImage.node.sourceUrl || "",
+          altText: data.page.featuredImage.node.altText || "",
+        }
+      : undefined,
+  };
 }
