@@ -567,19 +567,60 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
         <div className="hidden lg:block lg:col-span-1">
           <div className="sticky top-32 space-y-8">
             <div>
-              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-4">Share Article</h4>
-              <div className="flex flex-column flex-wrap gap-3">
-                <a href={buildShareUrl("facebook", displayPost.slug, displayPost.title)} target="_blank" rel="noreferrer" className="w-13 h-13 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#005555] hover:text-white transition-all shadow-sm">
-                  <Facebook className="w-4 h-4" />
+              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-5">Share Article</h4>
+              <div className="flex flex-col gap-3">
+                {/* Facebook */}
+                <a
+                  href={buildShareUrl("facebook", displayPost.slug, displayPost.title)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group relative flex items-center gap-3 p-3 rounded-2xl bg-gray-50 hover:bg-[#1877F2] transition-all duration-300 shadow-sm hover:shadow-md"
+                  title="Share on Facebook"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#1877F2] group-hover:text-white transition-colors duration-300">
+                    <Facebook className="w-5 h-5" />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-700 group-hover:text-white transition-colors duration-300">Facebook</span>
                 </a>
-                <a href={buildShareUrl("twitter", displayPost.slug, displayPost.title)} target="_blank" rel="noreferrer" className="w-13 h-13 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#005555] hover:text-white transition-all shadow-sm">
-                  <Twitter className="w-4 h-4" />
+
+                {/* Twitter/X */}
+                <a
+                  href={buildShareUrl("twitter", displayPost.slug, displayPost.title)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group relative flex items-center gap-3 p-3 rounded-2xl bg-gray-50 hover:bg-black transition-all duration-300 shadow-sm hover:shadow-md"
+                  title="Share on X (Twitter)"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-black group-hover:text-white transition-colors duration-300">
+                    <Twitter className="w-5 h-5" />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-700 group-hover:text-white transition-colors duration-300">X / Twitter</span>
                 </a>
-                <a href={buildShareUrl("linkedin", displayPost.slug, displayPost.title)} target="_blank" rel="noreferrer" className="w-13 h-13 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#005555] hover:text-white transition-all shadow-sm">
-                  <Linkedin className="w-4 h-4" />
+
+                {/* LinkedIn */}
+                <a
+                  href={buildShareUrl("linkedin", displayPost.slug, displayPost.title)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group relative flex items-center gap-3 p-3 rounded-2xl bg-gray-50 hover:bg-[#0A66C2] transition-all duration-300 shadow-sm hover:shadow-md"
+                  title="Share on LinkedIn"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#0A66C2] group-hover:text-white transition-colors duration-300">
+                    <Linkedin className="w-5 h-5" />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-700 group-hover:text-white transition-colors duration-300">LinkedIn</span>
                 </a>
-                <button onClick={handleCopyLink} className="w-13 h-13 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#005555] hover:text-white transition-all shadow-sm">
-                  <Link2 className="w-4 h-4" />
+
+                {/* Copy Link */}
+                <button
+                  onClick={handleCopyLink}
+                  className="group relative flex items-center gap-3 p-3 rounded-2xl bg-gray-50 hover:bg-[#005555] transition-all duration-300 shadow-sm hover:shadow-md w-full text-left"
+                  title="Copy link to clipboard"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-600 group-hover:text-white transition-colors duration-300">
+                    <Link2 className="w-5 h-5" />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-700 group-hover:text-white transition-colors duration-300">Copy Link</span>
                 </button>
               </div>
             </div>
