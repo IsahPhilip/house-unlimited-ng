@@ -578,7 +578,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                   <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#1877F2] group-hover:transition-colors duration-300">
                     <Facebook className="w-5 h-5" />
                   </div>
-                  <span className="text-sm font-semibold text-gray-700 group-hover:transition-colors duration-300">Facebook</span>
+                  <span className="text-sm font-semibold text-gray-700 group-hover:text-white transition-colors duration-300">Facebook</span>
                 </a>
 
                 {/* Twitter/X */}
@@ -590,7 +590,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                   <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-black group-hover:transition-colors duration-300">
                     <Twitter className="w-5 h-5" />
                   </div>
-                  <span className="text-sm font-semibold text-gray-700 group-hover:transition-colors duration-300">X / Twitter</span>
+                  <span className="text-sm font-semibold text-gray-700 group-hover:text-white transition-colors duration-300">X / Twitter</span>
                 </a>
 
                 {/* LinkedIn */}
@@ -604,7 +604,7 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                   <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#0A66C2] group-hover:transition-colors duration-300">
                     <Linkedin className="w-5 h-5" />
                   </div>
-                  <span className="text-sm font-semibold text-gray-700 group-hover:transition-colors duration-300">LinkedIn</span>
+                  <span className="text-sm font-semibold text-gray-700 group-hover:text-white transition-colors duration-300">LinkedIn</span>
                 </a>
 
                 {/* Copy Link */}
@@ -615,8 +615,8 @@ export function BlogPostClient({ slug, initialPost, initialRelatedPosts }: BlogP
                 >
                   <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-600 group-hover:transition-colors duration-300">
                     <Link2 className="w-5 h-5" />
-                  </div>
-                  <span className="text-sm font-semibold text-gray-700 group-hover:transition-colors duration-300">Copy Link</span>
+                  </div> 
+                  <span className="text-sm font-semibold text-gray-700 group-hover:text-white transition-colors duration-300">Copy Link</span>
                 </button>
               </div>
             </div>
