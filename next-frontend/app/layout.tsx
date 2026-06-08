@@ -60,6 +60,11 @@ export default async function RootLayout({
             />
           </>
         )}
+        <Script
+          src="https://analytics.ahrefs.com/analytics.js"
+          data-key="L2G40W/T7YPLmXmydQE0lQ"
+          strategy="afterInteractive"
+        />
         <GoogleAnalytics />
         <div className="bg-slate-900 text-white py-2 text-[10px] uppercase tracking-widest font-bold">
           <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2">
