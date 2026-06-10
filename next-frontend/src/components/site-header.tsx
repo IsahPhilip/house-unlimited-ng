@@ -15,9 +15,10 @@ export function SiteHeader({ menu, settings }: SiteHeaderProps) {
 
   const defaultNavItems: MenuItem[] = [
     { label: "Home", path: "/" },
-    { label: "Property", path: "/properties" },
+    { label: "Properties", path: "/properties" },
     { label: "Blog", path: "/blog" },
     { label: "About Us", path: "/about" },
+    { label: "Careers", path: "/careers" },
     { label: "Contact Us", path: "/contact" }
   ];
 
