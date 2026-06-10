@@ -3,7 +3,8 @@ import { getPageSlugs, getPostSlugs, getPropertySlugs, getSiteSettings } from "@
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const settings = await getSiteSettings();
-  const baseUrl = settings.siteUrl?.replace(/\/$/, "") || "https://houseunlimitednigeria.com";
+  // Use production domain; only fall back to WordPress settings if explicitly correct
+  const baseUrl = "https://houseunlimitednigeria.com";
 
   const [propertySlugs, postSlugs, pageSlugs] = await Promise.all([
     getPropertySlugs(),
