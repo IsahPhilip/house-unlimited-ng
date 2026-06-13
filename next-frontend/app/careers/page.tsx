@@ -118,7 +118,7 @@ export default async function CareersPage() {
             <div className="rounded-3xl border border-dashed border-gray-200 bg-gray-50 p-10 text-center">
               <h3 className="text-2xl font-bold text-gray-900 mb-3">No roles published yet</h3>
               <p className="text-gray-600 max-w-2xl mx-auto mb-6">
-                Open roles will appear here once they are added and published from WordPress `wp-admin`.
+                Open roles will appear here once they are published. In the meantime, if you&apos;re interested in joining our team, please send us a career enquiry and we&apos;ll keep your information on file for future opportunities.
               </p>
               <Link
                 href="/contact?topic=careers"
