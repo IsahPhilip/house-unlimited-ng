@@ -61,16 +61,24 @@ export default async function HomePage() {
 
   return (
     <div className="animate-in fade-in duration-500">
-      <section className="relative h-[650px] flex items-center">
+      <section className="relative min-h-[650px] flex items-center overflow-hidden bg-slate-950">
         <div className="absolute inset-0 z-0">
-          <OptimizedImage
-            src="/maitama-ii.jpeg"
-            alt="Luxury homes and investment properties in Abuja"
-            sizes={IMAGE_SIZES.hero}
-            priority
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/40 to-transparent"></div>
+          <video
+            className="h-full w-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            poster="/maitama-ii.jpeg"
+            aria-hidden="true"
+          >
+            <source src="/hero-property-video.webm" type="video/webm" />
+            <source src="/hero-property-video.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/55 to-white/10"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(216,238,238,0.55),transparent_32%),linear-gradient(135deg,rgba(0,85,85,0.2),transparent_45%)]"></div>
+          <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-[linear-gradient(115deg,transparent_0%,rgba(255,255,255,0.18)_42%,transparent_43%,transparent_58%,rgba(255,255,255,0.14)_59%,transparent_100%)] md:block"></div>
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 w-full">
           <div className="max-w-2xl">
