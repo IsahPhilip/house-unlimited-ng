@@ -91,11 +91,6 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
             <Link href="/about" className="block hover:text-[#9fd1d1] transition-colors">About Us</Link>
             <Link href="/careers" className="block hover:text-[#9fd1d1] transition-colors">Careers</Link>
             <Link href="/contact" className="block hover:text-[#9fd1d1] transition-colors">Contact Us</Link>
-          </div>
-        </div>
-        <div>
-          <h4 className="font-bold mb-6">Legal</h4>
-          <div className="space-y-3 text-gray-400 text-sm">
             <Link href="/privacy" className="block hover:text-[#9fd1d1] transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="block hover:text-[#9fd1d1] transition-colors">Terms & Conditions</Link>
           </div>
@@ -108,6 +103,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
             <p className="flex items-center"><MapPin className="w-4 h-4 mr-2 text-[#005555]" /> {settings.address}</p>
           </div>
         </div>
+
         <div>
           <h4 className="font-bold mb-6">Get the latest information</h4>
           <div className="relative">
