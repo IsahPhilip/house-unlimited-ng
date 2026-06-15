@@ -25,6 +25,20 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: settings.description,
     metadataBase: new URL(settings.siteUrl),
+    icons: {
+      icon: [
+        {
+          url: "/site_icon.png",
+          type: "image/png"
+        }
+      ],
+      apple: [
+        {
+          url: "/site_icon.png",
+          type: "image/png"
+        }
+      ]
+    },
     openGraph: {
       title: settings.title,
       description: settings.description,
