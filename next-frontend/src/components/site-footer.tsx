@@ -103,7 +103,6 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
             <p className="flex items-center"><MapPin className="w-4 h-4 mr-2 text-[#005555]" /> {settings.address}</p>
           </div>
         </div>
-
         <div>
           <h4 className="font-bold mb-6">Get the latest information</h4>
           <div className="relative">
