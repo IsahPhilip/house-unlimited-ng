@@ -233,11 +233,11 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="flex gap-6 overflow-x-auto pb-2 [scrollbar-width:thin]">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {featuredVideos.map((video) => (
                 <article
                   key={`${video.title}-${video.url}`}
-                  className="w-[320px] shrink-0 overflow-hidden rounded-[28px] border border-gray-100 bg-white shadow-sm md:w-[380px] lg:w-[420px]"
+                  className="overflow-hidden rounded-[28px] border border-gray-100 bg-white shadow-sm"
                 >
                   <div className="relative aspect-video bg-[#003c3c]">
                     {video.embedUrl ? (
