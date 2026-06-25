@@ -743,6 +743,91 @@ add_action(
 			},
 			'reading'
 		);
+
+		$site_options = array(
+			'hun_site_phone'    => '+234 904 375 2708',
+			'hun_site_email'    => 'official@houseunlimitednigeria.com',
+			'hun_site_address'  => 'Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria',
+			'hun_site_facebook' => 'https://facebook.com/houseunlimitednigeria',
+			'hun_site_instagram'=> 'https://instagram.com/houseunlimitednigeria',
+			'hun_site_linkedin' => 'https://linkedin.com/company/houseunlimitednigeria',
+			'hun_site_youtube'  => 'https://youtube.com/@houseunlimitednigeria',
+		);
+
+		foreach ( $site_options as $option_name => $default_value ) {
+			if ( false === get_option( $option_name, false ) ) {
+				add_option( $option_name, $default_value, '', false );
+			}
+		}
+	}
+);
+
+add_action(
+	'admin_menu',
+	static function () {
+		add_options_page(
+			__( 'Site Settings', 'house-unlimited-headless' ),
+			__( 'Site Settings', 'house-unlimited-headless' ),
+			'manage_options',
+			'hun-site-settings',
+			static function () {
+				?>
+				<div class="wrap">
+					<h1><?php esc_html_e( 'Site Settings', 'house-unlimited-headless' ); ?></h1>
+					<form method="post" action="options.php">
+						<?php
+						settings_fields( 'hun_site_settings' );
+						do_settings_sections( 'hun_site_settings' );
+						?>
+						<table class="form-table">
+							<tr>
+								<th scope="row"><label for="hun_site_phone"><?php esc_html_e( 'Phone Number', 'house-unlimited-headless' ); ?></label></th>
+								<td><input type="text" id="hun_site_phone" name="hun_site_phone" value="<?php echo esc_attr( get_option( 'hun_site_phone', '+234 904 375 2708' ) ); ?>" class="regular-text" /></td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="hun_site_email"><?php esc_html_e( 'Email Address', 'house-unlimited-headless' ); ?></label></th>
+								<td><input type="email" id="hun_site_email" name="hun_site_email" value="<?php echo esc_attr( get_option( 'hun_site_email', 'official@houseunlimitednigeria.com' ) ); ?>" class="regular-text" /></td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="hun_site_address"><?php esc_html_e( 'Office Address', 'house-unlimited-headless' ); ?></label></th>
+								<td><textarea id="hun_site_address" name="hun_site_address" rows="3" class="large-text"><?php echo esc_textarea( get_option( 'hun_site_address', 'Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria' ) ); ?></textarea></td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="hun_site_facebook"><?php esc_html_e( 'Facebook URL', 'house-unlimited-headless' ); ?></label></th>
+								<td><input type="url" id="hun_site_facebook" name="hun_site_facebook" value="<?php echo esc_attr( get_option( 'hun_site_facebook', 'https://facebook.com/houseunlimitednigeria' ) ); ?>" class="regular-text" /></td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="hun_site_instagram"><?php esc_html_e( 'Instagram URL', 'house-unlimited-headless' ); ?></label></th>
+								<td><input type="url" id="hun_site_instagram" name="hun_site_instagram" value="<?php echo esc_attr( get_option( 'hun_site_instagram', 'https://instagram.com/houseunlimitednigeria' ) ); ?>" class="regular-text" /></td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="hun_site_linkedin"><?php esc_html_e( 'LinkedIn URL', 'house-unlimited-headless' ); ?></label></th>
+								<td><input type="url" id="hun_site_linkedin" name="hun_site_linkedin" value="<?php echo esc_attr( get_option( 'hun_site_linkedin', 'https://linkedin.com/company/houseunlimitednigeria' ) ); ?>" class="regular-text" /></td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="hun_site_youtube"><?php esc_html_e( 'YouTube URL', 'house-unlimited-headless' ); ?></label></th>
+								<td><input type="url" id="hun_site_youtube" name="hun_site_youtube" value="<?php echo esc_attr( get_option( 'hun_site_youtube', 'https://youtube.com/@houseunlimitednigeria' ) ); ?>" class="regular-text" /></td>
+							</tr>
+						</table>
+						<?php submit_button(); ?>
+					</form>
+				</div>
+				<?php
+			}
+		);
+	}
+);
+
+add_action(
+	'admin_init',
+	static function () {
+		register_setting( 'hun_site_settings', 'hun_site_phone', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '+234 904 375 2708' ) );
+		register_setting( 'hun_site_settings', 'hun_site_email', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_email', 'default' => 'official@houseunlimitednigeria.com' ) );
+		register_setting( 'hun_site_settings', 'hun_site_address', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_textarea_field', 'default' => 'Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria' ) );
+		register_setting( 'hun_site_settings', 'hun_site_facebook', array( 'type' => 'string', 'sanitize_callback' => 'esc_url_raw', 'default' => 'https://facebook.com/houseunlimitednigeria' ) );
+		register_setting( 'hun_site_settings', 'hun_site_instagram', array( 'type' => 'string', 'sanitize_callback' => 'esc_url_raw', 'default' => 'https://instagram.com/houseunlimitednigeria' ) );
+		register_setting( 'hun_site_settings', 'hun_site_linkedin', array( 'type' => 'string', 'sanitize_callback' => 'esc_url_raw', 'default' => 'https://linkedin.com/company/houseunlimitednigeria' ) );
+		register_setting( 'hun_site_settings', 'hun_site_youtube', array( 'type' => 'string', 'sanitize_callback' => 'esc_url_raw', 'default' => 'https://youtube.com/@houseunlimitednigeria' ) );
 	}
 );
 
@@ -1195,13 +1280,13 @@ add_action(
 							'frontendUrl' => hun_headless_frontend_url(),
 							'graphqlUrl'  => home_url( '/graphql' ),
 							'siteUrl'     => home_url( '/' ),
-							'phone'       => '+234 904 375 2708',
-							'email'       => 'official@houseunlimitednigeria.com',
-							'address'     => 'Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria',
-							'facebook'    => 'https://facebook.com/houseunlimitednigeria',
-							'instagram'   => 'https://instagram.com/houseunlimitednigeria',
-							'linkedin'    => 'https://linkedin.com/company/houseunlimitednigeria',
-							'youtube'     => 'https://youtube.com/@houseunlimitednigeria',
+							'phone'       => (string) get_option( 'hun_site_phone', '+234 904 375 2708' ),
+							'email'       => (string) get_option( 'hun_site_email', 'official@houseunlimitednigeria.com' ),
+							'address'     => (string) get_option( 'hun_site_address', 'Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria' ),
+							'facebook'    => (string) get_option( 'hun_site_facebook', 'https://facebook.com/houseunlimitednigeria' ),
+							'instagram'   => (string) get_option( 'hun_site_instagram', 'https://instagram.com/houseunlimitednigeria' ),
+							'linkedin'    => (string) get_option( 'hun_site_linkedin', 'https://linkedin.com/company/houseunlimitednigeria' ),
+							'youtube'     => (string) get_option( 'hun_site_youtube', 'https://youtube.com/@houseunlimitednigeria' ),
 						)
 					);
 				},

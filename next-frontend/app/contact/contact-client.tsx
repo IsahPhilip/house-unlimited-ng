@@ -359,7 +359,7 @@ export function ContactClient({ settings, initialTopic = "general", initialRole 
           <div className="bg-white p-4 rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
             <h3 className="text-2xl font-bold text-gray-900 mb-6 px-4">Our Location</h3>
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3939.5606!2d7.4894193!3d9.0755077!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zO Kw3NyA4NMKwMzUnMC41Ilc!5e0!3m2!1sen!2sng!4v1703060000000"
+              src={`https://maps.google.com/maps?q=${encodeURIComponent(settings.address || "Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria")}&output=embed`}
               width="100%"
               height="450"
               style={{ border: 0 }}
