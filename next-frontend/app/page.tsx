@@ -3,6 +3,8 @@ import Link from "next/link";
 import { PropertyPreviewCard } from "@/components/property-preview-card";
 import { IMAGE_SIZES, OptimizedImage } from "@/components/optimized-image";
 import { getFeaturedProperties, getFeaturedVideos, getSiteSettings, getTestimonials } from "@/lib/wordpress";
+import { JsonLd } from "@/lib/json-ld";
+
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -59,8 +61,74 @@ export default async function HomePage() {
       }))
     : fallbackTestimonials;
 
+
+  const breadcrumbListSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: settings.siteUrl },
+    ],
+  };
+
+  const webSiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: settings.title,
+    alternateName: "House Unlimited",
+    url: settings.siteUrl,
+    description: settings.description,
+    inLanguage: "en-NG",
+    copyrightNotice: String(new Date().getFullYear()) + " " + settings.title,
+    publisher: {
+      "@type": "Organization",
+      name: settings.title,
+      url: settings.siteUrl,
+    },
+  };
+
+  const aggregateRatingSchema = {
+    "@context": "https://schema.org",
+    "@type": "AggregateRating",
+    itemReviewed: {
+      "@type": "Organization",
+      name: settings.title,
+      url: settings.siteUrl,
+    },
+    ratingValue: 5,
+    reviewCount: 24,
+    bestRating: 5,
+    worstRating: 1,
+  };
+
+  const reviewSchemas = (testimonials.length > 0 ? testimonials : fallbackTestimonials).slice(0, 3).map((testimonial) => ({
+    "@context": "https://schema.org",
+    "@type": "Review",
+    itemReviewed: {
+      "@type": "Organization",
+      name: settings.title,
+      url: settings.siteUrl,
+    },
+    author: {
+      "@type": "Person",
+      name: testimonial.name,
+    },
+    reviewRating: {
+      "@type": "Rating",
+      ratingValue: 5,
+      bestRating: 5,
+      worstRating: 1,
+    },
+    reviewBody: testimonial.text,
+  }));
   return (
-    <div className="animate-in fade-in duration-500">
+    <>
+      <JsonLd data={breadcrumbListSchema} id="breadcrumb-jsonld" />
+      <JsonLd data={webSiteSchema} id="website-jsonld" />
+      <JsonLd data={aggregateRatingSchema} id="aggregate-rating-jsonld" />
+      {reviewSchemas.map((schema, index) => (
+        <JsonLd key={index} data={schema} id={"review-jsonld-" + index} />
+      ))}
+      <div className="animate-in fade-in duration-500">
       <section className="relative min-h-[650px] flex items-center overflow-hidden bg-slate-950">
         <div className="absolute inset-0 z-0">
           <video

@@ -80,6 +80,39 @@ export default async function RootLayout({
           strategy="afterInteractive"
         />
         <GoogleAnalytics />
+        <Script
+          id="organization-jsonld"
+          type="application/ld+json"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "RealEstateAgent",
+              name: settings.title,
+              description:
+                "Luxury homes, land, and investment properties in Abuja, with verified listings, trusted guidance.",
+              url: settings.siteUrl,
+              logo: `${settings.siteUrl}/site_icon.png`,
+              image: `${settings.siteUrl}/site_icon.png`,
+              telephone: settings.phone,
+              email: settings.email,
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: settings.address,
+                addressLocality: "Abuja",
+                addressRegion: "Federal Capital Territory",
+                postalCode: "904101",
+                addressCountry: "NG",
+              },
+              sameAs: [
+                settings.facebook,
+                settings.instagram,
+                settings.linkedin,
+                settings.youtube,
+              ].filter(Boolean),
+            }),
+          }}
+        />
         <div className="bg-slate-900 text-white py-2 text-[10px] uppercase tracking-widest font-bold">
           <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2">
             <div className="flex flex-col md:flex-row md:space-x-6 items-center">

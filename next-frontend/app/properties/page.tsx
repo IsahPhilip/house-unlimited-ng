@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PropertyPreviewCard } from "@/components/property-preview-card";
 import { getFeaturedProperties, getSiteSettings } from "@/lib/wordpress";
+import { JsonLd } from "@/lib/json-ld";
 import { Search } from "lucide-react";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -17,10 +18,47 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PropertiesPage() {
+  const settings = await getSiteSettings();
   const properties = await getFeaturedProperties(12);
 
+  const breadcrumbListSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: settings.siteUrl },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Properties",
+        item: settings.siteUrl + "/properties",
+      },
+    ],
+  };
+
+  const collectionPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: settings.title + " - Properties",
+    description: "Browse verified properties for sale in Abuja.",
+    url: settings.siteUrl + "/properties",
+    isPartOf: {
+      "@type": "WebSite",
+      name: settings.title,
+      url: settings.siteUrl,
+    },
+  };
+
   return (
-    <div className="py-16 bg-gray-50 min-h-screen">
+    <>
+      <JsonLd
+        data={breadcrumbListSchema}
+        id="properties-breadcrumb-jsonld"
+      />
+      <JsonLd
+        data={collectionPageSchema}
+        id="properties-collection-jsonld"
+      />
+      <div className="py-16 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>

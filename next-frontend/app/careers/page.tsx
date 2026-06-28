@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Briefcase, CheckCircle2, Clock3, MapPin, Users2 } from "lucide-react";
 import { getJobRoles, getSiteSettings } from "@/lib/wordpress";
+import { JsonLd } from "@/lib/json-ld";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -19,8 +20,19 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function CareersPage() {
   const [settings, openRoles] = await Promise.all([getSiteSettings(), getJobRoles(12)]);
 
+  const breadcrumbListSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: settings.siteUrl },
+      { "@type": "ListItem", position: 2, name: "Careers", item: settings.siteUrl + "/careers" },
+    ],
+  };
+
   return (
-    <div className="animate-in fade-in duration-500 bg-white">
+    <>
+      <JsonLd data={breadcrumbListSchema} id="careers-breadcrumb-jsonld" />
+      <div className="animate-in fade-in duration-500 bg-white">
       <section className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
           <div>

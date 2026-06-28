@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { IMAGE_SIZES, OptimizedImage } from "@/components/optimized-image";
 import { getPropertyBySlug, getPropertySlugs } from "@/lib/wordpress";
+import { JsonLd } from "@/lib/json-ld";
 import { Bed, Bath, Square, MapPin, Phone, Mail } from "lucide-react";
 
 interface PropertyPageProps {
@@ -40,8 +41,63 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     notFound();
   }
 
+  const siteUrl = "https://houseunlimitednigeria.com";
+  const breadcrumbListSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Properties", item: siteUrl + "/properties" },
+      { "@type": "ListItem", position: 3, name: property.title, item: siteUrl + "/properties/" + property.slug },
+    ],
+  };
+
+  const numericArea = property.area ? Number.parseFloat(String(property.area).replace(/[^0-9.]/g, "")) : undefined;
+
+  const listingSchema = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateListing",
+    name: property.title,
+    description: property.excerpt || property.content || "",
+    url: siteUrl + "/properties/" + property.slug,
+    image: property.image,
+    additionalProperty: [
+      property.bedrooms !== undefined && { "@type": "PropertyValue", name: "Bedrooms", value: String(property.bedrooms) },
+      property.bathrooms !== undefined && { "@type": "PropertyValue", name: "Bathrooms", value: String(property.bathrooms) },
+      property.type && { "@type": "PropertyValue", name: "Property Type", value: property.type },
+      property.status && { "@type": "PropertyValue", name: "Status", value: property.status },
+      numericArea && { "@type": "PropertyValue", name: "Area", value: String(numericArea) },
+    ].filter(Boolean),
+  };
+
+  if (property.price) {
+    listingSchema.offers = {
+      "@type": "Offer",
+      price: String(property.price).replace(/[^0-9.]/g, ""),
+      priceCurrency: "NGN",
+      availability: "https://schema.org/InStock",
+      url: siteUrl + "/properties/" + property.slug,
+    };
+  }
+
+  if (property.location) {
+    listingSchema.address = {
+      "@type": "PostalAddress",
+      addressLocality: property.location,
+      addressRegion: "Federal Capital Territory",
+      addressCountry: "NG",
+    };
+  }
+
+  if (numericArea) {
+    listingSchema.floorSize = { "@type": "QuantitativeValue", value: numericArea, unitCode: "SQM" };
+  }
+
   return (
-    <div className="py-24 bg-gray-50 min-h-screen">
+    <>
+      <JsonLd data={breadcrumbListSchema} id="property-breadcrumb-jsonld" />
+      <JsonLd data={listingSchema} id="property-listing-jsonld" />
+      <div className="py-24 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4">
         {/* Property Header */}
         <div className="mb-8">

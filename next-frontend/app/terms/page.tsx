@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getSiteSettings } from "@/lib/wordpress";
+import { JsonLd } from "@/lib/json-ld";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -50,7 +51,18 @@ const sections = [
 export default async function TermsPage() {
   const settings = await getSiteSettings();
 
+  const breadcrumbListSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: settings.siteUrl },
+      { "@type": "ListItem", position: 2, name: "Terms", item: settings.siteUrl + "/terms" },
+    ],
+  };
+
   return (
+    <>
+      <JsonLd data={breadcrumbListSchema} id="termspage-breadcrumb-jsonld" />
     <div className="py-24 bg-gray-50 min-h-screen animate-in fade-in duration-500">
       <div className="max-w-4xl mx-auto px-4">
         <div className="text-center mb-12">

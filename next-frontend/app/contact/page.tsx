@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/lib/json-ld";
 import { ContactClient } from "./contact-client";
 import { getSiteSettings } from "@/lib/wordpress";
 
@@ -28,5 +29,17 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
   const topic = resolvedSearchParams.topic || "general";
   const role = resolvedSearchParams.role || "";
 
-  return <ContactClient settings={settings} initialTopic={topic} initialRole={role} />;
+  const breadcrumbListSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: settings.siteUrl },
+      { "@type": "ListItem", position: 2, name: "Contact", item: settings.siteUrl + "/contact" },
+    ],
+  };
+
+  return (
+    <>
+      <JsonLd data={breadcrumbListSchema} id="contact-breadcrumb-jsonld" />
+      <ContactClient settings={settings} initialTopic={topic} initialRole={role} />;
 }
