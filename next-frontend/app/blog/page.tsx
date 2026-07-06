@@ -50,4 +50,6 @@ export default async function BlogIndexPage() {
       <JsonLd data={breadcrumbListSchema} id="blog-breadcrumb-jsonld" />
       <JsonLd data={collectionPageSchema} id="blog-collection-jsonld" />
       <BlogIndexClient posts={posts} categories={categories} />;
+    </>
+  );
 }

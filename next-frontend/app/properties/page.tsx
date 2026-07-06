@@ -104,7 +104,7 @@ export default async function PropertiesPage() {
           </div>
         ) : (
           <div className="bg-white rounded-3xl p-20 text-center border border-dashed border-gray-200">
-            <div className="text-6xl mb-6">🏜️</div>
+            <div className="text-6xl mb-6"></div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">No matching properties found</h3>
             <p className="text-gray-500 mb-8">Try adjusting your filters or check back later for new listings.</p>
             <button className="text-[#005555] font-bold hover:underline">Reset all filters</button>
@@ -112,5 +112,6 @@ export default async function PropertiesPage() {
         )}
       </div>
     </div>
+    </>
   );
 }

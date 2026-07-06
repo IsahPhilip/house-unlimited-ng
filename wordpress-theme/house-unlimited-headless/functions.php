@@ -361,6 +361,19 @@ add_action(
 						'type'              => 'text',
 					),
 					array(
+						'key'               => 'field_listing_type',
+						'label'             => 'Listing Type',
+						'name'              => 'listing_type',
+						'type'              => 'select',
+						'instructions'      => 'Is this an off-plan or completed property?',
+						'choices'           => array(
+							'off-plan'  => 'Off-Plan',
+							'completed' => 'Completed',
+						),
+						'allow_null'        => 1,
+						'default_value'     => '',
+					),
+					array(
 						'key'               => 'field_gallery',
 						'label'             => 'Gallery',
 						'name'              => 'gallery',

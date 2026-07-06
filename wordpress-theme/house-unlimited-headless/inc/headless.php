@@ -369,6 +369,7 @@ if ( ! function_exists( 'hun_prepare_property_payload' ) ) {
 			'bathrooms'   => hun_get_property_numeric_meta_value( $post->ID, 'bathrooms' ),
 			'area'        => (string) hun_get_property_meta_value( $post->ID, 'area' ),
 			'status'      => (string) hun_get_property_meta_value( $post->ID, 'property_status' ),
+			'listingType' => (string) hun_get_property_meta_value( $post->ID, 'listing_type' ),
 			'gallery'     => $gallery,
 		);
 	}

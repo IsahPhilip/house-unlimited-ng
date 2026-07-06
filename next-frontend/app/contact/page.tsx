@@ -42,4 +42,6 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
     <>
       <JsonLd data={breadcrumbListSchema} id="contact-breadcrumb-jsonld" />
       <ContactClient settings={settings} initialTopic={topic} initialRole={role} />;
+    </>
+  );
 }

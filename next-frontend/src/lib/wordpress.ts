@@ -42,6 +42,7 @@ type RestProperty = {
   bathrooms?: number;
   area?: string;
   status?: string;
+  listingType?: string;
   gallery?: string[];
 };
 
@@ -111,6 +112,7 @@ export type PropertyPreview = {
   bathrooms?: number;
   area?: string;
   status?: string;
+  listingType?: string;
   gallery?: string[];
   content?: string;
 };
@@ -446,6 +448,7 @@ function mapRestProperty(property: RestProperty): PropertyPreview {
     bathrooms: parseNumericField(property.bathrooms),
     area: property.area,
     status: property.status,
+    listingType: property.listingType,
     gallery: property.gallery || []
   };
 }
@@ -611,6 +614,12 @@ export async function getPropertyBySlug(slug: string): Promise<PropertyPreview |
     status: data.property.propertyFields?.propertyStatus,
     gallery: data.property.propertyFields?.gallery?.map((img) => img.sourceUrl || "").filter(Boolean) || []
   };
+}
+
+export async function getPropertiesByType(type: string, first = 24): Promise<PropertyPreview[]> {
+  const all = await getFeaturedProperties(first);
+  const normalized = type.toLowerCase();
+  return all.filter((p) => p.listingType?.toLowerCase() === normalized);
 }
 
 export async function getTeamMembers(limit = 8): Promise<TeamMember[]> {

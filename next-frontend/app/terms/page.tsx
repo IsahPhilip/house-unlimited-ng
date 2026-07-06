@@ -69,7 +69,7 @@ export default async function TermsPage() {
           <p className="text-[#005555] font-semibold mb-2 uppercase tracking-widest text-xs font-bold">Legal</p>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Terms & <span className="text-gray-400 italic font-light">Conditions</span></h1>
           <p className="text-gray-600 text-sm max-w-2xl mx-auto">
-            These terms govern access to and use of the {settings.title} website, content, and public enquiry features.
+            These terms govern access to and use of the website, content, and public enquiry features.
           </p>
         </div>
         <div className="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 space-y-8">
@@ -82,5 +82,6 @@ export default async function TermsPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
