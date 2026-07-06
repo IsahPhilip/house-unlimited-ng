@@ -332,8 +332,6 @@ if ( ! function_exists( 'hun_prepare_property_payload' ) ) {
 	 * @param WP_Post $post Property post object.
 	 */
 	function hun_prepare_property_payload( WP_Post $post ): array {
-		$gallery = hun_get_property_meta_value( $post->ID, 'gallery' );
-		$gallery = is_array( $gallery ) ? $gallery : array();
 		$gallery = array_values(
 			array_filter(
 				array_map(
@@ -350,7 +348,14 @@ if ( ! function_exists( 'hun_prepare_property_payload' ) ) {
 
 						return is_string( $item ) ? $item : '';
 					},
-					$gallery
+					array_filter( array(
+						hun_get_property_meta_value( $post->ID, 'gallery_1' ),
+						hun_get_property_meta_value( $post->ID, 'gallery_2' ),
+						hun_get_property_meta_value( $post->ID, 'gallery_3' ),
+						hun_get_property_meta_value( $post->ID, 'gallery_4' ),
+						hun_get_property_meta_value( $post->ID, 'gallery_5' ),
+						hun_get_property_meta_value( $post->ID, 'gallery_6' ),
+					) )
 				)
 			)
 		);
