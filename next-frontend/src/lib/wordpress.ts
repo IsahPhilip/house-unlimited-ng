@@ -93,6 +93,7 @@ export type PostPreview = {
   title: string;
   excerpt: string;
   date: string;
+  modified?: string;
   author: string;
   categories: string[];
   tags: string[];
@@ -395,6 +396,7 @@ export async function getPostBySlug(slug: string): Promise<PostPreview | null> {
       excerpt?: string;
       content?: string;
       date?: string;
+      modified?: string;
       author?: { node?: { name?: string } };
       categories?: { nodes?: Array<{ name?: string }> };
       tags?: { nodes?: Array<{ name?: string }> };
@@ -412,6 +414,7 @@ export async function getPostBySlug(slug: string): Promise<PostPreview | null> {
     excerpt: stripHtml(data.post.excerpt),
     content: data.post.content || "",
     date: formatDate(data.post.date),
+    modified: formatDate(data.post.modified),
     author: data.post.author?.node?.name || "",
     categories: data.post.categories?.nodes?.map((item) => item.name || "").filter(Boolean) || [],
     tags: data.post.tags?.nodes?.map((item) => item.name || "").filter(Boolean) || [],

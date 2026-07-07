@@ -70,6 +70,7 @@ export const POST_BY_SLUG_QUERY = `
       excerpt
       content
       date
+      modified
       author {
         node {
           name
