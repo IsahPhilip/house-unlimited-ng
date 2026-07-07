@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 export function PropertyEnquiry({ propertyTitle }: { propertyTitle: string }) {
   const [formData, setFormData] = useState({
@@ -46,7 +46,7 @@ export function PropertyEnquiry({ propertyTitle }: { propertyTitle: string }) {
       payload.append("type", "property_inquiry");
       if (formData.phone.trim()) payload.append("phone", formData.phone);
 
-      const response = await fetch(`${API_BASE_URL}/contact/submit`, {
+      const response = await fetch(`/api/contact/submit`, {
         method: "POST",
         body: payload
       });
