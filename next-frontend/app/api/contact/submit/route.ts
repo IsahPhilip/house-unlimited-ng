@@ -217,7 +217,13 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ message: "Message sent successfully." }, { status: 200 });
   } catch (error) {
-    console.error("Contact form: failed to send email:", error);
+    const err = error as NodeJS.ErrnoException & { code?: string; response?: string; responseCode?: number };
+    console.error("Contact form SMTP error:", {
+      message: err.message,
+      code: err.code,
+      response: err.response,
+      responseCode: err.responseCode
+    });
     return NextResponse.json(
       { message: "Failed to send your message. Please try again or contact us directly." },
       { status: 500 }
