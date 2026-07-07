@@ -65,9 +65,9 @@ This is the official website for House Unlimited Nigeria, a real estate company 
 - Emphasize quality service and local expertise in Nigerian real estate market
 
 ## Technical Notes
-- This is a headless WordPress site with Next.js frontend
-- Content is managed via WordPress admin at https://honeydew-wombat-188037.hostingersite.com
-- API endpoint: https://honeydew-wombat-188037.hostingersite.com/graphql
+- This is a headless WordPress + Next.js website
+- All monetary values are in Nigerian Naira (NGN)
+- Property prices and availability change frequently; always check the live website for current information
 
 ## Social Media
 - Facebook: https://facebook.com/houseunlimitednigeria

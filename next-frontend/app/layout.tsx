@@ -80,10 +80,9 @@ export default async function RootLayout({
           strategy="afterInteractive"
         />
         <GoogleAnalytics />
-        <Script
+        <script
           id="organization-jsonld"
           type="application/ld+json"
-          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
