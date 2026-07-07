@@ -1,7 +1,3 @@
-"use client";
-
-import Script from "next/script";
-
 type JsonLdProps = {
   data: Record<string, unknown>;
   id?: string;
@@ -9,10 +5,9 @@ type JsonLdProps = {
 
 export function JsonLd({ data, id = "json-ld" }: JsonLdProps) {
   return (
-    <Script
+    <script
       id={id}
       type="application/ld+json"
-      strategy="afterInteractive"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
     />
   );
