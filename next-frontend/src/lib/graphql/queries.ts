@@ -161,7 +161,7 @@ export const PROPERTY_BY_SLUG_QUERY = `
 `;
 
 export const PAGE_BY_SLUG_QUERY = `
-  query PageBySlug($slug: String!) {
+  query PageBySlug($slug: ID!) {
     page(id: $slug, idType: URI) {
       slug
       title

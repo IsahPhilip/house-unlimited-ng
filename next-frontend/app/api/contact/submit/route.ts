@@ -203,7 +203,13 @@ export async function POST(request: Request) {
       host: SMTP_HOST,
       port: SMTP_PORT,
       secure: SMTP_PORT === 465,
-      auth: { user: SMTP_USER, pass: SMTP_PASS }
+      auth: { user: SMTP_USER, pass: SMTP_PASS },
+      tls: {
+        ciphers:'SSLv3',
+        rejectUnauthorized: false
+      },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000
     });
 
     await transporter.sendMail({
@@ -217,10 +223,11 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ message: "Message sent successfully." }, { status: 200 });
   } catch (error) {
-    const err = error as NodeJS.ErrnoException & { code?: string; response?: string; responseCode?: number };
+    const err = error as NodeJS.ErrnoException & { code?: string; response?: string; responseCode?: number; name?: string };
     console.error("Contact form SMTP error:", {
       message: err.message,
       code: err.code,
+      name: err.name,
       response: err.response,
       responseCode: err.responseCode
     });
