@@ -90,6 +90,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
             <Link href="/blog" className="block hover:text-[#9fd1d1] transition-colors">Blog</Link>
             <Link href="/about" className="block hover:text-[#9fd1d1] transition-colors">About Us</Link>
             <Link href="/careers" className="block hover:text-[#9fd1d1] transition-colors">Careers</Link>
+            <Link href="/faq" className="block hover:text-[#9fd1d1] transition-colors">FAQ</Link>
             <Link href="/contact" className="block hover:text-[#9fd1d1] transition-colors">Contact Us</Link>
             <Link href="/privacy" className="block hover:text-[#9fd1d1] transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="block hover:text-[#9fd1d1] transition-colors">Terms & Conditions</Link>
