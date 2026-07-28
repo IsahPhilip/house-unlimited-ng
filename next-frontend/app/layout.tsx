@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { GoogleAnalytics } from "@/components/google-analytics";
 import { getPrimaryMenu, getSiteSettings } from "@/lib/wordpress";
+import { WhatsAppButton } from "@/components/whatsapp-button";
 import { Phone, Mail, Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
 
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
@@ -147,6 +148,7 @@ export default async function RootLayout({
           <SiteHeader menu={menu} settings={settings} />
           <main>{children}</main>
           <SiteFooter settings={settings} />
+          <WhatsAppButton phone={settings.phone} />
         </div>
       </body>
     </html>
