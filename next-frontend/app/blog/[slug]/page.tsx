@@ -63,10 +63,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     url: siteUrl + "/blog/" + post.slug,
     datePublished: post.date,
     dateModified: post.modified || post.date,
+    inLanguage: "en-NG",
     author: {
       "@type": "Organization",
       name: settings.title,
       url: siteUrl,
+      logo: { "@type": "ImageObject", url: siteUrl + "/site_icon.png" },
     },
     publisher: {
       "@type": "Organization",
@@ -74,8 +76,24 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       url: siteUrl,
       logo: { "@type": "ImageObject", url: siteUrl + "/site_icon.png" },
     },
-    image: post.featuredImage,
+    image: post.featuredImage
+      ? { "@type": "ImageObject", url: post.featuredImage, caption: post.title }
+      : undefined,
     mainEntityOfPage: { "@type": "WebPage", "@id": siteUrl + "/blog/" + post.slug },
+    speakable: {
+      "@type": "SpeakableSpecification",
+      cssSelector: ["h1", "article", ".wp-content"]
+    },
+    about: {
+      "@type": "Thing",
+      name: "Real Estate in Abuja, Nigeria"
+    },
+    mentions: [
+      { "@type": "Place", name: "Abuja", address: { "@type": "PostalAddress", addressLocality: "Abuja", addressCountry: "NG" } },
+      { "@type": "Organization", name: settings.title, url: siteUrl }
+    ],
+    isPartOf: { "@type": "Blog", name: settings.title + " Blog", url: siteUrl + "/blog" },
+    keywords: post.tags?.join(", ") || "real estate, Abuja, Nigeria, property",
   };
 
   const postCategories = new Set(post.categories.map((item) => item.toLowerCase()));
