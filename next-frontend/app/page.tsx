@@ -43,9 +43,18 @@ export default async function HomePage() {
   ]);
 
   const services = [
-    { title: 'Buy a Home', desc: 'Find the right home faster with verified listings and guided tours.' },
-    { title: 'Buy Land', desc: 'Discover verified land parcels with clear documentation and strong value.' },
-    { title: 'Investment Sales', desc: 'Identify high‑value house and land opportunities with strong upside.' },
+    {
+      title: 'Buy a Home',
+      desc: 'Personalised search and verified listings, guided viewings, legal checks, and negotiation support so you can buy with confidence.'
+    },
+    {
+      title: 'Buy Land',
+      desc: 'Verified land parcels, title & survey coordination, and due‑diligence assistance to secure development‑ready plots.'
+    },
+    {
+      title: 'Investment Sales',
+      desc: 'Data‑driven valuations, curated investment opportunities, and deal execution to maximise your rental or resale returns.'
+    }
   ];
 
   const fallbackTestimonials = [
