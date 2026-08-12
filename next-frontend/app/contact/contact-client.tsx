@@ -359,7 +359,18 @@ export function ContactClient({ settings, initialTopic = "general", initialRole 
           <div className="bg-white p-4 rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
             <h3 className="text-2xl font-bold text-gray-900 mb-6 px-4">Our Location</h3>
             <iframe
-              src={`https://maps.google.com/maps?q=${encodeURIComponent(settings.address || "Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria")}&output=embed`}
+              src={(() => {
+                // Prefer explicit coordinates when available to ensure accurate map pin
+                const lat = settings.latitude;
+                const lng = settings.longitude;
+
+                if (lat && lng) {
+                  return `https://maps.google.com/maps?q=${encodeURIComponent(`${lat},${lng}`)}&output=embed`;
+                }
+
+                const address = settings.address || "Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria";
+                return `https://maps.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
+              })()}
               width="100%"
               height="450"
               style={{ border: 0 }}

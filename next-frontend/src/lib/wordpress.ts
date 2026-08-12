@@ -86,6 +86,8 @@ export type SiteSettings = {
   instagram: string;
   linkedin: string;
   youtube: string;
+  latitude?: string;
+  longitude?: string;
 };
 
 export type PostPreview = {
@@ -296,7 +298,9 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     siteUrl: restSettings?.siteUrl || fallbackSiteUrl,
     phone: restSettings?.phone || "+234 904 375 2708",
     email: restSettings?.email || "official@houseunlimitednigeria.com",
-    address: "Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria",
+    address: restSettings?.address || "Suite S23 Febson Mall, Wuse Zone 4, Abuja 904101, Federal Capital Territory, Nigeria",
+    latitude: restSettings?.latitude?.toString(),
+    longitude: restSettings?.longitude?.toString(),
     heroTitle: "Modern editorial and listing workflows, without giving up WordPress.",
     heroDescription:
       "House Unlimited Nigeria is a leading real estate company dedicated to helping you find your dream home. With a wide range of properties, expert guidance, and personalized service, we make the home buying process seamless and enjoyable. Whether you're looking for a cozy apartment or a spacious family home, House Unlimited Nigeria is here to turn your vision into reality.",
