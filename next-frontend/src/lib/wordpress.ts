@@ -483,6 +483,7 @@ function mapWordPressRestProperty(property: WordPressRestProperty): PropertyPrev
     bathrooms: parseNumericField(property.acf?.bathrooms),
     area: property.acf?.area,
     status: property.acf?.property_status,
+    listingType: property.acf?.property_status,
     gallery
   };
 }
@@ -529,6 +530,8 @@ export async function getFeaturedProperties(first = 6): Promise<PropertyPreview[
       image: node.featuredImage?.node?.sourceUrl,
       price: node.propertyFields?.price,
       type: node.propertyFields?.propertyType,
+      status: node.propertyFields?.propertyStatus,
+      listingType: node.propertyFields?.propertyStatus,
       location: node.propertyFields?.location
     })) || []
   );
@@ -615,6 +618,7 @@ export async function getPropertyBySlug(slug: string): Promise<PropertyPreview |
     bathrooms: parseNumericField(data.property.propertyFields?.bathrooms),
     area: data.property.propertyFields?.area,
     status: data.property.propertyFields?.propertyStatus,
+    listingType: data.property.propertyFields?.propertyStatus,
     gallery: data.property.propertyFields?.gallery?.map((img) => img.sourceUrl || "").filter(Boolean) || []
   };
 }
