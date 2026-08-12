@@ -1301,6 +1301,42 @@ add_action(
 
 		register_rest_route(
 			'hun/v1',
+			'/settings/coordinates',
+			array(
+				'methods'             => 'POST',
+				'permission_callback' => '__return_true',
+				'callback'            => static function ( WP_REST_Request $request ) {
+					$body = $request->get_json_params();
+
+					$secret = isset( $body['secret'] ) ? (string) $body['secret'] : '';
+					$expected = (string) get_option( 'hun_api_update_secret', '' );
+
+					if ( ! $expected || $secret !== $expected ) {
+						return new WP_Error( 'hun_settings_unauthorized', __( 'Unauthorized.', 'house-unlimited-headless' ), array( 'status' => 403 ) );
+					}
+
+					$lat = isset( $body['latitude'] ) ? $body['latitude'] : null;
+					$lng = isset( $body['longitude'] ) ? $body['longitude'] : null;
+
+					if ( $lat === null || $lng === null ) {
+						return new WP_Error( 'hun_settings_invalid', __( 'Missing latitude or longitude.', 'house-unlimited-headless' ), array( 'status' => 400 ) );
+					}
+
+					// Basic validation: numeric
+					if ( ! is_numeric( $lat ) || ! is_numeric( $lng ) ) {
+						return new WP_Error( 'hun_settings_invalid_format', __( 'Latitude and longitude must be numeric.', 'house-unlimited-headless' ), array( 'status' => 400 ) );
+					}
+
+					update_option( 'hun_site_latitude', (string) $lat );
+					update_option( 'hun_site_longitude', (string) $lng );
+
+					return rest_ensure_response( array( 'success' => true, 'latitude' => (string) $lat, 'longitude' => (string) $lng ) );
+				},
+			)
+		);
+
+		register_rest_route(
+			'hun/v1',
 			'/menu',
 			array(
 				'methods'             => 'GET',
