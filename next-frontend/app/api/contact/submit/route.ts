@@ -3,7 +3,7 @@ import { Resend } from "resend";
 
 const RESEND_API_KEY  = process.env.RESEND_API_KEY || "";
 const CONTACT_TO     = process.env.CONTACT_TO_EMAIL || "official@houseunlimitednigeria.com";
-const CONTACT_FROM   = process.env.CONTACT_FROM_EMAIL || "House Unlimited Nigeria <noreply@houseunlimitednigeria.com>";
+const CONTACT_FROM   = process.env.CONTACT_FROM_EMAIL || "House Unlimited Nigeria <noreply@send.houseunlimitednigeria.com>";
 
 const ALLOWED_TYPES = new Set(["general", "property_inquiry", "partnership", "complaint", "other"]);
 const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;

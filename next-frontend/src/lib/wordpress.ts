@@ -287,6 +287,8 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       instagram?: string;
       linkedin?: string;
       youtube?: string;
+      latitude?: string | number;
+      longitude?: string | number;
     }>("/settings", { suppressNotFound: true })
   ]);
 
