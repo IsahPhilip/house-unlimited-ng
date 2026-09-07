@@ -523,6 +523,7 @@ export async function getFeaturedProperties(first = 6): Promise<PropertyPreview[
           price?: string;
           propertyType?: string;
           location?: string;
+          propertyStatus?: string;
         };
       }>;
     };
