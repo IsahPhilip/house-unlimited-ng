@@ -17,8 +17,21 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+const STATIC_ROLES = [
+  {
+    slug: "female-content-creator-nysc",
+    title: "Female Content Creator (NYSC Internship)",
+    summary: "Turn your creativity into a career. We're looking for a passionate female Corp Member to create engaging content across our social media platforms.",
+    content: `<ul><li>Create engaging content for Instagram, TikTok, Facebook &amp; WhatsApp</li><li>Assist in shoots, editing, captions, scripts &amp; events</li></ul><p><strong>You must have:</strong></p><ul><li>Must be a female</li><li>Serving Corp Member</li><li>Passion for content creation with at least 1 year experience</li></ul>`,
+    employmentType: "NYSC Internship",
+    location: "Abuja (On-Site)",
+    applyLabel: "Apply Now",
+  },
+];
+
 export default async function CareersPage() {
-  const [settings, openRoles] = await Promise.all([getSiteSettings(), getJobRoles(12)]);
+  const [settings, wpRoles] = await Promise.all([getSiteSettings(), getJobRoles(12)]);
+  const openRoles = wpRoles.length > 0 ? wpRoles : STATIC_ROLES;
 
   const breadcrumbListSchema = {
     "@context": "https://schema.org",
@@ -93,8 +106,7 @@ export default async function CareersPage() {
             </p>
           </div>
 
-          {openRoles.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {openRoles.map((role) => (
               <article key={role.slug} className="rounded-3xl border border-gray-100 bg-gray-50 p-8 shadow-sm">
                 <div className="flex flex-wrap gap-3 mb-5">
@@ -126,20 +138,6 @@ export default async function CareersPage() {
               </article>
               ))}
             </div>
-          ) : (
-            <div className="rounded-3xl border border-dashed border-gray-200 bg-gray-50 p-10 text-center">
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">No roles published yet</h3>
-              <p className="text-gray-600 max-w-2xl mx-auto mb-6">
-                Open roles will appear here once they are published. In the meantime, if you&apos;re interested in joining our team, please send us a career enquiry and we&apos;ll keep your information on file for future opportunities.
-              </p>
-              <Link
-                href="/contact?topic=careers"
-                className="inline-flex items-center rounded-full bg-[#005555] px-7 py-3 text-sm font-bold text-white hover:bg-[#004242] transition-all shadow-lg shadow-[#d8eeee]"
-              >
-                Send Career Enquiry
-              </Link>
-            </div>
-          )}
         </div>
       </section>
 
